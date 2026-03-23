@@ -1,0 +1,122 @@
+/**
+ * MediCalm Canonical Taxonomy
+ * Authority: Input Taxonomy (doc 14), Execution Spec (doc 04), UX/UI Experience Report (doc 12)
+ *
+ * Controlled-vocabulary values used across the entire system.
+ * Synonyms from free text must be normalised to these canonical strings
+ * before engine processing (M2).
+ * All values are lowercase_snake_case.
+ */
+
+import type { SeverityBand } from './index'
+
+// ── Location Tags ──────────────────────────────────────────────────────────────
+// Body regions where the user experiences symptoms.
+export const LOCATION_TAGS = [
+  'front_neck',
+  'back_neck',
+  'jaw',
+  'ribs',
+  'upper_back',
+  'shoulders',
+  'chest',
+  'lower_back',
+  'hips',
+  'head',
+] as const
+
+export type LocationTag = (typeof LOCATION_TAGS)[number]
+
+// ── Symptom Tags ───────────────────────────────────────────────────────────────
+// How the user experiences their symptoms.
+export const SYMPTOM_TAGS = [
+  'burning',
+  'tightness',
+  'pressure',
+  'sharp',
+  'throbbing',
+  'soreness',
+  'aching',
+  'stiffness',
+  'numbness',
+  'tingling',
+] as const
+
+export type SymptomTag = (typeof SYMPTOM_TAGS)[number]
+
+// ── Trigger Tags ───────────────────────────────────────────────────────────────
+// Context or activity associated with onset.
+export const TRIGGER_TAGS = [
+  'sitting',
+  'standing',
+  'driving',
+  'eating',
+  'post_sleep',
+  'stress',
+  'overhead_movement',
+  'screen_use',
+  'exercise',
+  'unknown',
+] as const
+
+export type TriggerTag = (typeof TRIGGER_TAGS)[number]
+
+// ── Immediate Escalation Tags (Safety Precheck) ────────────────────────────────
+// Authority: Execution Spec (doc 04) § 2. Safety Precheck Engine
+// If any of these are present, route to SAFETY_STOP_MODE. Do not start session.
+export const IMMEDIATE_ESCALATION_TAGS = [
+  'chest_pain',
+  'severe_shortness_of_breath',
+  'progressive_weakness',
+  'worsening_numbness',
+  'severe_neurologic_change',
+  'hand_dysfunction',
+  'fainting',
+  'major_balance_loss',
+] as const
+
+export type ImmediateEscalationTag = (typeof IMMEDIATE_ESCALATION_TAGS)[number]
+
+// ── Active Session Stop Triggers ───────────────────────────────────────────────
+// Authority: Execution Spec (doc 04) § 6. Active Safety Interrupt Engine
+export const SESSION_STOP_TRIGGERS = [
+  'dizziness',
+  'major_pain_spike',
+  'panic_escalation',
+  'worsening_nerve_symptoms',
+  'severe_shortness_of_breath',
+  'new_weakness',
+  'loss_of_control',
+] as const
+
+export type SessionStopTrigger = (typeof SESSION_STOP_TRIGGERS)[number]
+
+// ── Severity Bands ─────────────────────────────────────────────────────────────
+// Authority: Execution Spec (doc 04) § 1. State Intake Engine
+export const SEVERITY_BANDS: Record<SeverityBand, [number, number]> = {
+  low:       [0, 3],
+  moderate:  [4, 6],
+  high:      [7, 8],
+  very_high: [9, 10],
+}
+
+export function getSeverityBand(pain_level: number): SeverityBand {
+  if (pain_level <= 3) return 'low'
+  if (pain_level <= 6) return 'moderate'
+  if (pain_level <= 8) return 'high'
+  return 'very_high'
+}
+
+// ── Change Markers (Feedback) ──────────────────────────────────────────────────
+// Authority: Execution Spec (doc 04) § 7. Feedback Engine
+export const CHANGE_MARKERS = [
+  'less_tight',
+  'less_burning',
+  'easier_breathing',
+  'more_control',
+  'less_jaw_tension',
+  'less_pressure',
+  'no_change',
+] as const
+
+export type ChangeMarker = (typeof CHANGE_MARKERS)[number]
