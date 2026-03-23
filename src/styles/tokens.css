@@ -1,0 +1,88 @@
+/* MediCalm Design Tokens
+   Authority: Visual Design Doctrine (doc 07), UX/UI Experience Report (doc 12)
+   Color identity: deep neutral indigo base · soft cyan accent · warm off-white text
+*/
+
+:root {
+  /* ── Colors ───────────────────────────────────────────────────────── */
+  --color-bg-base:          #1a1c2e;   /* deep neutral indigo */
+  --color-bg-surface:       #20223a;   /* slightly lifted surface */
+  --color-bg-card:          #252848;   /* card / panel background */
+
+  --color-accent-primary:   #5ecfcf;   /* soft cyan — primary accent */
+  --color-accent-secondary: #3d9e9e;   /* muted teal — secondary */
+  --color-accent-glow:      rgba(94, 207, 207, 0.15);
+
+  --color-text-primary:     #e8edf2;   /* warm white */
+  --color-text-secondary:   #8c9aaa;
+  --color-text-disabled:    #4a5568;
+
+  --color-border-subtle:    rgba(255, 255, 255, 0.08);
+  --color-border-active:    rgba(94, 207, 207, 0.4);
+
+  --color-safety-stop:      #f87171;   /* calm red — safety stop states only */
+  --color-caution:          #fbbf24;   /* amber — interrupted caution */
+
+  /* ── Spacing ──────────────────────────────────────────────────────── */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+
+  /* ── Typography ───────────────────────────────────────────────────── */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --text-xs:   0.75rem;    /* 12px */
+  --text-sm:   0.875rem;   /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg:   1.125rem;   /* 18px */
+  --text-xl:   1.25rem;    /* 20px */
+  --text-2xl:  1.5rem;     /* 24px */
+  --text-3xl:  1.875rem;   /* 30px */
+  --text-4xl:  2.25rem;    /* 36px */
+
+  --weight-light:    300;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+
+  --leading-tight:   1.2;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.7;
+
+  /* ── Radius ───────────────────────────────────────────────────────── */
+  --radius-sm:   6px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-full: 9999px;
+
+  /* ── Motion ───────────────────────────────────────────────────────── */
+  /* Authority: Guided Session UI Spec (doc 05) § 2. Transition System  */
+  /* crossfades 200–400ms only; no bounce, no zoom, no slides           */
+  --transition-quick:     200ms ease;
+  --transition-crossfade: 300ms ease;
+  --transition-slow:      400ms ease;
+
+  /* ── Touch / Accessibility ────────────────────────────────────────── */
+  --touch-min: 44px;   /* minimum tap target per accessibility spec (doc 17) */
+
+  /* ── Layout ───────────────────────────────────────────────────────── */
+  --screen-max-width: 480px;   /* mobile-first centered column */
+  --screen-padding:   var(--space-5);
+}
+
+/* ── Reduced motion overrides ─────────────────────────────────────────── */
+/* Authority: Accessibility + Motion Fallbacks (doc 17)                   */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-quick:     0ms;
+    --transition-crossfade: 0ms;
+    --transition-slow:      0ms;
+  }
+}
