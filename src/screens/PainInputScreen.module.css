@@ -1,0 +1,113 @@
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--screen-max-width);
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--space-6) var(--screen-padding) var(--space-10);
+  gap: var(--space-6);
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.backButton {
+  align-self: flex-start;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  min-height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-quick);
+}
+
+.backButton:hover {
+  color: var(--color-text-primary);
+}
+
+.heading {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-light);
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.noteLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.noteInput {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: var(--text-base);
+  padding: var(--space-3) var(--space-4);
+  resize: none;
+  transition: border-color var(--transition-quick);
+  outline: none;
+  width: 100%;
+}
+
+.noteInput:focus {
+  border-color: var(--color-border-active);
+}
+
+.noteInput::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.submitButton {
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: var(--space-4);
+  background: var(--color-accent-primary);
+  color: var(--color-bg-base);
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  font-family: inherit;
+  transition: opacity var(--transition-quick);
+}
+
+.submitButton:not(:disabled):hover {
+  opacity: 0.88;
+}
+
+.submitButton:not(:disabled):active {
+  opacity: 0.72;
+}
+
+.submitButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.validation {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
