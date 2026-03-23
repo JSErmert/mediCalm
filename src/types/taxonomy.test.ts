@@ -48,3 +48,75 @@ describe('taxonomy', () => {
     expect(getSeverityBand(10)).toBe('very_high')
   })
 })
+
+describe('SYMPTOM_TAGS', () => {
+  it('includes nerve_like', () => {
+    expect(SYMPTOM_TAGS).toContain('nerve_like')
+  })
+
+  it('includes radiating', () => {
+    expect(SYMPTOM_TAGS).toContain('radiating')
+  })
+
+  it('includes guarding', () => {
+    expect(SYMPTOM_TAGS).toContain('guarding')
+  })
+
+  it('includes shallow_breathing', () => {
+    expect(SYMPTOM_TAGS).toContain('shallow_breathing')
+  })
+
+  it('includes instability', () => {
+    expect(SYMPTOM_TAGS).toContain('instability')
+  })
+
+  it('includes coordination_change', () => {
+    expect(SYMPTOM_TAGS).toContain('coordination_change')
+  })
+
+  it('includes weakness', () => {
+    expect(SYMPTOM_TAGS).toContain('weakness')
+  })
+
+  it('retains all original tags', () => {
+    const original = [
+      'burning', 'tightness', 'pressure', 'sharp', 'throbbing',
+      'soreness', 'aching', 'stiffness', 'numbness', 'tingling',
+    ]
+    for (const tag of original) {
+      expect(SYMPTOM_TAGS).toContain(tag)
+    }
+  })
+})
+
+describe('LOCATION_TAGS', () => {
+  it('includes ear', () => {
+    expect(LOCATION_TAGS).toContain('ear')
+  })
+
+  it('includes throat', () => {
+    expect(LOCATION_TAGS).toContain('throat')
+  })
+
+  it('includes mid_back', () => {
+    expect(LOCATION_TAGS).toContain('mid_back')
+  })
+
+  it('includes arm', () => {
+    expect(LOCATION_TAGS).toContain('arm')
+  })
+
+  it('includes hand', () => {
+    expect(LOCATION_TAGS).toContain('hand')
+  })
+
+  it('retains all original location tags', () => {
+    const original = [
+      'front_neck', 'back_neck', 'jaw', 'ribs', 'upper_back',
+      'shoulders', 'chest', 'lower_back', 'hips', 'head',
+    ]
+    for (const tag of original) {
+      expect(LOCATION_TAGS).toContain(tag)
+    }
+  })
+})

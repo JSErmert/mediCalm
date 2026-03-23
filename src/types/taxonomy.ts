@@ -13,16 +13,26 @@ import type { SeverityBand } from './index'
 // ── Location Tags ──────────────────────────────────────────────────────────────
 // Body regions where the user experiences symptoms.
 export const LOCATION_TAGS = [
+  // ── Head + jaw region ────────────────────────────────────────────────────────
+  'head',
+  'jaw',
+  'ear',             // jaw-cervical co-contraction territory; → MECH_JAW_CERVICAL_CO_CONTRACTION
+  // ── Neck region ──────────────────────────────────────────────────────────────
   'front_neck',
   'back_neck',
-  'jaw',
-  'ribs',
-  'upper_back',
+  'throat',          // anterior cervical; → MECH_CERVICAL_GUARDING
+  // ── Shoulder + upper body ────────────────────────────────────────────────────
   'shoulders',
   'chest',
+  'upper_back',
+  'ribs',
+  'mid_back',        // thoracic/costovertebral region; → MECH_RIB_RESTRICTION
+  // ── Lower body ───────────────────────────────────────────────────────────────
   'lower_back',
   'hips',
-  'head',
+  // ── Extremities — also safety-routing candidates for radiating/nerve patterns ─
+  'arm',             // radiating territory; → MECH_MECHANICALLY_DRIVEN_NERVE_IRRITATION
+  'hand',            // distal radiating; also triggers hand_dysfunction safety precheck in M2
 ] as const
 
 export type LocationTag = (typeof LOCATION_TAGS)[number]
@@ -30,16 +40,27 @@ export type LocationTag = (typeof LOCATION_TAGS)[number]
 // ── Symptom Tags ───────────────────────────────────────────────────────────────
 // How the user experiences their symptoms.
 export const SYMPTOM_TAGS = [
+  // ── Sensory quality ──────────────────────────────────────────────────────────
   'burning',
-  'tightness',
-  'pressure',
+  'tingling',
+  'numbness',
+  'nerve_like',      // neuropathic / electrical quality; strong → MECH_MECHANICALLY_DRIVEN_NERVE_IRRITATION
+  'radiating',       // spreading / traveling sensation; strong → MECH_MECHANICALLY_DRIVEN_NERVE_IRRITATION
   'sharp',
   'throbbing',
+  // ── Musculoskeletal quality ───────────────────────────────────────────────────
+  'tightness',
+  'pressure',
   'soreness',
   'aching',
   'stiffness',
-  'numbness',
-  'tingling',
+  // ── Functional / state quality ───────────────────────────────────────────────
+  'shallow_breathing',    // breathing restriction; strong → MECH_RIB_RESTRICTION
+  'guarding',             // active muscle protection; → MECH_CERVICAL_GUARDING, MECH_GENERAL_OVERPROTECTION_STATE
+  'instability',          // sense of positional instability; → MECH_GENERAL_OVERPROTECTION_STATE
+  // ── Safety-adjacent — present as symptom tags; M2 engine handles escalation routing ──
+  'coordination_change',  // altered motor coordination; may route to SAFETY_STOP_MODE in M2
+  'weakness',             // loss of strength; may route to SAFETY_STOP_MODE in M2
 ] as const
 
 export type SymptomTag = (typeof SYMPTOM_TAGS)[number]

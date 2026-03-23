@@ -70,7 +70,7 @@ export interface RuntimeSession {
   protocol_id: string
   protocol_name: string
   goal: string
-  display_mode: 'breath_with_body_cue' | 'breath_only'
+  display_mode: 'breath_only' | 'breath_with_body_cue' | 'breath_with_posture_cue' | 'breath_with_micro_movement' | 'position_with_breath'
   timing_profile: TimingProfile
   cue_sequence: string[]
   estimated_length_seconds: number
@@ -151,7 +151,7 @@ export interface ProtocolDefinition {
   protocol_name: string
   goal: string
   primary_mechanisms: string[]
-  display_mode: 'breath_with_body_cue' | 'breath_only'
+  display_mode: 'breath_only' | 'breath_with_body_cue' | 'breath_with_posture_cue' | 'breath_with_micro_movement' | 'position_with_breath'
   default_timing_profile: TimingProfile
   cue_sequence: string[]
   microtext_options: string[]
