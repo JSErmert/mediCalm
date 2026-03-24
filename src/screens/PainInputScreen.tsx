@@ -6,8 +6,8 @@
  * Required: pain_level (0–10), ≥1 location_tag, ≥1 symptom_tag
  * Optional: trigger_tag (single select), user_note (free text, ≤200 chars)
  *
- * On submit: validates → dispatches SET_PAIN_INPUT → navigates to session_placeholder.
- * M2 replaces the session_placeholder route with a real session engine call.
+ * On submit: validates → calls resolveSession() → dispatches SET_ACTIVE_SESSION or SET_SAFETY_STOP
+ * → navigates to 'guided_session' or 'safety_stop'.
  *
  * UI rules:
  * - screen must feel open, quiet, and immediately understandable
