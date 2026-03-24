@@ -28,13 +28,23 @@ describe('App root', () => {
     ).toBeInTheDocument()
   })
 
-  it('reaches SessionPlaceholder after completing pain input', async () => {
+  it('reaches GuidedSessionScreen after completing pain input with safe input', async () => {
     render(<App />)
     await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
-    // Select required inputs
-    await userEvent.click(screen.getByRole('button', { name: /front\s*neck/i }))
-    await userEvent.click(screen.getByRole('button', { name: /burning/i }))
+    // ribs + tightness → MECH_RIB_RESTRICTION → PROTO_RIB_EXPANSION_RESET
+    await userEvent.click(screen.getByRole('button', { name: /^ribs$/i }))
+    await userEvent.click(screen.getByRole('button', { name: /^tightness$/i }))
     await userEvent.click(screen.getByRole('button', { name: /begin session/i }))
-    expect(screen.getByText(/milestone 1 complete/i)).toBeInTheDocument()
+    // GuidedSessionScreen shows stop button
+    expect(screen.getByRole('button', { name: /^stop session$/i })).toBeInTheDocument()
+  })
+
+  it('routes to SafetyStopScreen when coordination_change is selected', async () => {
+    render(<App />)
+    await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
+    await userEvent.click(screen.getByRole('button', { name: /^ribs$/i }))
+    await userEvent.click(screen.getByRole('button', { name: /coordination.change/i }))
+    await userEvent.click(screen.getByRole('button', { name: /begin session/i }))
+    expect(screen.getByText(/stop here\./i)).toBeInTheDocument()
   })
 })

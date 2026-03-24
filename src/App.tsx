@@ -4,11 +4,6 @@
  *
  * Uses Framer Motion AnimatePresence for crossfade transitions (300ms, ease).
  * Screen routing is driven by AppContext state machine.
- *
- * Rules (from Guided Session UI Spec):
- * - crossfades only: no slides, no zoom, no bounce
- * - transitions must not feel delayed — 300ms is the target
- * - the experience should feel like one continuous environment
  */
 import { AnimatePresence } from 'framer-motion'
 import { AppProvider } from './context/AppProvider'
@@ -16,7 +11,8 @@ import { useAppContext } from './context/AppContext'
 import { ScreenTransition } from './components/ScreenTransition'
 import { HomeScreen } from './screens/HomeScreen'
 import { PainInputScreen } from './screens/PainInputScreen'
-import { SessionPlaceholder } from './screens/SessionPlaceholder'
+import { GuidedSessionScreen } from './screens/GuidedSessionScreen'
+import { SafetyStopScreen } from './screens/SafetyStopScreen'
 
 function ScreenRouter() {
   const { state } = useAppContext()
@@ -34,9 +30,14 @@ function ScreenRouter() {
           <PainInputScreen />
         </ScreenTransition>
       )}
-      {activeScreen === 'session_placeholder' && (
-        <ScreenTransition screenKey="session_placeholder">
-          <SessionPlaceholder />
+      {activeScreen === 'guided_session' && (
+        <ScreenTransition screenKey="guided_session">
+          <GuidedSessionScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'safety_stop' && (
+        <ScreenTransition screenKey="safety_stop">
+          <SafetyStopScreen />
         </ScreenTransition>
       )}
     </AnimatePresence>

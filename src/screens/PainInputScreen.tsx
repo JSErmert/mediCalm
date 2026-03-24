@@ -14,6 +14,7 @@
  * - avoid dense forms; no scrolling-heavy layouts in v1
  * - keep input completion responsive — no loading delay
  */
+import { resolveSession } from '../engine'
 import { useState } from 'react'
 import type { PainInputState } from '../types'
 import { LOCATION_TAGS, SYMPTOM_TAGS, TRIGGER_TAGS } from '../types/taxonomy'
@@ -58,9 +59,17 @@ export function PainInputScreen() {
       ...(userNote.trim() !== '' && { user_note: userNote.trim() }),
     }
 
+    const resolution = resolveSession(input)
+
     dispatch({ type: 'SET_PAIN_INPUT', input })
-    // M1: route to placeholder. M2: call session engine and route to guided session.
-    dispatch({ type: 'NAVIGATE', screen: 'session_placeholder' })
+
+    if (resolution.kind === 'safety_stop') {
+      dispatch({ type: 'SET_SAFETY_STOP', assessment: resolution.assessment })
+      dispatch({ type: 'NAVIGATE', screen: 'safety_stop' })
+    } else {
+      dispatch({ type: 'SET_ACTIVE_SESSION', session: resolution.session })
+      dispatch({ type: 'NAVIGATE', screen: 'guided_session' })
+    }
   }
 
   function handleBack() {
