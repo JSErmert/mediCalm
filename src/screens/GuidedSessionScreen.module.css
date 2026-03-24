@@ -1,0 +1,190 @@
+.screen {
+  min-height: 100dvh;
+  background: var(--color-background);
+  display: flex;
+  flex-direction: column;
+}
+
+.breathingPhase {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 1.5rem 2rem;
+}
+
+.topZone {
+  width: 100%;
+  text-align: center;
+  padding-bottom: 0.5rem;
+}
+
+.protocolName {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary, rgba(255, 255, 255, 0.35));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.goalText {
+  font-size: 0.8125rem;
+  color: var(--color-text-tertiary, rgba(255, 255, 255, 0.35));
+  line-height: 1.4;
+}
+
+.orbArea {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emergenceArea {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0 1rem;
+}
+
+.sessionFooter {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.safetyButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.safetyButton:hover {
+  opacity: 0.9;
+}
+
+.stopButton {
+  padding: 0.5rem 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.stopButton:hover {
+  opacity: 1;
+}
+
+.safetyInterruptPhase {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.safetyHeading {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.safetyBody {
+  font-size: 1.0625rem;
+  color: var(--color-text-primary);
+}
+
+.safetySubtext {
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  max-width: 300px;
+}
+
+.returnHomeButton {
+  margin-top: 1.5rem;
+  padding: 0.75rem 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.returnHomeButton:hover {
+  opacity: 0.7;
+}
+
+.completionPhase {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.confirmDialog {
+  background: var(--color-surface, #1a1e2e);
+  border-radius: 0.75rem;
+  padding: 2rem 1.5rem;
+  max-width: 280px;
+  width: 100%;
+  text-align: center;
+}
+
+.confirmText {
+  font-size: 1.0625rem;
+  color: var(--color-text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.confirmButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.confirmStop {
+  padding: 0.625rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.confirmContinue {
+  padding: 0.625rem;
+  border: none;
+  border-radius: 0.375rem;
+  background: var(--color-accent, #4a90d9);
+  color: #fff;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
