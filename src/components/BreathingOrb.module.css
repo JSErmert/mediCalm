@@ -1,4 +1,8 @@
-/* src/components/BreathingOrb.module.css */
+/* src/components/BreathingOrb.module.css — M2.5.2 Medical Light
+ * Orb is the primary pacing instrument. It must be the dominant focal point
+ * on the light background — deep teal gradient with teal ambient shadow.
+ */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -11,7 +15,15 @@
   width: min(54vw, 260px);
   height: min(54vw, 260px);
   border-radius: 50%;
-  background: radial-gradient(circle at 38% 38%, var(--color-orb-center, #e8f0fe), var(--color-orb-edge, #c5d8f8));
+  background: radial-gradient(
+    circle at 36% 34%,
+    var(--color-orb-center, #2196a8) 0%,
+    var(--color-orb-mid, #155e6e) 45%,
+    var(--color-orb-edge, #0d3d4a) 100%
+  );
+  box-shadow:
+    var(--shadow-orb, 0 8px 32px rgba(22, 130, 148, 0.22), 0 2px 8px rgba(0, 0, 0, 0.10)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,16 +36,20 @@
   width: min(54vw, 260px);
   height: min(54vw, 260px);
   border-radius: 50%;
-  background: radial-gradient(circle, var(--color-orb-glow, rgba(160, 200, 250, 0.35)), transparent 70%);
-  scale: 1.18;
+  background: radial-gradient(
+    circle,
+    var(--color-orb-glow, rgba(22, 130, 148, 0.16)),
+    transparent 72%
+  );
+  scale: 1.22;
   z-index: 0;
 }
 
 .countdown {
   font-size: clamp(2.25rem, 8vw, 3rem);
-  font-weight: 300;
+  font-weight: 200;
   font-variant-numeric: tabular-nums;
-  color: var(--color-text-primary);
+  color: var(--color-orb-text, rgba(255, 255, 255, 0.92));
   letter-spacing: -0.02em;
   user-select: none;
 }

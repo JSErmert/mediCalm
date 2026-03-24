@@ -38,7 +38,7 @@
   min-height: var(--touch-min);
   padding: var(--space-3) var(--space-8);
   background: var(--color-accent-primary);
-  color: var(--color-bg-base);
+  color: var(--color-on-accent);
   border-radius: var(--radius-full);
   font-size: var(--text-base);
   font-weight: var(--weight-semibold);

@@ -1,6 +1,11 @@
+/* GuidedSessionScreen — M2.5.2 Medical Light
+ * Light background, orb as dominant focal point.
+ * All text uses design tokens — no hardcoded rgba(255,255,255,...) values.
+ */
+
 .screen {
   min-height: 100dvh;
-  background: var(--color-background);
+  background: var(--color-bg-base);
   display: flex;
   flex-direction: column;
 }
@@ -21,23 +26,40 @@
 }
 
 .protocolName {
-  font-size: 0.75rem;
-  color: var(--color-text-tertiary, rgba(255, 255, 255, 0.35));
-  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
 }
 
 .goalText {
-  font-size: 0.8125rem;
-  color: var(--color-text-tertiary, rgba(255, 255, 255, 0.35));
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
   line-height: 1.4;
+  margin-bottom: 0.4rem;
+}
+
+/* Tertiary numeric round counter — not the primary indicator */
+.roundCounter {
+  font-size: 0.67rem;
+  letter-spacing: 0.08em;
+  color: var(--color-text-tertiary);
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
 }
 
 .orbArea {
   flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
+}
+
+/* Dot strip: directly below orb, no competing text */
+.dotsArea {
+  padding: 14px 0 0;
+  display: flex;
   justify-content: center;
 }
 
@@ -59,28 +81,28 @@
   padding: 0.5rem 1rem;
   border: none;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
   font-size: 0.8125rem;
   cursor: pointer;
-  opacity: 0.5;
+  opacity: 0.7;
   transition: opacity 0.2s ease;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .safetyButton:hover {
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .stopButton {
   padding: 0.5rem 1.5rem;
   border: 1px solid var(--color-border);
-  border-radius: 0.375rem;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text-secondary);
   font-size: 0.875rem;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 0.65;
   transition: opacity 0.2s ease;
 }
 
@@ -88,6 +110,7 @@
   opacity: 1;
 }
 
+/* ── Safety interrupt ─────────────────────────────── */
 .safetyInterruptPhase {
   flex: 1;
   display: flex;
@@ -97,6 +120,7 @@
   padding: 3rem 2rem;
   text-align: center;
   gap: 0.75rem;
+  background: var(--color-bg-base);
 }
 
 .safetyHeading {
@@ -121,7 +145,7 @@
   margin-top: 1.5rem;
   padding: 0.75rem 2rem;
   border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text-primary);
   font-size: 1rem;
@@ -133,28 +157,35 @@
   opacity: 0.7;
 }
 
+/* ── Completion ───────────────────────────────────── */
 .completionPhase {
   flex: 1;
   overflow-y: auto;
+  background: var(--color-bg-base);
 }
 
+/* ── Stop confirm overlay ─────────────────────────── */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(30, 45, 61, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 .confirmDialog {
-  background: var(--color-surface, #1a1e2e);
-  border-radius: 0.75rem;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
   padding: 2rem 1.5rem;
   max-width: 280px;
   width: 100%;
   text-align: center;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border-subtle);
 }
 
 .confirmText {
@@ -172,19 +203,23 @@
 .confirmStop {
   padding: 0.625rem;
   border: 1px solid var(--color-border);
-  border-radius: 0.375rem;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text-primary);
   font-size: 0.9375rem;
   cursor: pointer;
+  transition: opacity 0.15s ease;
 }
+.confirmStop:hover { opacity: 0.7; }
 
 .confirmContinue {
   padding: 0.625rem;
   border: none;
-  border-radius: 0.375rem;
-  background: var(--color-accent, #4a90d9);
-  color: #fff;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-primary);
+  color: var(--color-on-accent);
   font-size: 0.9375rem;
   cursor: pointer;
+  transition: opacity 0.15s ease;
 }
+.confirmContinue:hover { opacity: 0.85; }

@@ -1,27 +1,59 @@
-/* MediCalm Design Tokens
+/* MediCalm Design Tokens — M2.5.2 Medical Light Theme
    Authority: Visual Design Doctrine (doc 07), UX/UI Experience Report (doc 12)
-   Color identity: deep neutral indigo base · soft cyan accent · warm off-white text
+   Theme: clinical light · muted teal accent · dark-slate text · shadow elevation
 */
 
 :root {
-  /* ── Colors ───────────────────────────────────────────────────────── */
-  --color-bg-base:          #1a1c2e;   /* deep neutral indigo */
-  --color-bg-surface:       #20223a;   /* slightly lifted surface */
-  --color-bg-card:          #252848;   /* card / panel background */
+  /* ── Surface colors ────────────────────────────────────────────────── */
+  --color-bg-base:          #f2f5f7;   /* soft blue-grey off-white — screen backgrounds */
+  --color-bg-subtle:        #edf1f4;   /* depth layer slightly below surface */
+  --color-bg-surface:       #ffffff;   /* elevated white — sections, inputs */
+  --color-bg-card:          #ffffff;   /* card / panel background */
 
-  --color-accent-primary:   #5ecfcf;   /* soft cyan — primary accent */
-  --color-accent-secondary: #3d9e9e;   /* muted teal — secondary */
-  --color-accent-glow:      rgba(94, 207, 207, 0.15);
+  /* Legacy aliases — keep for SafetyStop and any unresolved references */
+  --color-background:       var(--color-bg-base);
+  --color-surface:          var(--color-bg-surface);
 
-  --color-text-primary:     #e8edf2;   /* warm white */
-  --color-text-secondary:   #8c9aaa;
-  --color-text-disabled:    #4a5568;
+  /* ── Accent ────────────────────────────────────────────────────────── */
+  --color-accent-primary:   #1a8a8a;   /* muted teal — darkened for light bg contrast */
+  --color-accent-secondary: #147070;   /* deeper teal */
+  --color-accent-glow:      rgba(26, 138, 138, 0.12);
+  --color-accent-subtle:    #e6f5f5;   /* teal wash — selected states */
+  --color-accent-border:    rgba(26, 138, 138, 0.35);
+  --color-accent:           var(--color-accent-primary);   /* shorthand alias */
 
-  --color-border-subtle:    rgba(255, 255, 255, 0.08);
-  --color-border-active:    rgba(94, 207, 207, 0.4);
+  /* Text on accent backgrounds (buttons, chips) */
+  --color-on-accent:        #ffffff;
 
-  --color-safety-stop:      #f87171;   /* calm red — safety stop states only */
-  --color-caution:          #fbbf24;   /* amber — interrupted caution */
+  /* ── Text ──────────────────────────────────────────────────────────── */
+  --color-text-primary:     #1e2d3d;   /* dark slate — primary content */
+  --color-text-secondary:   #5a6e80;   /* medium gray — supporting content */
+  --color-text-tertiary:    #96aab8;   /* light gray — labels, metadata */
+  --color-text-disabled:    #b8c8d4;
+
+  /* ── Borders ───────────────────────────────────────────────────────── */
+  --color-border-subtle:    rgba(0, 0, 0, 0.07);
+  --color-border:           rgba(0, 0, 0, 0.10);
+  --color-border-active:    rgba(26, 138, 138, 0.45);
+
+  /* ── Safety ────────────────────────────────────────────────────────── */
+  --color-safety-stop:      #c94040;   /* muted red — safety stop states only */
+  --color-caution:          #c07828;   /* amber — interrupted caution */
+
+  /* ── Orb colors ────────────────────────────────────────────────────── */
+  /* Authority: M2_BREATHING_ORB_IMPLEMENTATION_CONTRACT.md              */
+  --color-orb-center:       #2196a8;   /* rich teal — orb center highlight */
+  --color-orb-mid:          #155e6e;   /* mid teal */
+  --color-orb-edge:         #0d3d4a;   /* deep navy-teal — orb outer edge */
+  --color-orb-glow:         rgba(22, 130, 148, 0.16);
+  --color-orb-text:         rgba(255, 255, 255, 0.92);   /* countdown number */
+
+  /* ── Elevation / Shadows ───────────────────────────────────────────── */
+  --shadow-xs:   0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md:   0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-lg:   0 4px 20px rgba(0, 0, 0, 0.09), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-orb:  0 8px 32px rgba(22, 130, 148, 0.22), 0 2px 8px rgba(0, 0, 0, 0.10);
 
   /* ── Spacing ──────────────────────────────────────────────────────── */
   --space-1:   4px;
@@ -70,10 +102,10 @@
   --transition-slow:      400ms ease;
 
   /* ── Touch / Accessibility ────────────────────────────────────────── */
-  --touch-min: 44px;   /* minimum tap target per accessibility spec (doc 17) */
+  --touch-min: 44px;
 
   /* ── Layout ───────────────────────────────────────────────────────── */
-  --screen-max-width: 480px;   /* mobile-first centered column */
+  --screen-max-width: 480px;
   --screen-padding:   var(--space-5);
 }
 

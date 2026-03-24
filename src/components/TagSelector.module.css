@@ -47,7 +47,7 @@
 }
 
 .chip.selected {
-  background: rgba(94, 207, 207, 0.1);
-  border-color: var(--color-accent-primary);
+  background: var(--color-accent-subtle);
+  border-color: var(--color-accent-border);
   color: var(--color-accent-primary);
 }
