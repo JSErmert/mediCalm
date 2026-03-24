@@ -1,0 +1,55 @@
+/* src/components/BreathingOrb.module.css */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.orb {
+  width: min(54vw, 260px);
+  height: min(54vw, 260px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, var(--color-orb-center, #e8f0fe), var(--color-orb-edge, #c5d8f8));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.glowRing {
+  position: absolute;
+  width: min(54vw, 260px);
+  height: min(54vw, 260px);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-orb-glow, rgba(160, 200, 250, 0.35)), transparent 70%);
+  scale: 1.18;
+  z-index: 0;
+}
+
+.countdown {
+  font-size: clamp(2.25rem, 8vw, 3rem);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  user-select: none;
+}
+
+.cueText {
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+  max-width: 240px;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb,
+  .glowRing {
+    transition: opacity 0.04s ease !important;
+  }
+}
