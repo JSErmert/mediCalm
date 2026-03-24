@@ -1,16 +1,20 @@
 import { createContext, useContext } from 'react'
-import type { AppSettings, PainInputState } from '../types'
+import type { AppSettings, PainInputState, RuntimeSession, SafetyAssessment } from '../types'
 
 /**
  * AppScreen — all screens the app can display in v1.
- * 'session_placeholder' is removed in M2 when the session engine is wired.
+ * 'session_placeholder' removed in M2; replaced with 'guided_session' and 'safety_stop'.
  */
-export type AppScreen = 'home' | 'pain_input' | 'session_placeholder'
+export type AppScreen = 'home' | 'pain_input' | 'guided_session' | 'safety_stop'
 
 export interface AppState {
   activeScreen: AppScreen
-  /** Set when the user submits pain input. Consumed by the session engine (M2). */
+  /** Set when the user submits pain input. Consumed by the session engine. */
   pendingPainInput: PainInputState | null
+  /** Set when resolveSession returns a session. Consumed by GuidedSessionScreen. */
+  activeSession: RuntimeSession | null
+  /** Set when resolveSession returns a safety_stop. Consumed by SafetyStopScreen. */
+  safetyAssessment: SafetyAssessment | null
   settings: AppSettings
 }
 
@@ -18,6 +22,9 @@ export type AppAction =
   | { type: 'NAVIGATE'; screen: AppScreen }
   | { type: 'SET_PAIN_INPUT'; input: PainInputState }
   | { type: 'CLEAR_PAIN_INPUT' }
+  | { type: 'SET_ACTIVE_SESSION'; session: RuntimeSession }
+  | { type: 'SET_SAFETY_STOP'; assessment: SafetyAssessment }
+  | { type: 'CLEAR_SESSION' }
   | { type: 'UPDATE_SETTINGS'; settings: Partial<AppSettings> }
 
 interface AppContextValue {
