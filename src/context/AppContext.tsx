@@ -5,7 +5,7 @@ import type { AppSettings, PainInputState, RuntimeSession, SafetyAssessment } fr
  * AppScreen — all screens the app can display in v1.
  * 'session_placeholder' removed in M2; replaced with 'guided_session' and 'safety_stop'.
  */
-export type AppScreen = 'home' | 'pain_input' | 'guided_session' | 'safety_stop'
+export type AppScreen = 'home' | 'pain_input' | 'session_setup' | 'guided_session' | 'safety_stop'
 
 export interface AppState {
   activeScreen: AppScreen

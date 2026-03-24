@@ -7,7 +7,7 @@
  * Optional: trigger_tag (single select), user_note (free text, ≤200 chars)
  *
  * On submit: validates → calls resolveSession() → dispatches SET_ACTIVE_SESSION or SET_SAFETY_STOP
- * → navigates to 'guided_session' or 'safety_stop'.
+ * → navigates to 'session_setup' or 'safety_stop'.
  *
  * UI rules:
  * - screen must feel open, quiet, and immediately understandable
@@ -68,7 +68,7 @@ export function PainInputScreen() {
       dispatch({ type: 'NAVIGATE', screen: 'safety_stop' })
     } else {
       dispatch({ type: 'SET_ACTIVE_SESSION', session: resolution.session })
-      dispatch({ type: 'NAVIGATE', screen: 'guided_session' })
+      dispatch({ type: 'NAVIGATE', screen: 'session_setup' })
     }
   }
 

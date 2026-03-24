@@ -14,6 +14,7 @@ export const PROTOCOLS: ProtocolDefinition[] = [
     protocol_id: 'PROTO_RIB_EXPANSION_RESET',
     protocol_name: 'Rib Expansion Reset',
     goal: 'Reduce compression and restore rib motion before more specific movement.',
+    support_mode: 'Seated or slightly reclined',
     primary_mechanisms: [
       'MECH_RIB_RESTRICTION',
       'MECH_POSTURAL_COMPRESSION',
@@ -54,6 +55,7 @@ export const PROTOCOLS: ProtocolDefinition[] = [
     protocol_id: 'PROTO_SEATED_DECOMPRESSION_RESET',
     protocol_name: 'Seated Decompression Reset',
     goal: 'Reduce seated compression and bracing without forcing posture correction.',
+    support_mode: 'Seated upright, feet flat',
     primary_mechanisms: [
       'MECH_POSTURAL_COMPRESSION',
       'MECH_GENERAL_OVERPROTECTION_STATE',
@@ -88,6 +90,7 @@ export const PROTOCOLS: ProtocolDefinition[] = [
     protocol_id: 'PROTO_GENTLE_CERVICAL_RECONNECTION',
     protocol_name: 'Gentle Cervical Reconnection',
     goal: 'Reintroduce low-intensity neck organisation after calming and decompression.',
+    support_mode: 'Seated, neck relaxed',
     primary_mechanisms: [
       'MECH_CERVICAL_GUARDING',
       'MECH_JAW_CERVICAL_CO_CONTRACTION',
@@ -122,6 +125,7 @@ export const PROTOCOLS: ProtocolDefinition[] = [
     protocol_id: 'PROTO_JAW_UNCLENCH_RESET',
     protocol_name: 'Jaw Unclench Reset',
     goal: 'Reduce jaw guarding when linked to neck tension, bracing, or overprotection.',
+    support_mode: 'Any comfortable position',
     primary_mechanisms: [
       'MECH_JAW_CERVICAL_CO_CONTRACTION',
       'MECH_GENERAL_OVERPROTECTION_STATE',
@@ -155,6 +159,7 @@ export const PROTOCOLS: ProtocolDefinition[] = [
     protocol_id: 'PROTO_BURNING_NERVE_CALM_RESET',
     protocol_name: 'Burning Nerve Calm Reset',
     goal: 'Downshift protection when burning or nerve-like discomfort is prominent.',
+    support_mode: 'Lying down or supported recline',
     primary_mechanisms: [
       'MECH_MECHANICALLY_DRIVEN_NERVE_IRRITATION',
       'MECH_GENERAL_OVERPROTECTION_STATE',
@@ -188,6 +193,7 @@ export const PROTOCOLS: ProtocolDefinition[] = [
     protocol_id: 'PROTO_SUPPORTED_FORWARD_LEAN_RESET',
     protocol_name: 'Supported Forward Lean Reset',
     goal: 'Unload the front neck and shift support into the back body.',
+    support_mode: 'Seated, leaning forward onto support',
     primary_mechanisms: [
       'MECH_POSTURAL_COMPRESSION',
       'MECH_CERVICAL_GUARDING',

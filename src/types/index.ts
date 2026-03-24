@@ -150,6 +150,8 @@ export interface ProtocolDefinition {
   protocol_id: string
   protocol_name: string
   goal: string
+  /** Recommended body position shown on session setup screen. Not a medical prescription. */
+  support_mode?: string
   primary_mechanisms: string[]
   display_mode: 'breath_only' | 'breath_with_body_cue' | 'breath_with_posture_cue' | 'breath_with_micro_movement' | 'position_with_breath'
   default_timing_profile: TimingProfile

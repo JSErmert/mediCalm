@@ -4,11 +4,14 @@ import { useAppContext } from '../context/AppContext'
 import { BreathingOrb } from '../components/BreathingOrb'
 import { StepEmergence } from '../components/StepEmergence'
 import { CompletionForm } from '../components/CompletionForm'
+import { RoundDots } from '../components/RoundDots'
 import { saveSession } from '../storage/sessionHistory'
+import { deriveExpressionProfile } from '../engine/expressionProfile'
 import styles from './GuidedSessionScreen.module.css'
 
 /**
  * Authority: M2_SESSION_EXPERIENCE_SPEC.md
+ *            M2.5 UX refinement pass
  *            Execution Spec (doc 04) § 5. Session Orchestration Engine
  *            Safety + Reassurance Spec (doc 06) § 2. Active Session Safety Interrupts
  */
@@ -18,15 +21,24 @@ export function GuidedSessionScreen() {
   const { state, dispatch } = useAppContext()
   const session = state.activeSession!
 
+  const expressionProfile = deriveExpressionProfile(session)
+
   const [phase, setPhase] = useState<SessionPhase>('breathing')
   const [showStopConfirm, setShowStopConfirm] = useState(false)
   const [orbRunning, setOrbRunning] = useState(true)
+
+  // completedRounds tracks how many rounds have fully finished (for RoundDots)
+  const [completedRounds, setCompletedRounds] = useState(0)
 
   const startTimeRef = useRef(Date.now())
   const elapsedAtStopRef = useRef(0)
 
   function getElapsedSeconds() {
     return Math.floor((Date.now() - startTimeRef.current) / 1000)
+  }
+
+  function handleRoundComplete(roundNumber: number) {
+    setCompletedRounds(roundNumber)
   }
 
   function handleAllRoundsComplete() {
@@ -108,9 +120,12 @@ export function GuidedSessionScreen() {
     dispatch({ type: 'NAVIGATE', screen: 'home' })
   }
 
-  const [currentRound, setCurrentRound] = useState(1)
+  const totalRounds = session.timing_profile.rounds
+  // currentRound shown to user is completedRounds + 1 (which round they're on now)
+  const currentDisplayRound = Math.min(completedRounds + 1, totalRounds)
+
   const cueText = session.cue_sequence[
-    (currentRound - 1) % session.cue_sequence.length
+    (currentDisplayRound - 1) % session.cue_sequence.length
   ]
 
   const emergenceSteps: [string, string, string] = [
@@ -126,17 +141,30 @@ export function GuidedSessionScreen() {
           <header className={styles.topZone} aria-label="Protocol context">
             <p className={styles.protocolName}>{session.protocol_name}</p>
             <p className={styles.goalText}>{session.goal}</p>
+            {/* Subtle numeric fallback — tertiary, not dominant */}
+            <p className={styles.roundCounter} aria-label={`Round ${currentDisplayRound} of ${totalRounds}`}>
+              {currentDisplayRound} / {totalRounds}
+            </p>
           </header>
 
           <div className={styles.orbArea}>
             {orbRunning && (
               <BreathingOrb
                 timingProfile={session.timing_profile}
-                onRoundComplete={(round) => setCurrentRound(round + 1)}
+                expressionProfile={expressionProfile}
+                onRoundComplete={handleRoundComplete}
                 onAllRoundsComplete={handleAllRoundsComplete}
                 cueText={cueText}
               />
             )}
+          </div>
+
+          {/* Dot strip: primary round progress indicator, positioned below orb */}
+          <div className={styles.dotsArea}>
+            <RoundDots
+              totalRounds={totalRounds}
+              completedRounds={completedRounds}
+            />
           </div>
 
           <div className={styles.emergenceArea}>
@@ -186,6 +214,7 @@ export function GuidedSessionScreen() {
           <CompletionForm
             sessionId={session.session_id}
             painBefore={session.pain_input.pain_level}
+            protocolId={session.protocol_id}
             onSave={handleSave}
           />
         </div>
@@ -196,6 +225,7 @@ export function GuidedSessionScreen() {
           <CompletionForm
             sessionId={session.session_id}
             painBefore={session.pain_input.pain_level}
+            protocolId={session.protocol_id}
             onSave={handleStoppedSave}
             minimal
           />

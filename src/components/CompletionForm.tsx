@@ -3,11 +3,14 @@ import type { SessionFeedback } from '../types'
 import { CHANGE_MARKERS } from '../types/taxonomy'
 import { PainSlider } from './PainSlider'
 import { TagSelector } from './TagSelector'
+import { getSessionReflection } from '../data/reflections'
 import styles from './CompletionForm.module.css'
 
 interface Props {
   sessionId: string
   painBefore: number
+  /** Used to look up the deterministic session reflection line */
+  protocolId: string
   onSave: (feedback: SessionFeedback) => void
   /** When true: hide change markers + note. Used for user_stopped path. */
   minimal?: boolean
@@ -21,11 +24,13 @@ const RESULT_OPTIONS: { value: ResultOption; label: string }[] = [
   { value: 'worse',  label: 'Worse'  },
 ]
 
-export function CompletionForm({ sessionId, painBefore, onSave, minimal = false }: Props) {
+export function CompletionForm({ sessionId, painBefore, protocolId, onSave, minimal = false }: Props) {
   const [painAfter, setPainAfter] = useState(painBefore)
   const [result, setResult] = useState<ResultOption | null>(null)
   const [changeMarkers, setChangeMarkers] = useState<string[]>([])
   const [note, setNote] = useState('')
+
+  const reflection = getSessionReflection(protocolId)
 
   function toggleMarker(tag: string) {
     setChangeMarkers((prev) =>
@@ -50,6 +55,9 @@ export function CompletionForm({ sessionId, painBefore, onSave, minimal = false 
       <header className={styles.header}>
         <h2 className={styles.heading}>Session complete.</h2>
         <p className={styles.subtext}>Notice what changed.</p>
+        {reflection && (
+          <p className={styles.reflection}>{reflection}</p>
+        )}
       </header>
 
       <section className={styles.section} aria-label="Pain level after session">

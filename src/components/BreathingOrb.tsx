@@ -2,10 +2,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import type { TimingProfile } from '../types'
+import type { ExpressionProfile } from '../engine/expressionProfile'
 import styles from './BreathingOrb.module.css'
 
 interface Props {
   timingProfile: TimingProfile
+  expressionProfile?: ExpressionProfile
   onRoundComplete?: (roundNumber: number) => void
   onAllRoundsComplete?: () => void
   cueText?: string
@@ -13,8 +15,28 @@ interface Props {
 
 type Phase = 'inhale' | 'exhale' | 'reset'
 
-export function BreathingOrb({ timingProfile, onRoundComplete, onAllRoundsComplete, cueText }: Props) {
+// Default expression matches the M2 baseline (moderate profile values)
+const DEFAULT_EXPRESSION: Pick<
+  ExpressionProfile,
+  'orb_scale_min' | 'orb_scale_max' | 'glow_scale_min' | 'glow_scale_max' | 'glow_opacity_min' | 'glow_opacity_max'
+> = {
+  orb_scale_min: 0.72,
+  orb_scale_max: 1.0,
+  glow_scale_min: 0.55,
+  glow_scale_max: 0.85,
+  glow_opacity_min: 0.35,
+  glow_opacity_max: 0.55,
+}
+
+export function BreathingOrb({
+  timingProfile,
+  expressionProfile,
+  onRoundComplete,
+  onAllRoundsComplete,
+  cueText,
+}: Props) {
   const { inhale_seconds, exhale_seconds, rounds } = timingProfile
+  const expr = expressionProfile ?? DEFAULT_EXPRESSION
   const prefersReducedMotion = useReducedMotion()
 
   const [phase, setPhase] = useState<Phase>('inhale')
@@ -88,8 +110,15 @@ export function BreathingOrb({ timingProfile, onRoundComplete, onAllRoundsComple
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const orbScale = phase === 'inhale' ? 1.0 : 0.72
-  const glowScale = phase === 'inhale' ? 0.85 : 0.55
+  // Derive scale/opacity from expression profile
+  const orbScale = phase === 'inhale' ? expr.orb_scale_max : expr.orb_scale_min
+  const glowScale = phase === 'inhale' ? expr.glow_scale_max : expr.glow_scale_min
+  const glowOpacity =
+    phase === 'reset'
+      ? expr.glow_opacity_min * 0.7
+      : phase === 'inhale'
+        ? expr.glow_opacity_max
+        : expr.glow_opacity_min
 
   const inhaleEase = [0.25, 0.46, 0.45, 0.94] as const
   const exhaleEase = [0.33, 0.0, 0.67, 1.0] as const
@@ -103,7 +132,11 @@ export function BreathingOrb({ timingProfile, onRoundComplete, onAllRoundsComple
     >
       <motion.div
         className={styles.glowRing}
-        animate={prefersReducedMotion ? {} : { scale: glowScale, opacity: phase === 'reset' ? 0.4 : 1 }}
+        animate={
+          prefersReducedMotion
+            ? { opacity: phase === 'inhale' ? expr.glow_opacity_max * 0.9 : expr.glow_opacity_min }
+            : { scale: glowScale, opacity: glowOpacity }
+        }
         transition={prefersReducedMotion ? { duration: 0.04 } : { duration, ease }}
       />
       <motion.div

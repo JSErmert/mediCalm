@@ -1,0 +1,29 @@
+/* RoundDots — peripheral progress indicator — M2.5.2 Medical Light
+ * Intentionally quiet: small, low-contrast, no labels.
+ * Filled dots use text-tertiary on light bg; empty dots use a subtle gray.
+ */
+
+.container {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.filled {
+  background: var(--color-text-tertiary);
+  opacity: 1;
+}
+
+.empty {
+  background: var(--color-border);
+  opacity: 0.6;
+}

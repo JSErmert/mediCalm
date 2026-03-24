@@ -9,7 +9,7 @@
  */
 import { useEffect, useState } from 'react'
 import type { HistoryEntry } from '../types'
-import { storageGet } from '../storage/localStorage'
+import { loadHistory, deleteSession, updateSessionFeedback } from '../storage/sessionHistory'
 import { useAppContext } from '../context/AppContext'
 import { HistoryCard } from '../components/HistoryCard'
 import styles from './HomeScreen.module.css'
@@ -19,8 +19,7 @@ export function HomeScreen() {
   const [history, setHistory] = useState<HistoryEntry[]>([])
 
   useEffect(() => {
-    const stored = storageGet<HistoryEntry[]>('session_history') ?? []
-    // Show most recent first
+    const stored = loadHistory()
     setHistory([...stored].sort(
       (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     ))
@@ -28,6 +27,21 @@ export function HomeScreen() {
 
   function handleStart() {
     dispatch({ type: 'NAVIGATE', screen: 'pain_input' })
+  }
+
+  function handleDelete(sessionId: string) {
+    deleteSession(sessionId)
+    setHistory((prev) => prev.filter((e) => e.session_id !== sessionId))
+  }
+
+  function handleUpdate(
+    sessionId: string,
+    patch: Pick<Partial<HistoryEntry>, 'pain_after' | 'result' | 'change_markers'>
+  ) {
+    updateSessionFeedback(sessionId, patch)
+    setHistory((prev) =>
+      prev.map((e) => e.session_id === sessionId ? { ...e, ...patch } : e)
+    )
   }
 
   return (
@@ -59,7 +73,11 @@ export function HomeScreen() {
           <ul className={styles.historyList} aria-label="Past sessions">
             {history.map((entry) => (
               <li key={entry.session_id}>
-                <HistoryCard entry={entry} />
+                <HistoryCard
+                  entry={entry}
+                  onDelete={handleDelete}
+                  onUpdate={handleUpdate}
+                />
               </li>
             ))}
           </ul>

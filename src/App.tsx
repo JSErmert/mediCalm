@@ -11,6 +11,7 @@ import { useAppContext } from './context/AppContext'
 import { ScreenTransition } from './components/ScreenTransition'
 import { HomeScreen } from './screens/HomeScreen'
 import { PainInputScreen } from './screens/PainInputScreen'
+import { SessionSetupScreen } from './screens/SessionSetupScreen'
 import { GuidedSessionScreen } from './screens/GuidedSessionScreen'
 import { SafetyStopScreen } from './screens/SafetyStopScreen'
 
@@ -28,6 +29,11 @@ function ScreenRouter() {
       {activeScreen === 'pain_input' && (
         <ScreenTransition screenKey="pain_input">
           <PainInputScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'session_setup' && (
+        <ScreenTransition screenKey="session_setup">
+          <SessionSetupScreen />
         </ScreenTransition>
       )}
       {activeScreen === 'guided_session' && (
