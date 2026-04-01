@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D3 — Medical Calibration · mediCalm Mockup</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-base:        #f4f6f8;
+    --bg-surface:     #ffffff;
+    --bg-inset:       #eef0f3;
+    --accent:         #1a8a8a;
+    --accent-deep:    #0f6060;
+    --text-primary:   #1e2d3d;
+    --text-secondary: #5a6e80;
+    --text-tertiary:  #96aab8;
+    --border:         rgba(0,0,0,0.07);
+    --border-rule:    rgba(0,0,0,0.05);
+    --orb-center:     #2196a8;
+    --orb-mid:        #155e6e;
+    --orb-edge:       #0d3d4a;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg-base);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── Background: Ruled precision paper ──────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 27px,
+        rgba(26,138,138,0.045) 27px,
+        rgba(26,138,138,0.045) 28px
+      );
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Vertical accent rule */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: max(16px, calc(50vw - 236px));
+    width: 2px;
+    height: 100vh;
+    background: linear-gradient(180deg, rgba(26,138,138,0.20) 0%, rgba(26,138,138,0.06) 50%, transparent 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .screen {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header bar ────────────────────────────────────────────────────────── */
+  .header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0 24px 18px;
+    border-bottom: 1px solid var(--border-rule);
+    margin-bottom: 28px;
+  }
+
+  .header-logo {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: dot-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .status-text {
+    font-size: 0.62rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  /* ── Calibration block ─────────────────────────────────────────────────── */
+  .calibration-block {
+    padding: 0 0 28px 18px;
+  }
+
+  .calib-system-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 10px;
+  }
+
+  .calib-headline {
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .calib-headline strong {
+    font-weight: 500;
+  }
+
+  .calib-sub {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    max-width: 320px;
+  }
+
+  /* ── Two-column layout: input + orb ────────────────────────────────────── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: start;
+    padding: 0 0 28px 18px;
+  }
+
+  /* Input column */
+  .input-col {}
+
+  .input-field-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .input-field-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-rule);
+  }
+
+  .intensity-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .scale-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 48px;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+
+  .scale-row:hover {
+    background: rgba(26,138,138,0.05);
+    border-color: rgba(26,138,138,0.15);
+  }
+
+  .scale-row.selected {
+    background: rgba(26,138,138,0.07);
+    border-color: rgba(26,138,138,0.25);
+  }
+
+  .scale-num {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+
+  .scale-row.selected .scale-num {
+    color: var(--accent);
+  }
+
+  .scale-bar-track {
+    height: 3px;
+    background: var(--bg-inset);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .scale-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    opacity: 0.35;
+  }
+
+  .scale-row.selected .scale-bar-fill {
+    opacity: 1;
+  }
+
+  .scale-label {
+    font-size: 0.6rem;
+    color: var(--text-tertiary);
+    text-align: right;
+    letter-spacing: 0.04em;
+  }
+
+  .scale-row.selected .scale-label {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* Orb column */
+  .orb-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding-top: 32px;
+  }
+
+  .orb-instrument {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .orb-glow-sm {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(22,130,148,0.14) 0%, transparent 70%);
+    animation: sm-pulse 4s ease-in-out infinite;
+  }
+
+  .orb-sphere-sm {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 34%, var(--orb-center), var(--orb-mid) 55%, var(--orb-edge) 100%);
+    box-shadow: 0 5px 18px rgba(22,130,148,0.26), 0 2px 6px rgba(0,0,0,0.12);
+    animation: sm-breathe 4s ease-in-out infinite;
+  }
+
+  /* Tick marks around orb */
+  .orb-ticks {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    animation: ticks-rotate 20s linear infinite;
+  }
+
+  @keyframes sm-breathe {
+    0%, 100% { transform: scale(0.92); }
+    50% { transform: scale(1.0); }
+  }
+
+  @keyframes sm-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes ticks-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .orb-instrument-label {
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* ── CTA ───────────────────────────────────────────────────────────────── */
+  .cta-section {
+    padding: 0 0 28px 18px;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 24px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: inherit;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(26,138,138,0.28);
+    transition: all 0.14s ease;
+  }
+
+  .cta-btn:hover {
+    opacity: 0.9;
+  }
+
+  .cta-meta {
+    margin-top: 10px;
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cta-meta-item::before {
+    content: '·';
+    margin-right: 4px;
+    opacity: 0.5;
+  }
+
+  /* ── History — structured data ──────────────────────────────────────────── */
+  .history-section {
+    padding: 0 0 40px 18px;
+  }
+
+  .history-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-rule);
+  }
+
+  .history-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  .history-cols {
+    display: flex;
+    gap: 8px;
+    font-size: 0.58rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .history-col { width: 70px; text-align: right; }
+
+  .history-entries {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .history-entry {
+    display: grid;
+    grid-template-columns: 1fr 70px 70px 70px;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-rule);
+  }
+
+  .entry-date {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+  }
+
+  .entry-protocol {
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+    text-align: right;
+  }
+
+  .entry-duration {
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+    text-align: right;
+  }
+
+  .entry-reduction {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-align: right;
+  }
+
+  .entry-reduction.neutral {
+    font-weight: 400;
+    color: var(--text-tertiary);
+  }
+
+  .mockup-badge {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background: rgba(26,138,138,0.12);
+    border: 1px solid rgba(26,138,138,0.25);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="mockup-badge">D3 — MEDICAL CALIBRATION</div>
+
+<div class="screen">
+
+  <!-- Header bar -->
+  <div class="header-bar">
+    <span class="header-logo">mediCalm</span>
+    <div class="header-status">
+      <div class="status-dot"></div>
+      <span class="status-text">system ready</span>
+    </div>
+  </div>
+
+  <!-- Calibration block -->
+  <div class="calibration-block">
+    <div class="calib-system-label">Guided physiological intervention</div>
+    <h1 class="calib-headline">Current<br><strong>bodily state:</strong></h1>
+    <p class="calib-sub">Rate your present intensity to receive a calibrated breathing protocol for your exact level of tension or discomfort.</p>
+  </div>
+
+  <!-- Two-column: input scale + orb -->
+  <div class="two-col">
+    <div class="input-col">
+      <div class="input-field-label">Intensity scale</div>
+      <div class="intensity-scale">
+        <div class="scale-row">
+          <span class="scale-num">1–2</span>
+          <div class="scale-bar-track"><div class="scale-bar-fill" style="width:20%"></div></div>
+          <span class="scale-label">minimal</span>
+        </div>
+        <div class="scale-row">
+          <span class="scale-num">3–4</span>
+          <div class="scale-bar-track"><div class="scale-bar-fill" style="width:38%"></div></div>
+          <span class="scale-label">mild</span>
+        </div>
+        <div class="scale-row selected">
+          <span class="scale-num">5–6</span>
+          <div class="scale-bar-track"><div class="scale-bar-fill" style="width:55%"></div></div>
+          <span class="scale-label">moderate</span>
+        </div>
+        <div class="scale-row">
+          <span class="scale-num">7–8</span>
+          <div class="scale-bar-track"><div class="scale-bar-fill" style="width:75%"></div></div>
+          <span class="scale-label">severe</span>
+        </div>
+        <div class="scale-row">
+          <span class="scale-num">9–10</span>
+          <div class="scale-bar-track"><div class="scale-bar-fill" style="width:95%"></div></div>
+          <span class="scale-label">intense</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="orb-col">
+      <div class="orb-instrument">
+        <div class="orb-glow-sm"></div>
+        <!-- SVG tick marks -->
+        <svg class="orb-ticks" viewBox="0 0 80 80" width="80" height="80" style="position:absolute;inset:0">
+          <circle cx="40" cy="40" r="37" fill="none" stroke="rgba(26,138,138,0.12)" stroke-width="0.8" stroke-dasharray="3 8" />
+        </svg>
+        <div class="orb-sphere-sm"></div>
+      </div>
+      <div class="orb-instrument-label">regulation<br>instrument</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <button class="cta-btn">
+      Calibrate and begin
+      <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 5H13M9 1L13 5L9 9" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="cta-meta">
+      <span class="cta-meta-item">Protocol auto-selected</span>
+      <span class="cta-meta-item">4–6 min</span>
+      <span class="cta-meta-item">No setup required</span>
+    </div>
+  </div>
+
+  <!-- History — structured -->
+  <div class="history-section">
+    <div class="history-header">
+      <span class="history-label">Session record</span>
+      <div class="history-cols">
+        <span class="history-col">Protocol</span>
+        <span class="history-col">Duration</span>
+        <span class="history-col">Change</span>
+      </div>
+    </div>
+    <div class="history-entries">
+      <div class="history-entry">
+        <span class="entry-date">Today · 2:14 PM</span>
+        <span class="entry-protocol">Diaphragm</span>
+        <span class="entry-duration">5:30</span>
+        <span class="entry-reduction">↓ 4 pts</span>
+      </div>
+      <div class="history-entry">
+        <span class="entry-date">Yesterday · 9:08</span>
+        <span class="entry-protocol">Box</span>
+        <span class="entry-duration">4:00</span>
+        <span class="entry-reduction">↓ 3 pts</span>
+      </div>
+      <div class="history-entry">
+        <span class="entry-date">Mar 22 · 11:41 PM</span>
+        <span class="entry-protocol">4-7-8</span>
+        <span class="entry-duration">2:12</span>
+        <span class="entry-reduction neutral">interrupted</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D1 — Sovereign Precision · mediCalm Mockup</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-base:        #eef1f4;
+    --bg-surface:     #ffffff;
+    --accent:         #1a8a8a;
+    --accent-deep:    #0f6060;
+    --accent-glow:    rgba(26,138,138,0.14);
+    --text-primary:   #1e2d3d;
+    --text-secondary: #5a6e80;
+    --text-tertiary:  #96aab8;
+    --border:         rgba(0,0,0,0.07);
+    --orb-center:     #2196a8;
+    --orb-mid:        #155e6e;
+    --orb-edge:       #0d3d4a;
+    --orb-glow:       rgba(22,130,148,0.20);
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg-base);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px;
+    /* Topographic background system */
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── Background: Sovereign Topographic Layer ──────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(160deg, #e8edf2 0%, #eef1f4 40%, #e4eaef 100%);
+    z-index: 0;
+  }
+
+  /* Micro-contour SVG overlay via data URI */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%231a8a8a' stroke-width='0.6' opacity='0.07'%3E%3Cellipse cx='400' cy='400' rx='320' ry='220' /%3E%3Cellipse cx='400' cy='400' rx='280' ry='185' /%3E%3Cellipse cx='400' cy='400' rx='240' ry='152' /%3E%3Cellipse cx='400' cy='400' rx='200' ry='122' /%3E%3Cellipse cx='400' cy='400' rx='160' ry='94' /%3E%3Cellipse cx='400' cy='400' rx='120' ry='68' /%3E%3Cellipse cx='400' cy='400' rx='80' ry='44' /%3E%3Cellipse cx='400' cy='400' rx='350' ry='255' /%3E%3Cellipse cx='400' cy='800' rx='280' ry='180' /%3E%3Cellipse cx='0' cy='400' rx='160' ry='240' /%3E%3Cellipse cx='800' cy='200' rx='200' ry='120' /%3E%3C/g%3E%3C/svg%3E");
+    background-size: 800px 800px;
+    background-position: 50% 40%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .screen {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── Wordmark bar ──────────────────────────────────────────────────────── */
+  .wordmark-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 0 28px;
+  }
+
+  .wordmark {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .wordmark-rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(26,138,138,0.25) 0%, transparent 100%);
+  }
+
+  .wordmark-version {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: var(--text-tertiary);
+    font-weight: 500;
+  }
+
+  /* ── Hero ──────────────────────────────────────────────────────────────── */
+  .hero {
+    padding: 0 0 36px;
+  }
+
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .hero-eyebrow-line {
+    width: 20px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+
+  .hero-eyebrow-text {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .hero-headline {
+    font-size: 1.75rem;
+    font-weight: 300;
+    color: var(--text-primary);
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+  }
+
+  .hero-headline em {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--text-primary);
+  }
+
+  .hero-sub {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    letter-spacing: 0.01em;
+  }
+
+  .hero-sub-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  .hero-tag {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    border: 1px solid rgba(26,138,138,0.20);
+    border-radius: 3px;
+    padding: 3px 8px;
+    background: rgba(26,138,138,0.04);
+  }
+
+  /* ── Orb ───────────────────────────────────────────────────────────────── */
+  .orb-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0 32px;
+    gap: 16px;
+  }
+
+  .orb-frame {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .orb-glow {
+    position: absolute;
+    inset: -16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--orb-glow) 0%, transparent 70%);
+    animation: orb-pulse 4.5s ease-in-out infinite;
+  }
+
+  .orb {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 36%, var(--orb-center), var(--orb-mid) 52%, var(--orb-edge) 100%);
+    box-shadow:
+      0 6px 24px rgba(22,130,148,0.28),
+      0 2px 8px rgba(0,0,0,0.14),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+    animation: orb-breathe 4.5s ease-in-out infinite;
+  }
+
+  /* Precision ring around orb */
+  .orb-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(26,138,138,0.18);
+    animation: ring-pulse 4.5s ease-in-out infinite;
+  }
+
+  .orb-ring-outer {
+    position: absolute;
+    inset: -14px;
+    border-radius: 50%;
+    border: 1px solid rgba(26,138,138,0.08);
+    animation: ring-pulse 4.5s ease-in-out infinite 0.5s;
+  }
+
+  @keyframes orb-breathe {
+    0%, 100% { transform: scale(0.88); }
+    50% { transform: scale(1.0); }
+  }
+
+  @keyframes orb-pulse {
+    0%, 100% { opacity: 0.5; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  @keyframes ring-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.96); }
+    50% { opacity: 0.8; transform: scale(1.04); }
+  }
+
+  .orb-label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  /* ── Input layer ───────────────────────────────────────────────────────── */
+  .input-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .input-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 14px;
+  }
+
+  .intensity-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .intensity-btn {
+    height: 40px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-base);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.14s ease;
+    font-family: inherit;
+  }
+
+  .intensity-btn:hover {
+    border-color: rgba(26,138,138,0.35);
+    color: var(--accent);
+    background: rgba(26,138,138,0.04);
+  }
+
+  .intensity-btn.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .intensity-scale-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+
+  .intensity-scale-label {
+    font-size: 0.6rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── CTA ───────────────────────────────────────────────────────────────── */
+  .cta-section {
+    margin-bottom: 32px;
+  }
+
+  .cta-btn {
+    width: 100%;
+    height: 52px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: inherit;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 3px 14px rgba(26,138,138,0.30), 0 1px 4px rgba(0,0,0,0.10);
+    transition: all 0.14s ease;
+  }
+
+  .cta-btn:hover {
+    opacity: 0.92;
+    box-shadow: 0 4px 18px rgba(26,138,138,0.38);
+  }
+
+  .cta-arrow {
+    opacity: 0.75;
+    font-size: 1rem;
+  }
+
+  .cta-sub {
+    text-align: center;
+    font-size: 0.68rem;
+    color: var(--text-tertiary);
+    margin-top: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── History ───────────────────────────────────────────────────────────── */
+  .history-section {
+    padding-bottom: 40px;
+  }
+
+  .history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .history-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  .history-count {
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+  }
+
+  .history-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .history-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .history-row:last-child { border-bottom: none; }
+
+  .history-row-date {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+  }
+
+  .history-row-pattern {
+    font-size: 0.68rem;
+    color: var(--text-tertiary);
+    text-align: center;
+  }
+
+  .history-row-reduction {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-align: right;
+  }
+
+  .history-row-reduction.neutral {
+    color: var(--text-tertiary);
+    font-weight: 400;
+  }
+
+  /* ── Mockup label ──────────────────────────────────────────────────────── */
+  .mockup-badge {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background: rgba(26,138,138,0.12);
+    border: 1px solid rgba(26,138,138,0.25);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="mockup-badge">D1 — SOVEREIGN PRECISION</div>
+
+<div class="screen">
+
+  <!-- Wordmark bar -->
+  <div class="wordmark-bar">
+    <span class="wordmark">mediCalm</span>
+    <div class="wordmark-rule"></div>
+    <span class="wordmark-version">Relief Protocol</span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-line"></div>
+      <span class="hero-eyebrow-text">Physiological relief system</span>
+    </div>
+    <h1 class="hero-headline">Your nervous system<br>is under <em>tension.</em></h1>
+    <p class="hero-sub">Structured breathing protocols calibrated to your current state — designed to guide your system back toward baseline.</p>
+    <div class="hero-sub-tags">
+      <span class="hero-tag">rib restriction</span>
+      <span class="hero-tag">shallow breathing</span>
+      <span class="hero-tag">neck tension</span>
+      <span class="hero-tag">protective overactivation</span>
+    </div>
+  </div>
+
+  <!-- Orb -->
+  <div class="orb-section">
+    <div class="orb-frame">
+      <div class="orb-glow"></div>
+      <div class="orb-ring-outer"></div>
+      <div class="orb-ring"></div>
+      <div class="orb"></div>
+    </div>
+    <span class="orb-label">regulation instrument · ready</span>
+  </div>
+
+  <!-- Intensity input -->
+  <div class="input-section">
+    <div class="input-label">Current intensity</div>
+    <div class="intensity-grid">
+      <button class="intensity-btn">1</button>
+      <button class="intensity-btn">2</button>
+      <button class="intensity-btn">3</button>
+      <button class="intensity-btn">4</button>
+      <button class="intensity-btn selected">5</button>
+      <button class="intensity-btn">6</button>
+      <button class="intensity-btn">7</button>
+      <button class="intensity-btn">8</button>
+      <button class="intensity-btn">9</button>
+      <button class="intensity-btn">10</button>
+    </div>
+    <div class="intensity-scale-labels">
+      <span class="intensity-scale-label">minimal</span>
+      <span class="intensity-scale-label">moderate</span>
+      <span class="intensity-scale-label">severe</span>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <button class="cta-btn">
+      Begin guided relief <span class="cta-arrow">→</span>
+    </button>
+    <p class="cta-sub">Protocol selected automatically · approx. 4–6 min</p>
+  </div>
+
+  <!-- History -->
+  <div class="history-section">
+    <div class="history-header">
+      <span class="history-label">Session record</span>
+      <span class="history-count">3 sessions</span>
+    </div>
+    <div class="history-table">
+      <div class="history-row">
+        <span class="history-row-date">Today · 2:14 PM</span>
+        <span class="history-row-pattern">Diaphragm</span>
+        <span class="history-row-reduction">↓ 4 pts</span>
+      </div>
+      <div class="history-row">
+        <span class="history-row-date">Yesterday · 9:08 AM</span>
+        <span class="history-row-pattern">Box breath</span>
+        <span class="history-row-reduction">↓ 3 pts</span>
+      </div>
+      <div class="history-row">
+        <span class="history-row-date">Mar 22 · 11:41 PM</span>
+        <span class="history-row-pattern">4-7-8</span>
+        <span class="history-row-reduction neutral">— no change</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

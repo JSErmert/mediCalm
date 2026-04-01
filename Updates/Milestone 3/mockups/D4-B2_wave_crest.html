@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D4-B2 · Wave Crest — mediCalm Flow Resonance</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --accent: #1a8a8a; --accent-d: #0f6060;
+  --tp: #1e2d3d; --ts: #5a6e80; --tt: #96aab8;
+  --oc: #2196a8; --om: #155e6e; --oe: #0d3d4a;
+}
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh; display: flex; justify-content: center;
+  align-items: flex-start; overflow-x: hidden; background: #d2dce6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   D4-B2 · WAVE CREST
+   Reference extraction: the luminous breaking wave at mid-frame —
+   the moment of peak energy before release.
+
+   Power layer: The orb IS the wave crest. Energy erupts outward
+   LEFT and RIGHT from the crest line. Lines above the crest angle
+   upward (spray, mist, sky motion). Lines below angle downward
+   (shore wash, receding water). The wave crest = the orb's horizon.
+
+   Filter layer: Near-diagonal security lines (8°) encoding the
+   wave face texture — like an engraved official seal over moving water.
+   Creates the currency-quality surface discipline.
+
+   Psychological: The user is at the moment of the wave — not before,
+   not after. The orb is the wave crest. This is the moment of release.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bg { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+
+/* ── BASE: depth layers from the reference photo ──────────────────
+   Dark sky above (storm clouds) → luminous teal wave band →
+   dark wet sand below. Three-layer atmospheric depth.            */
+.bg-base {
+  position: absolute; inset: 0;
+  background:
+    /* Sky layer — darker, cooler, directional */
+    linear-gradient(180deg,
+      rgba(195,214,224,0.80) 0%,
+      rgba(208,224,234,0.45) 25%,
+      transparent 42%),
+    /* Wave crest luminance — strong teal glow at orb level */
+    radial-gradient(ellipse 100% 18% at 50% 40%,
+      rgba(32,150,168,0.16) 0%,
+      rgba(26,138,138,0.09) 60%,
+      transparent 100%),
+    /* Shore — slightly darker below */
+    linear-gradient(0deg,
+      rgba(188,208,220,0.55) 0%,
+      rgba(205,220,230,0.30) 30%,
+      transparent 55%),
+    linear-gradient(175deg, #c8d8e4 0%, #d2dce6 35%, #cdd8e2 65%, #c8d2de 100%);
+}
+
+/* ── POWER LAYER: wave energy field ──────────────────────────────── */
+.bg-power {
+  position: absolute; inset: 0;
+  transform-origin: 50% 40%;
+  animation: wave-breathe 9s cubic-bezier(0.45,0,0.45,1) infinite;
+}
+@keyframes wave-breathe {
+  0%,100% { transform: scale(1.000) translate(0,0); opacity: 1; }
+  43%     { transform: scale(1.028) translate(0.3px,-0.5px); opacity: 0.87; }
+  70%     { transform: scale(1.014) translate(-0.2px,0.3px); opacity: 0.94; }
+}
+
+/* ── FILTER: near-diagonal engraved security lines ───────────────── */
+.bg-filter {
+  position: absolute; inset: 0;
+  background-image:
+    /* Primary: near-horizontal at 8° — like wave-face engraving */
+    repeating-linear-gradient(8deg,
+      transparent 0, transparent 10px,
+      rgba(26,138,138,0.022) 10px, rgba(26,138,138,0.022) 10.4px),
+    /* Secondary: opposite diagonal — creates interference with primary */
+    repeating-linear-gradient(172deg,
+      transparent 0, transparent 16px,
+      rgba(26,138,138,0.012) 16px, rgba(26,138,138,0.012) 16.4px),
+    /* Fine vertical channel — like tall wave face lines */
+    repeating-linear-gradient(90deg,
+      transparent 0, transparent 28px,
+      rgba(26,138,138,0.008) 28px, rgba(26,138,138,0.008) 28.4px);
+}
+
+/* ── Content ───────────────────────────────────────────────────── */
+.page{position:relative;z-index:1;width:100%;max-width:440px;display:flex;flex-direction:column;padding:0 20px 40px;min-height:100vh;}
+.wm{padding:22px 0 0;}
+.wm span{font-size:0.65rem;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);opacity:0.78;}
+.hero{text-align:center;padding:34px 8px 0;}
+.hl{font-size:2.2rem;font-weight:300;color:var(--tp);line-height:1.14;letter-spacing:-0.026em;margin-bottom:14px;}
+.sub{font-size:0.8rem;color:var(--ts);line-height:1.74;max-width:310px;margin:0 auto;letter-spacing:0.006em;}
+.oz{display:flex;flex-direction:column;align-items:center;padding:26px 0 20px;gap:12px;}
+.of{position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center;}
+.og{position:absolute;inset:22px;border-radius:50%;background:radial-gradient(circle,rgba(22,130,148,0.22) 0%,rgba(22,130,148,0.09) 48%,transparent 76%);animation:og 7s ease-in-out infinite;}
+.r4{position:absolute;inset:0px;border-radius:50%;border:1px solid rgba(26,138,138,0.060);animation:ri 7s ease-in-out infinite 0.00s;}
+.r3{position:absolute;inset:14px;border-radius:50%;border:1px solid rgba(26,138,138,0.092);animation:ri 7s ease-in-out infinite 0.35s;}
+.r2{position:absolute;inset:28px;border-radius:50%;border:1px solid rgba(26,138,138,0.124);animation:ri 7s ease-in-out infinite 0.70s;}
+.r1{position:absolute;inset:42px;border-radius:50%;border:1px solid rgba(26,138,138,0.158);animation:ri 7s ease-in-out infinite 1.05s;}
+.os{position:relative;width:112px;height:112px;border-radius:50%;background:radial-gradient(circle at 36% 33%,var(--oc),var(--om) 52%,var(--oe) 100%);box-shadow:0 12px 44px rgba(22,130,148,0.32),0 4px 14px rgba(0,0,0,0.15),inset 0 2px 0 rgba(255,255,255,0.12);animation:oi 7s ease-in-out infinite;}
+.ol{font-size:0.60rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--tt);opacity:0.65;}
+@keyframes oi{0%,100%{transform:scale(0.88)}43%{transform:scale(1.0)}72%{transform:scale(0.93)}}
+@keyframes og{0%,100%{opacity:0.48;transform:scale(0.85)}43%{opacity:1;transform:scale(1.18)}}
+@keyframes ri{0%,100%{opacity:0.32;transform:scale(0.93)}43%{opacity:0.88;transform:scale(1.07)}}
+.cta{display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 0 36px;}
+.btn{width:200px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent-d));color:#fff;border:none;border-radius:9999px;font-size:0.9rem;font-weight:500;font-family:inherit;letter-spacing:0.04em;cursor:pointer;box-shadow:0 4px 18px rgba(26,138,138,0.28),0 1px 4px rgba(0,0,0,0.10);}
+.cs{font-size:0.64rem;color:var(--tt);letter-spacing:0.04em;text-align:center;}
+.hd{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.hl2{flex:1;height:1px;background:rgba(0,0,0,0.07);}
+.hlbl{font-size:0.62rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--tt);white-space:nowrap;}
+.emp{font-size:0.875rem;color:var(--ts);text-align:center;padding:16px 0;line-height:1.7;}
+.badge{position:fixed;top:12px;right:12px;z-index:100;background:rgba(26,138,138,0.12);border:1px solid rgba(26,138,138,0.28);border-radius:6px;padding:4px 10px;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;color:var(--accent);}
+.note{position:fixed;bottom:12px;left:12px;right:12px;z-index:100;max-width:320px;margin:0 auto;background:rgba(255,255,255,0.84);border:1px solid rgba(26,138,138,0.18);border-radius:8px;padding:10px 14px;font-size:0.63rem;color:var(--ts);line-height:1.6;backdrop-filter:blur(8px);}
+.note strong{color:var(--accent);font-weight:600;display:block;margin-bottom:3px;}
+</style>
+</head>
+<body>
+<div class="badge">D4-B2 · WAVE CREST</div>
+
+<div class="bg">
+  <div class="bg-base"></div>
+
+  <div class="bg-power">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         style="position:absolute;inset:0;width:100%;height:100%"
+         viewBox="0 0 480 850" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <!-- Horizontal gradient: bright at crest center (orb), fades outward -->
+        <linearGradient id="crest-h" x1="0" y1="0.5" x2="1" y2="0.5">
+          <stop offset="0%"   stop-color="#1a8a8a" stop-opacity="0.02"/>
+          <stop offset="35%"  stop-color="#1a8a8a" stop-opacity="0.08"/>
+          <stop offset="50%"  stop-color="#1a8a8a" stop-opacity="0.10"/>
+          <stop offset="65%"  stop-color="#1a8a8a" stop-opacity="0.08"/>
+          <stop offset="100%" stop-color="#1a8a8a" stop-opacity="0.02"/>
+        </linearGradient>
+        <!-- Vertical fade for lines above/below crest -->
+        <linearGradient id="spray-up" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%"   stop-color="#1a8a8a" stop-opacity="0.09"/>
+          <stop offset="60%"  stop-color="#1a8a8a" stop-opacity="0.04"/>
+          <stop offset="100%" stop-color="#1a8a8a" stop-opacity="0.005"/>
+        </linearGradient>
+        <linearGradient id="wash-down" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#1a8a8a" stop-opacity="0.09"/>
+          <stop offset="55%"  stop-color="#1a8a8a" stop-opacity="0.04"/>
+          <stop offset="100%" stop-color="#1a8a8a" stop-opacity="0.005"/>
+        </linearGradient>
+      </defs>
+
+      <!-- ── CONCENTRIC RINGS ──────────────────────────────────────── -->
+      <g fill="none" stroke="#1a8a8a">
+        <circle cx="240" cy="340" r="46"  stroke-width="0.86" opacity="0.064"/>
+        <circle cx="240" cy="340" r="88"  stroke-width="0.78" opacity="0.060"/>
+        <circle cx="240" cy="340" r="136" stroke-width="0.72" opacity="0.056"/>
+        <circle cx="240" cy="340" r="190" stroke-width="0.66" opacity="0.052"/>
+        <circle cx="240" cy="340" r="250" stroke-width="0.60" opacity="0.048"/>
+        <circle cx="240" cy="340" r="316" stroke-width="0.54" opacity="0.044"/>
+        <circle cx="240" cy="340" r="390" stroke-width="0.48" opacity="0.038"/>
+      </g>
+
+      <!-- ── CREST LINE: the wave face — the orb's horizon ────────────
+           A strong horizontal flow THROUGH the orb position,
+           spreading laterally like a wave face at full energy.      -->
+      <g fill="none" stroke="url(#crest-h)">
+        <path d="M -40,335 C 80,330 160,332 240,340 C 322,348 404,344 520,338"
+              stroke-width="1.2"/>
+        <path d="M -40,340 C 80,336 160,337 240,340 C 322,343 404,340 520,337"
+              stroke-width="1.4"/>
+        <path d="M -40,345 C 80,342 160,342 240,340 C 322,338 404,338 520,336"
+              stroke-width="1.2"/>
+        <!-- Secondary crest lines — the wave face has depth/thickness -->
+        <path d="M -40,325 C 90,320 165,323 240,332 C 316,341 400,336 520,330"
+              stroke-width="0.75"/>
+        <path d="M -40,355 C 88,352 164,352 240,348 C 318,344 402,348 520,346"
+              stroke-width="0.75"/>
+      </g>
+
+      <!-- ── SPRAY ZONE: above the crest — lines angle upward/outward ── -->
+      <g fill="none" stroke="url(#spray-up)">
+        <!-- Lines spreading left-upward from crest left side -->
+        <path d="M 240,340 C 200,310 148,280 80,248" stroke-width="0.62"/>
+        <path d="M 240,340 C 205,308 155,276 95,243"  stroke-width="0.58"/>
+        <path d="M 240,340 C 210,306 162,272 108,238" stroke-width="0.55"/>
+        <path d="M 240,340 C 216,304 172,268 124,234" stroke-width="0.52"/>
+        <path d="M 240,340 C 222,302 180,265 138,230" stroke-width="0.50"/>
+        <path d="M 240,340 C 228,300 190,262 154,226" stroke-width="0.48"/>
+        <path d="M 240,340 C 232,298 198,260 166,222" stroke-width="0.45"/>
+        <!-- Lines spreading right-upward -->
+        <path d="M 240,340 C 280,310 332,280 400,248" stroke-width="0.62"/>
+        <path d="M 240,340 C 275,308 325,276 385,243"  stroke-width="0.58"/>
+        <path d="M 240,340 C 270,306 318,272 372,238" stroke-width="0.55"/>
+        <path d="M 240,340 C 264,304 308,268 356,234" stroke-width="0.52"/>
+        <path d="M 240,340 C 258,302 300,265 342,230" stroke-width="0.50"/>
+        <path d="M 240,340 C 252,300 290,262 326,226" stroke-width="0.48"/>
+        <path d="M 240,340 C 248,298 282,260 314,222" stroke-width="0.45"/>
+        <!-- Fine secondary spray — engraving density near crest -->
+        <path d="M 240,340 C 202,309 150,278 82,246"  stroke-width="0.36"/>
+        <path d="M 240,340 C 207,307 158,274 100,240" stroke-width="0.34"/>
+        <path d="M 240,340 C 278,309 330,278 398,246"  stroke-width="0.36"/>
+        <path d="M 240,340 C 273,307 322,274 380,240" stroke-width="0.34"/>
+      </g>
+
+      <!-- ── SHORE WASH: below the crest — lines sweep downward ──────── -->
+      <g fill="none" stroke="url(#wash-down)">
+        <!-- Sweeping left-downward -->
+        <path d="M 240,340 C 196,372 142,410 72,455"  stroke-width="0.62"/>
+        <path d="M 240,340 C 202,374 150,413 88,458"  stroke-width="0.58"/>
+        <path d="M 240,340 C 208,376 158,415 102,462" stroke-width="0.55"/>
+        <path d="M 240,340 C 214,376 166,416 118,464" stroke-width="0.52"/>
+        <path d="M 240,340 C 220,376 174,417 134,466" stroke-width="0.50"/>
+        <path d="M 240,340 C 225,377 182,418 148,468" stroke-width="0.48"/>
+        <path d="M 240,340 C 230,377 190,418 162,469" stroke-width="0.45"/>
+        <!-- Sweeping right-downward -->
+        <path d="M 240,340 C 284,372 338,410 408,455"  stroke-width="0.62"/>
+        <path d="M 240,340 C 278,374 330,413 392,458"  stroke-width="0.58"/>
+        <path d="M 240,340 C 272,376 322,415 378,462" stroke-width="0.55"/>
+        <path d="M 240,340 C 266,376 314,416 362,464" stroke-width="0.52"/>
+        <path d="M 240,340 C 260,376 306,417 346,466" stroke-width="0.50"/>
+        <path d="M 240,340 C 255,377 298,418 332,468" stroke-width="0.48"/>
+        <path d="M 240,340 C 250,377 290,418 318,469" stroke-width="0.45"/>
+        <!-- Fine secondary wash -->
+        <path d="M 240,340 C 198,371 144,408 76,452"  stroke-width="0.36"/>
+        <path d="M 240,340 C 204,373 152,411 90,456"  stroke-width="0.34"/>
+        <path d="M 240,340 C 282,371 336,408 404,452"  stroke-width="0.36"/>
+        <path d="M 240,340 C 276,373 328,411 390,456"  stroke-width="0.34"/>
+      </g>
+
+    </svg>
+  </div>
+
+  <div class="bg-filter"></div>
+</div>
+
+<div class="page">
+  <div class="wm"><span>mediCalm</span></div>
+  <div class="hero">
+    <h1 class="hl">Just Breathe.</h1>
+    <p class="sub">Structured protocols for rib restriction, shallow breathing, neck and jaw tension, and protective overactivation — calibrated to your current intensity.</p>
+  </div>
+  <div class="oz">
+    <div class="of">
+      <div class="r4"></div><div class="r3"></div><div class="r2"></div><div class="r1"></div>
+      <div class="og"></div><div class="os"></div>
+    </div>
+    <span class="ol">ready</span>
+  </div>
+  <div class="cta">
+    <button class="btn">Begin session</button>
+    <p class="cs">Protocol calibrated to your intensity · approx. 4–6 min</p>
+  </div>
+  <div>
+    <div class="hd"><div class="hl2"></div><span class="hlbl">Past sessions</span><div class="hl2"></div></div>
+    <p class="emp">No sessions yet. Start your first session above.</p>
+  </div>
+</div>
+
+<div class="note">
+  <strong>D4-B2 · Wave Crest</strong>
+  The orb IS the breaking wave. Crest line passes through it horizontally. Spray lines angle upward above. Shore wash sweeps downward below. Luminous teal band at crest level matches reference wave glow. Near-diagonal 8° filter.
+</div>
+</body>
+</html>

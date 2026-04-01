@@ -11,7 +11,7 @@
   max-width: 480px;
   margin: 0 auto;
   box-sizing: border-box;
-  background: var(--color-bg-base);
+  background: transparent;
 }
 
 .content {
@@ -46,7 +46,9 @@
   margin: 0 0 32px;
 }
 
-/* Meta block — separator then position + duration */
+/* Meta block — separator then focus + approach + position + duration */
+.focusBlock,
+.approachBlock,
 .supportBlock,
 .durationBlock {
   display: flex;
@@ -61,6 +63,8 @@
   margin-bottom: 4px;
 }
 
+.focusLabel,
+.approachLabel,
 .supportLabel,
 .durationLabel {
   font-size: 0.7rem;
@@ -69,6 +73,19 @@
   color: var(--color-text-tertiary);
   min-width: 60px;
   flex-shrink: 0;
+}
+
+.focusValue {
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  line-height: 1.45;
+}
+
+.approachValue {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+  font-style: italic;
 }
 
 .supportValue,

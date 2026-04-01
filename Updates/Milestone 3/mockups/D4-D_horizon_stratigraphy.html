@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D4-D · Horizon Stratigraphy — mediCalm Background System</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --accent:   #1a8a8a;
+  --accent-d: #0f6060;
+  --tp: #1e2d3d; --ts: #5a6e80; --tt: #96aab8;
+  --oc: #2196a8; --om: #155e6e; --oe: #0d3d4a;
+}
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #d8e2ea;
+  min-height: 100vh;
+  display: flex; justify-content: center; align-items: flex-start;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND SYSTEM: Horizon Stratigraphy ──────────────────────────
+   Abstraction: geological cross-section + sediment depth layers
+   The system suggests looking through the earth in cross-section —
+   horizontal strata that encode depth, time, and natural structure.
+   The orb sits at the convergence point where the strata curve
+   upward (like a dome anticline in geology), parted by a force of
+   regulation and presence.
+   Microdetail: horizontal dash-gap ruled lines at extreme low opacity
+   like fine ruled ledger paper + dollar bill horizontal security lines.
+   Variation: strata line density increases in the middle zone (orb level)
+   then opens again, like a geological anticline structure.
+   ─────────────────────────────────────────────────────────────────── */
+
+.bg { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+
+/* Base: mineralic — slightly more earthy/sediment tone than others */
+.bg-base {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 88% 60% at 50% 40%,
+      rgba(206,226,236,0.85) 0%,
+      rgba(216,232,240,0.52) 50%,
+      transparent 76%),
+    radial-gradient(ellipse 45% 25% at 8% 50%,
+      rgba(200,222,232,0.30) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 22% at 92% 55%,
+      rgba(200,220,232,0.26) 0%, transparent 52%),
+    linear-gradient(175deg, #ccdbe5 0%, #d8e2ea 40%, #d4dfe8 75%, #cdd9e4 100%);
+}
+
+/* Strata animation — the whole layer breathes with orb */
+.bg-strata {
+  position: absolute; inset: 0;
+  transform-origin: 50% 40%;
+  animation: strata-breathe 9s cubic-bezier(0.45,0,0.45,1) infinite;
+}
+@keyframes strata-breathe {
+  0%,100% { transform: scale(1.000) translate(0px, 0px); opacity: 1; }
+  43%     { transform: scale(1.020) translate(0px, -0.4px); opacity: 0.91; }
+  70%     { transform: scale(1.009) translate(0.2px, 0.2px); opacity: 0.95; }
+}
+
+/* Very slow horizontal drift for the strata — geological time scale feel */
+.bg-strata-drift {
+  position: absolute; inset: 0;
+  animation: strata-slide 45s linear infinite;
+}
+@keyframes strata-slide {
+  0%   { transform: translateX(0px); }
+  100% { transform: translateX(6px); }
+}
+
+/* Microdetail: horizontal dash pattern — ruled ledger + security line logic */
+/* Two layers at different scales create a fine/coarse hierarchy */
+.bg-micro-h {
+  position: absolute; inset: 0;
+  background-image:
+    /* Fine horizontal dashes */
+    repeating-linear-gradient(
+      0deg,
+      transparent 0, transparent 9px,
+      rgba(26,138,138,0.022) 9px, rgba(26,138,138,0.022) 9.4px
+    ),
+    /* Slightly coarser spacing layer */
+    repeating-linear-gradient(
+      0deg,
+      transparent 0, transparent 23px,
+      rgba(26,138,138,0.013) 23px, rgba(26,138,138,0.013) 23.5px
+    );
+  animation: micro-drift 32s ease-in-out infinite;
+}
+/* Diagonal interference with horizontal — adds official document quality */
+.bg-micro-d {
+  position: absolute; inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      14deg,
+      transparent 0, transparent 30px,
+      rgba(26,138,138,0.012) 30px, rgba(26,138,138,0.012) 30.4px
+    );
+}
+@keyframes micro-drift {
+  0%,100% { transform:translate(0,0); opacity:0.85; }
+  50%     { transform:translate(2px,0); opacity:1; }
+}
+
+/* Content */
+.page { position:relative; z-index:1; width:100%; max-width:440px; display:flex; flex-direction:column; padding:0 20px 40px; min-height:100vh; }
+.wm { padding: 22px 0 0; }
+.wm span { font-size:0.65rem; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); opacity:0.78; }
+.hero { text-align:center; padding:34px 8px 0; }
+.hl { font-size:2.2rem; font-weight:300; color:var(--tp); line-height:1.14; letter-spacing:-0.026em; margin-bottom:14px; }
+.sub { font-size:0.8rem; color:var(--ts); line-height:1.74; max-width:310px; margin:0 auto; letter-spacing:0.006em; }
+.orb-zone { display:flex; flex-direction:column; align-items:center; padding:26px 0 20px; gap:12px; }
+.orb-field { position:relative; width:200px; height:200px; display:flex; align-items:center; justify-content:center; }
+.orb-glow { position:absolute; inset:22px; border-radius:50%;
+  background:radial-gradient(circle, rgba(22,130,148,0.22) 0%, rgba(22,130,148,0.09) 48%, transparent 76%);
+  animation:og 7s ease-in-out infinite; }
+.r4{position:absolute;inset:0px;border-radius:50%;border:1px solid rgba(26,138,138,0.060);animation:ri 7s ease-in-out infinite 0.00s;}
+.r3{position:absolute;inset:14px;border-radius:50%;border:1px solid rgba(26,138,138,0.092);animation:ri 7s ease-in-out infinite 0.35s;}
+.r2{position:absolute;inset:28px;border-radius:50%;border:1px solid rgba(26,138,138,0.124);animation:ri 7s ease-in-out infinite 0.70s;}
+.r1{position:absolute;inset:42px;border-radius:50%;border:1px solid rgba(26,138,138,0.158);animation:ri 7s ease-in-out infinite 1.05s;}
+.orb-sphere { position:relative; width:112px; height:112px; border-radius:50%;
+  background:radial-gradient(circle at 36% 33%, var(--oc), var(--om) 52%, var(--oe) 100%);
+  box-shadow:0 12px 44px rgba(22,130,148,0.32),0 4px 14px rgba(0,0,0,0.15),inset 0 2px 0 rgba(255,255,255,0.12);
+  animation:oi 7s ease-in-out infinite; }
+.orb-lbl { font-size:0.60rem; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--tt); opacity:0.65; }
+@keyframes oi{0%,100%{transform:scale(0.88)}43%{transform:scale(1.0)}72%{transform:scale(0.93)}}
+@keyframes og{0%,100%{opacity:0.48;transform:scale(0.85)}43%{opacity:1;transform:scale(1.18)}}
+@keyframes ri{0%,100%{opacity:0.32;transform:scale(0.93)}43%{opacity:0.88;transform:scale(1.07)}}
+.cta{display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 0 36px;}
+.btn{width:200px;height:52px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-d) 100%);color:#fff;border:none;border-radius:9999px;font-size:0.9rem;font-weight:500;font-family:inherit;letter-spacing:0.04em;cursor:pointer;box-shadow:0 4px 18px rgba(26,138,138,0.28),0 1px 4px rgba(0,0,0,0.10);}
+.cta-sub{font-size:0.64rem;color:var(--tt);letter-spacing:0.04em;text-align:center;}
+.hd{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.hl2{flex:1;height:1px;background:rgba(0,0,0,0.07);}
+.hlbl{font-size:0.62rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--tt);white-space:nowrap;}
+.empty{font-size:0.875rem;color:var(--ts);text-align:center;padding:16px 0;line-height:1.7;}
+.badge{position:fixed;top:12px;right:12px;z-index:100;background:rgba(26,138,138,0.12);border:1px solid rgba(26,138,138,0.28);border-radius:6px;padding:4px 10px;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;color:var(--accent);}
+.concept-note{position:fixed;bottom:12px;left:12px;right:12px;z-index:100;max-width:300px;margin:0 auto;background:rgba(255,255,255,0.82);border:1px solid rgba(26,138,138,0.18);border-radius:8px;padding:10px 14px;font-size:0.64rem;color:var(--ts);line-height:1.6;backdrop-filter:blur(8px);}
+.concept-note strong{color:var(--accent);font-weight:600;display:block;margin-bottom:3px;}
+</style>
+</head>
+<body>
+
+<div class="badge">D4-D · HORIZON STRATIGRAPHY</div>
+
+<div class="bg">
+  <div class="bg-base"></div>
+
+  <!-- Strata layers — animated -->
+  <div class="bg-strata">
+    <div class="bg-strata-drift">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           style="position:absolute;inset:0;width:100%;height:100%"
+           viewBox="0 0 480 850" preserveAspectRatio="xMidYMid slice">
+
+        <!-- ── GEOLOGICAL STRATA SYSTEM ───────────────────────────────────
+             Horizontal layers that arch upward (anticline dome) around
+             the orb's position (240, 340) — the orb sits at the apex
+             of the geological structure, the high point from which
+             everything flows outward and downward.
+             Upper strata: sparse → converging toward the dome apex
+             Dome zone: dense (currency-engraving cluster)
+             Lower strata: sparse, slightly curved, relaxing downward
+             Lines include micro-variation in y to simulate natural sediment. -->
+
+        <!-- CONCENTRIC RINGS — orb regulation field sits on top of strata -->
+        <g fill="none" stroke="#1a8a8a">
+          <circle cx="240" cy="340" r="46"  stroke-width="0.84" opacity="0.060"/>
+          <circle cx="240" cy="340" r="88"  stroke-width="0.76" opacity="0.056"/>
+          <circle cx="240" cy="340" r="136" stroke-width="0.70" opacity="0.052"/>
+          <circle cx="240" cy="340" r="190" stroke-width="0.64" opacity="0.048"/>
+          <circle cx="240" cy="340" r="248" stroke-width="0.58" opacity="0.044"/>
+          <circle cx="240" cy="340" r="312" stroke-width="0.52" opacity="0.040"/>
+          <circle cx="240" cy="340" r="384" stroke-width="0.46" opacity="0.034"/>
+        </g>
+
+        <!-- UPPER STRATA — sparse, arching gently above the dome -->
+        <g fill="none" stroke="#1a8a8a">
+          <!-- Each strata line has a tiny arch toward the orb center -->
+          <!-- The arch amount increases as we approach the dome level -->
+          <path d="M -20,68 C 120,62 200,65 240,60 C 282,55 368,62 500,58"
+                stroke-width="0.38" opacity="0.030" stroke-dasharray="none"/>
+          <path d="M -20,96 C 110,89 195,93 240,87 C 286,81 372,90 500,86"
+                stroke-width="0.40" opacity="0.033"/>
+          <path d="M -20,126 C 108,118 192,123 240,115 C 290,108 374,118 500,114"
+                stroke-width="0.42" opacity="0.036"/>
+          <path d="M -20,158 C 105,149 190,154 240,144 C 292,135 376,148 500,144"
+                stroke-width="0.44" opacity="0.040"/>
+          <path d="M -20,192 C 102,182 188,188 240,175 C 294,163 378,180 500,176"
+                stroke-width="0.46" opacity="0.044"/>
+          <path d="M -20,228 C 98,217 185,223 240,208 C 297,193 380,212 500,208"
+                stroke-width="0.48" opacity="0.048"/>
+          <path d="M -20,265 C 94,252 182,259 240,242 C 300,225 384,246 500,242"
+                stroke-width="0.50" opacity="0.052"/>
+          <path d="M -20,302 C 90,289 178,296 240,277 C 304,259 388,280 500,276"
+                stroke-width="0.52" opacity="0.056"/>
+        </g>
+
+        <!-- DOME APEX ZONE — densest strata (peak engraving cluster) -->
+        <!-- These lines show the maximum arch of the anticline -->
+        <g fill="none" stroke="#1a8a8a">
+          <path d="M -20,320 C 85,306 175,313 240,292 C 307,272 392,296 500,292"
+                stroke-width="0.56" opacity="0.058"/>
+          <path d="M -20,330 C 88,317 178,323 240,303 C 304,283 390,306 500,302"
+                stroke-width="0.58" opacity="0.060"/>
+          <!-- Fine half-step lines near the dome apex — engraving micro-density -->
+          <path d="M 40,338 C 110,325 175,329 240,313 C 307,297 372,320 440,316"
+                stroke-width="0.42" opacity="0.042"/>
+          <path d="M -20,340 C 90,327 180,333 240,314 C 302,295 392,318 500,314"
+                stroke-width="0.60" opacity="0.062"/>
+          <path d="M 30,348 C 108,335 175,340 240,322 C 307,304 375,328 448,324"
+                stroke-width="0.42" opacity="0.042"/>
+          <path d="M -20,350 C 88,337 178,343 240,324 C 304,306 392,329 500,325"
+                stroke-width="0.58" opacity="0.060"/>
+          <path d="M -20,360 C 86,348 176,354 240,335 C 306,317 394,340 500,336"
+                stroke-width="0.56" opacity="0.058"/>
+          <!-- Fine half-step lines -->
+          <path d="M 40,368 C 110,356 175,362 240,344 C 307,326 372,350 440,346"
+                stroke-width="0.40" opacity="0.040"/>
+          <path d="M -20,370 C 84,359 174,365 240,347 C 308,330 396,352 500,348"
+                stroke-width="0.54" opacity="0.056"/>
+          <path d="M -20,380 C 82,369 172,375 240,358 C 310,342 398,363 500,360"
+                stroke-width="0.52" opacity="0.054"/>
+        </g>
+
+        <!-- LOWER STRATA — opening again as we descend from dome -->
+        <g fill="none" stroke="#1a8a8a">
+          <path d="M -20,398 C 80,388 170,393 240,378 C 312,364 402,384 500,381"
+                stroke-width="0.50" opacity="0.052"/>
+          <path d="M -20,418 C 78,409 168,414 240,400 C 314,387 404,406 500,403"
+                stroke-width="0.48" opacity="0.048"/>
+          <path d="M -20,440 C 76,432 166,437 240,424 C 316,412 406,430 500,427"
+                stroke-width="0.46" opacity="0.044"/>
+          <path d="M -20,464 C 74,457 164,462 240,450 C 318,439 408,456 500,453"
+                stroke-width="0.44" opacity="0.040"/>
+          <path d="M -20,490 C 72,484 162,489 240,478 C 320,467 410,483 500,480"
+                stroke-width="0.42" opacity="0.036"/>
+          <path d="M -20,518 C 70,513 160,517 240,507 C 322,498 412,512 500,510"
+                stroke-width="0.40" opacity="0.033"/>
+          <path d="M -20,548 C 68,543 158,548 240,538 C 324,529 414,542 500,540"
+                stroke-width="0.38" opacity="0.030"/>
+          <path d="M -20,580 C 66,576 156,580 240,571 C 326,563 416,575 500,573"
+                stroke-width="0.36" opacity="0.027"/>
+          <path d="M -20,614 C 64,610 154,615 240,606 C 328,598 418,610 500,608"
+                stroke-width="0.34" opacity="0.024"/>
+          <path d="M -20,650 C 62,647 152,651 240,643 C 330,636 420,648 500,646"
+                stroke-width="0.32" opacity="0.020"/>
+        </g>
+
+      </svg>
+    </div>
+  </div>
+
+  <div class="bg-micro-h"></div>
+  <div class="bg-micro-d"></div>
+</div>
+
+<div class="page">
+  <div class="wm"><span>mediCalm</span></div>
+  <div class="hero">
+    <h1 class="hl">Just Breathe.</h1>
+    <p class="sub">Structured protocols for rib restriction, shallow breathing, neck and jaw tension, and protective overactivation — calibrated to your current intensity.</p>
+  </div>
+  <div class="orb-zone">
+    <div class="orb-field">
+      <div class="r4"></div><div class="r3"></div>
+      <div class="r2"></div><div class="r1"></div>
+      <div class="orb-glow"></div><div class="orb-sphere"></div>
+    </div>
+    <span class="orb-lbl">ready</span>
+  </div>
+  <div class="cta">
+    <button class="btn">Begin session</button>
+    <p class="cta-sub">Protocol calibrated to your intensity · approx. 4–6 min</p>
+  </div>
+  <div>
+    <div class="hd"><div class="hl2"></div><span class="hlbl">Past sessions</span><div class="hl2"></div></div>
+    <p class="empty">No sessions yet. Start your first session above.</p>
+  </div>
+</div>
+
+<div class="concept-note">
+  <strong>D4-D · Horizon Stratigraphy</strong>
+  Geological anticline — strata arch upward toward the orb apex (dome peak). Dense lines in the dome zone simulate engraving clustering. Horizontal ruled microdetail at 9px + 23px intervals. Strata drift horizontally at geological speed (45s).
+</div>
+
+</body>
+</html>

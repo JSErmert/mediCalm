@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D4-A · Contour Field — mediCalm Background System</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --accent:    #1a8a8a;
+  --accent-d:  #0f6060;
+  --tp:        #1e2d3d;
+  --ts:        #5a6e80;
+  --tt:        #96aab8;
+  --oc:        #2196a8;
+  --om:        #155e6e;
+  --oe:        #0d3d4a;
+}
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #dde6ec;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND SYSTEM: Contour Field ──────────────────────────────────
+   Abstraction: alpine topographic survey map
+   The eye sees: a mountain whose peak is the orb — contour lines
+   radiate outward + downward from it, encoding terrain memory.
+   Microdetail: currency-engraving-style tight stroke clusters
+   near the center, opening to sparse lines at the periphery.
+   ─────────────────────────────────────────────────────────────────── */
+
+/* SVG background — position:fixed fills the viewport */
+.bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Layer 1: atmospheric base — muted cool mineral with subtle vignette */
+.bg-base {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 65% at 50% 40%,
+      rgba(210,228,236,0.85) 0%,
+      rgba(222,233,239,0.55) 50%,
+      transparent 76%
+    ),
+    radial-gradient(ellipse 50% 28% at 15% 100%,
+      rgba(214,228,236,0.40) 0%,
+      transparent 60%
+    ),
+    linear-gradient(168deg, #d4e1e8 0%, #dde6ec 34%, #d9e4ea 72%, #d2dfe7 100%);
+}
+
+/* Layer 2: organic contour terrain lines (inline SVG) */
+/* Layer 3: concentric regulation rings */
+/* Layer 4: diagonal microdetail interference */
+.bg-micro {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      22deg,
+      transparent 0, transparent 14px,
+      rgba(26,138,138,0.022) 14px, rgba(26,138,138,0.022) 14.4px
+    ),
+    repeating-linear-gradient(
+      112deg,
+      transparent 0, transparent 20px,
+      rgba(26,138,138,0.014) 20px, rgba(26,138,138,0.014) 20.4px
+    );
+  animation: micro-drift 26s ease-in-out infinite;
+}
+@keyframes micro-drift {
+  0%,100% { transform: translate(0,0); opacity: 0.9; }
+  40%      { transform: translate(2px, 1.5px); opacity: 1; }
+  72%      { transform: translate(-1.5px, 2px); opacity: 0.8; }
+}
+
+/* Breathing animation for SVG layers */
+.bg-contour {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 40%;
+  animation: contour-breathe 9s cubic-bezier(0.45,0,0.45,1) infinite;
+}
+@keyframes contour-breathe {
+  0%,100% { transform: scale(1.000) translate(0px,0px); opacity: 1; }
+  43%     { transform: scale(1.022) translate(0.3px,-0.3px); opacity: 0.90; }
+  70%     { transform: scale(1.010) translate(-0.2px,0.2px); opacity: 0.95; }
+}
+
+/* Content */
+.page {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px 40px;
+  min-height: 100vh;
+}
+
+/* Wordmark */
+.wm { padding: 22px 0 0; }
+.wm span {
+  font-size: 0.65rem; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--accent); opacity: 0.78;
+}
+
+/* Hero */
+.hero { text-align: center; padding: 34px 8px 0; }
+.hl {
+  font-size: 2.2rem; font-weight: 300; color: var(--tp);
+  line-height: 1.14; letter-spacing: -0.026em; margin-bottom: 14px;
+}
+.sub {
+  font-size: 0.8rem; color: var(--ts); line-height: 1.74;
+  max-width: 310px; margin: 0 auto; letter-spacing: 0.006em;
+}
+
+/* Orb */
+.orb-zone {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 26px 0 20px; gap: 12px;
+}
+.orb-field {
+  position: relative; width: 200px; height: 200px;
+  display: flex; align-items: center; justify-content: center;
+}
+.orb-glow {
+  position: absolute; inset: 22px; border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(22,130,148,0.22) 0%, rgba(22,130,148,0.09) 48%, transparent 76%);
+  animation: og 7s ease-in-out infinite;
+}
+.r4 { position: absolute; inset:  0px; border-radius:50%; border:1px solid rgba(26,138,138,0.060); animation: ri 7s ease-in-out infinite 0.00s; }
+.r3 { position: absolute; inset: 14px; border-radius:50%; border:1px solid rgba(26,138,138,0.092); animation: ri 7s ease-in-out infinite 0.35s; }
+.r2 { position: absolute; inset: 28px; border-radius:50%; border:1px solid rgba(26,138,138,0.124); animation: ri 7s ease-in-out infinite 0.70s; }
+.r1 { position: absolute; inset: 42px; border-radius:50%; border:1px solid rgba(26,138,138,0.158); animation: ri 7s ease-in-out infinite 1.05s; }
+.orb-sphere {
+  position: relative; width: 112px; height: 112px; border-radius: 50%;
+  background: radial-gradient(circle at 36% 33%, var(--oc), var(--om) 52%, var(--oe) 100%);
+  box-shadow: 0 12px 44px rgba(22,130,148,0.32), 0 4px 14px rgba(0,0,0,0.15),
+              inset 0 2px 0 rgba(255,255,255,0.12);
+  animation: oi 7s ease-in-out infinite;
+}
+.orb-lbl {
+  font-size: 0.60rem; font-weight: 500; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--tt); opacity: 0.65;
+}
+@keyframes oi { 0%,100%{transform:scale(0.88)} 43%{transform:scale(1.0)} 72%{transform:scale(0.93)} }
+@keyframes og { 0%,100%{opacity:0.48;transform:scale(0.85)} 43%{opacity:1;transform:scale(1.18)} }
+@keyframes ri { 0%,100%{opacity:0.32;transform:scale(0.93)} 43%{opacity:0.88;transform:scale(1.07)} }
+
+/* CTA */
+.cta { display:flex; flex-direction:column; align-items:center; gap:8px; padding:4px 0 36px; }
+.btn {
+  width:200px; height:52px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-d) 100%);
+  color:#fff; border:none; border-radius:9999px;
+  font-size:0.9rem; font-weight:500; font-family:inherit; letter-spacing:0.04em;
+  cursor:pointer;
+  box-shadow: 0 4px 18px rgba(26,138,138,0.28), 0 1px 4px rgba(0,0,0,0.10);
+}
+.cta-sub { font-size:0.64rem; color:var(--tt); letter-spacing:0.04em; text-align:center; }
+
+/* History divider */
+.hd { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.hl2 { flex:1; height:1px; background:rgba(0,0,0,0.07); }
+.hlbl {
+  font-size:0.62rem; font-weight:600; letter-spacing:0.14em;
+  text-transform:uppercase; color:var(--tt); white-space:nowrap;
+}
+.empty {
+  font-size:0.875rem; color:var(--ts); text-align:center;
+  padding:16px 0; line-height:1.7;
+}
+
+/* Mockup label */
+.badge {
+  position: fixed; top:12px; right:12px; z-index:100;
+  background: rgba(26,138,138,0.12); border:1px solid rgba(26,138,138,0.28);
+  border-radius:6px; padding:4px 10px;
+  font-size:0.62rem; font-weight:600; letter-spacing:0.12em; color:var(--accent);
+}
+.concept-note {
+  position: fixed; bottom: 12px; left: 12px; right: 12px; z-index: 100;
+  max-width: 300px; margin: 0 auto;
+  background: rgba(255,255,255,0.82); border:1px solid rgba(26,138,138,0.18);
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 0.64rem; color: var(--ts); line-height: 1.6;
+  backdrop-filter: blur(8px);
+}
+.concept-note strong { color: var(--accent); font-weight: 600; display: block; margin-bottom: 3px; }
+</style>
+</head>
+<body>
+
+<div class="badge">D4-A · CONTOUR FIELD</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     BACKGROUND: Contour Field
+     SVG inline for full control. Two sublayers:
+       1. Organic terrain contour lines (mountain/landscape abstraction)
+       2. Concentric regulation rings (from D4, same center)
+     Both animated together on 9s breathing cycle.
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="bg">
+  <div class="bg-base"></div>
+
+  <!-- Contour + concentric rings — animated together -->
+  <div class="bg-contour">
+    <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 480 850" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <!-- The contour lines use very thin strokes that cluster more
+             densely near the terrain "peak" (center of screen = orb position)
+             Inspired by: topographic cartography + currency micro-engraving -->
+      </defs>
+
+      <!-- ── CONCENTRIC REGULATION RINGS (orb center 240, 340) ── -->
+      <g fill="none" stroke="#1a8a8a">
+        <circle cx="240" cy="340" r="44"  stroke-width="0.88" opacity="0.065"/>
+        <circle cx="240" cy="340" r="84"  stroke-width="0.80" opacity="0.060"/>
+        <circle cx="240" cy="340" r="130" stroke-width="0.74" opacity="0.056"/>
+        <circle cx="240" cy="340" r="182" stroke-width="0.68" opacity="0.052"/>
+        <circle cx="240" cy="340" r="240" stroke-width="0.62" opacity="0.048"/>
+        <circle cx="240" cy="340" r="305" stroke-width="0.56" opacity="0.044"/>
+        <circle cx="240" cy="340" r="378" stroke-width="0.50" opacity="0.038"/>
+      </g>
+
+      <!-- ── TERRAIN CONTOUR LINES ──────────────────────────────────
+           Abstraction: mountain viewed from above.
+           Lines flow horizontally with gentle organic undulation.
+           Density increases near the center (40% from top — orb peak).
+           Thin-to-thick: outer lines thinnest, inner lines slightly heavier.
+           This mimics topo map + currency engraving clustering logic.  -->
+      <g fill="none" stroke="#1a8a8a">
+
+        <!-- Upper terrain — sparse (mountain shoulder) -->
+        <path d="M-20,80  C80,72  160,88  240,80  C320,72  400,85  500,78"
+              stroke-width="0.45" opacity="0.038"/>
+        <path d="M-20,115 C70,106 165,122 240,114 C318,106 408,120 500,112"
+              stroke-width="0.48" opacity="0.042"/>
+        <path d="M-20,152 C75,142 162,160 240,150 C320,140 408,157 500,148"
+              stroke-width="0.50" opacity="0.046"/>
+        <path d="M-20,192 C78,181 164,198 240,188 C318,178 406,195 500,186"
+              stroke-width="0.52" opacity="0.050"/>
+
+        <!-- Mid terrain — tightening (approaching peak) -->
+        <path d="M-20,232 C80,220 162,238 240,227 C320,217 406,233 500,224"
+              stroke-width="0.56" opacity="0.054"/>
+        <path d="M-20,268 C82,256 164,274 240,263 C318,252 404,269 500,260"
+              stroke-width="0.58" opacity="0.058"/>
+
+        <!-- Peak zone — densest (currency-engraving cluster near orb) -->
+        <path d="M-20,298 C84,288 166,306 240,296 C316,286 402,302 500,294"
+              stroke-width="0.62" opacity="0.060"/>
+        <path d="M-20,320 C86,312 168,328 240,319 C314,310 400,325 500,317"
+              stroke-width="0.64" opacity="0.062"/>
+        <path d="M-20,342 C88,334 170,350 240,341 C312,332 398,348 500,340"
+              stroke-width="0.64" opacity="0.062"/>
+        <path d="M-20,364 C86,356 168,372 240,363 C314,354 400,370 500,362"
+              stroke-width="0.62" opacity="0.060"/>
+        <path d="M-20,386 C84,378 165,394 240,385 C316,376 403,392 500,384"
+              stroke-width="0.60" opacity="0.058"/>
+
+        <!-- Lower terrain — opening again (descent) -->
+        <path d="M-20,418 C82,411 164,426 240,418 C318,410 404,424 500,416"
+              stroke-width="0.56" opacity="0.054"/>
+        <path d="M-20,455 C78,448 162,463 240,455 C320,447 406,461 500,453"
+              stroke-width="0.52" opacity="0.050"/>
+        <path d="M-20,494 C75,487 161,502 240,494 C320,486 406,500 500,492"
+              stroke-width="0.48" opacity="0.046"/>
+        <path d="M-20,535 C72,528 160,542 240,534 C322,526 406,540 500,532"
+              stroke-width="0.45" opacity="0.042"/>
+        <path d="M-20,578 C70,572 158,586 240,578 C324,570 408,583 500,575"
+              stroke-width="0.42" opacity="0.038"/>
+        <path d="M-20,622 C68,616 158,630 240,622 C324,614 410,628 500,620"
+              stroke-width="0.38" opacity="0.032"/>
+        <path d="M-20,668 C66,663 156,676 240,668 C326,660 412,673 500,666"
+              stroke-width="0.35" opacity="0.028"/>
+
+        <!-- Fine secondary contour lines — engraving micro-density near peak -->
+        <!-- These half-step lines in the peak zone simulate currency engraving -->
+        <path d="M-20,309 C85,302 167,317 240,309 C315,301 400,315 500,308"
+              stroke-width="0.40" opacity="0.040"/>
+        <path d="M-20,331 C87,324 169,339 240,331 C313,323 399,337 500,330"
+              stroke-width="0.40" opacity="0.040"/>
+        <path d="M-20,353 C85,346 167,361 240,353 C315,345 401,359 500,352"
+              stroke-width="0.40" opacity="0.040"/>
+        <path d="M-20,375 C83,368 166,382 240,374 C316,366 402,380 500,373"
+              stroke-width="0.38" opacity="0.036"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="bg-micro"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CONTENT — exact D4 layout
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="wm"><span>mediCalm</span></div>
+
+  <div class="hero">
+    <h1 class="hl">Just Breathe.</h1>
+    <p class="sub">Structured protocols for rib restriction, shallow breathing, neck and jaw tension, and protective overactivation — calibrated to your current intensity.</p>
+  </div>
+
+  <div class="orb-zone">
+    <div class="orb-field">
+      <div class="r4"></div><div class="r3"></div>
+      <div class="r2"></div><div class="r1"></div>
+      <div class="orb-glow"></div>
+      <div class="orb-sphere"></div>
+    </div>
+    <span class="orb-lbl">ready</span>
+  </div>
+
+  <div class="cta">
+    <button class="btn">Begin session</button>
+    <p class="cta-sub">Protocol calibrated to your intensity · approx. 4–6 min</p>
+  </div>
+
+  <div>
+    <div class="hd">
+      <div class="hl2"></div>
+      <span class="hlbl">Past sessions</span>
+      <div class="hl2"></div>
+    </div>
+    <p class="empty">No sessions yet. Start your first session above.</p>
+  </div>
+</div>
+
+<div class="concept-note">
+  <strong>D4-A · Contour Field</strong>
+  Terrain abstraction: mountain viewed from above. Contour lines cluster near the orb (peak), open at periphery — engraving density logic. Diagonal microdetail interference at 22°/112°. Breathes 9s ambient cycle.
+</div>
+
+</body>
+</html>

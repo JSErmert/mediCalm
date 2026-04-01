@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guided Session — Deep Current Overlay</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .device {
+    width: 390px;
+    height: 844px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 44px;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+
+  .device-label {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    white-space: nowrap;
+  }
+
+  /* ══════════════════════════════════════════
+     D4-B4 BACKGROUND — extracted from HomeScreen unchanged
+  ══════════════════════════════════════════ */
+
+  .bg-field {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-base {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 46%, #0a2e38 0%, #061c24 38%, #030f16 68%, #020a10 100%),
+      linear-gradient(175deg, #040e14 0%, #02090d 100%);
+  }
+  .bg-filter-radial {
+    position: absolute;
+    inset: -150px;
+    background-image: repeating-conic-gradient(
+      from 2.3deg at 50% 47%,
+      transparent 0deg, transparent 3.8deg,
+      rgba(26,138,138,0.06) 3.8deg, rgba(26,138,138,0.06) 4deg
+    );
+    transform-origin: 50% 47%;
+    animation: rays-shoot 11s ease-in-out infinite, rays-rotate 220s linear infinite;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 47%,
+      transparent 0%, transparent 10%, rgba(0,0,0,0.4) 22%,
+      black 42%, black 78%, rgba(0,0,0,0.15) 88%, transparent 93%);
+    mask-image: radial-gradient(ellipse at 50% 47%,
+      transparent 0%, transparent 10%, rgba(0,0,0,0.4) 22%,
+      black 42%, black 78%, rgba(0,0,0,0.15) 88%, transparent 93%);
+  }
+  .bg-filter-cross {
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(148deg, transparent 0px, transparent 11px, rgba(15,80,90,0.022) 11px, rgba(15,80,90,0.022) 11.6px),
+      repeating-linear-gradient(58deg,  transparent 0px, transparent 14px, rgba(10,60,72,0.016)  14px, rgba(10,60,72,0.016)  14.4px);
+  }
+  @keyframes rays-shoot {
+    0%   { scale: 0.28; opacity: 0; }
+    10%  { opacity: 0.85; }
+    90%  { opacity: 0.65; }
+    100% { scale: 1.38; opacity: 0; }
+  }
+  @keyframes rays-rotate {
+    from { rotate: 0deg; }
+    to   { rotate: -360deg; }
+  }
+
+  /* ══════════════════════════════════════════
+     GUIDED SESSION SCREEN — faithful replica
+     of GuidedSessionScreen.tsx structure
+  ══════════════════════════════════════════ */
+
+  .screen {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 52px 28px 36px;
+    min-height: 100%;
+  }
+
+  /* Zone 1 — static context */
+  .top-zone {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 20px;
+    flex-shrink: 0;
+  }
+  .protocol-name {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.30);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .goal-text {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.38);
+    line-height: 1.45;
+  }
+
+  /* Zone 2 — guidance */
+  .guidance-zone {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+  }
+
+  /* ── RoundDots — exact replica of RoundDots.tsx logic ── */
+  .round-dots-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .dots {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  /* empty: opacity 0.22 | active: opacity 0.7 | completed: opacity 1.0 */
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1a8a8a;
+  }
+  .dot.empty     { opacity: 0.22; }
+  .dot.active    { opacity: 0.70; box-shadow: 0 0 5px rgba(26,138,138,0.55); }
+  .dot.completed { opacity: 1.00; }
+
+  .round-counter {
+    font-size: 0.60rem;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.28);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── BreathingOrb — exact replica of BreathingOrb structure ──
+     orbWrapper: fixed square, positioning context for all 3 children
+     glowRing:   absolute, fills wrapper, scales independently
+     orb:        absolute, fills wrapper, scales inhale/exhale
+     countdown:  absolute centered, sibling of orb — never scales with orb
+  ── */
+  .orb-wrapper {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* GlowRing — scales larger than orb at inhale peak */
+  .glow-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(33,150,168,0.22) 0%,
+      rgba(26,138,138,0.08) 50%,
+      transparent 72%
+    );
+    transform-origin: center;
+  }
+
+  /* Orb sphere — fills wrapper, scale drives the inhale/exhale size */
+  .orb {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%,
+      #dff6f8 0%,
+      #b8e8ed 6%,
+      #2196a8 30%,
+      #155e6e 62%,
+      #0d3d4a 100%
+    );
+    box-shadow:
+      0 0 10px rgba(255,255,255,0.08),
+      0 0 40px rgba(33,150,168,0.45),
+      0 0 80px rgba(26,138,138,0.20),
+      inset 0 0 3px rgba(255,255,255,0.12);
+    transform-origin: center;
+  }
+
+  /* Countdown — absolutely centered, sibling of .orb, NEVER scales with it */
+  .countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    font-weight: 200;
+    color: rgba(255,255,255,0.92);
+    letter-spacing: -0.02em;
+    z-index: 2;
+    pointer-events: none;
+    user-select: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Instruction slot — outside orbWrapper entirely, below it */
+  .instruction-slot {
+    min-height: 2.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-align: center;
+  }
+  .instruction-primary {
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+  .instruction-secondary {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.28);
+    line-height: 1.4;
+    letter-spacing: 0.015em;
+  }
+
+  /* ── Footer ── */
+  .session-footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding-top: 24px;
+    flex-shrink: 0;
+  }
+  .safety-button {
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.30);
+    font-size: 0.78rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-family: inherit;
+  }
+  .stop-button {
+    padding: 8px 24px;
+    border: 1px solid rgba(26,138,138,0.28);
+    border-radius: 6px;
+    background: transparent;
+    color: rgba(255,255,255,0.40);
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.04em;
+  }
+
+  /* ══════════════════════════════════════════
+     ORB ANIMATIONS — inhale / exhale cycles
+     orb_scale_min = 0.25, orb_scale_max = 1.0
+     inhale_seconds = 4, exhale_seconds = 7
+  ══════════════════════════════════════════ */
+
+  /* INHALE device: orb expands 0.25→1.0 over 4s */
+  .inhale-orb   { animation: inhale-scale  4s cubic-bezier(0.4,0,0.6,1) forwards; }
+  .inhale-glow  { animation: inhale-glow   4s cubic-bezier(0.4,0,0.6,1) forwards; }
+
+  /* EXHALE device: orb contracts 1.0→0.25 over 7s */
+  .exhale-orb   { animation: exhale-scale  7s cubic-bezier(0.25,0,0.5,1) forwards; }
+  .exhale-glow  { animation: exhale-glow   7s cubic-bezier(0.25,0,0.5,1) forwards; }
+
+  @keyframes inhale-scale {
+    from { transform: scale(0.25); }
+    to   { transform: scale(1.00); }
+  }
+  @keyframes inhale-glow {
+    from { transform: scale(0.32); opacity: 0.08; }
+    to   { transform: scale(1.30); opacity: 0.44; }
+  }
+  @keyframes exhale-scale {
+    from { transform: scale(1.00); }
+    to   { transform: scale(0.25); }
+  }
+  @keyframes exhale-glow {
+    from { transform: scale(1.30); opacity: 0.44; }
+    to   { transform: scale(0.32); opacity: 0.08; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg-filter-radial, .inhale-orb, .inhale-glow, .exhale-orb, .exhale-glow { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── INHALE STATE (orb expanding, countdown inside) ── -->
+<div class="device">
+  <div class="device-label">Inhale — Round 2 of 3</div>
+
+  <div class="bg-field" aria-hidden="true">
+    <div class="bg-base"></div>
+    <div class="bg-filter-radial"></div>
+    <div class="bg-filter-cross"></div>
+  </div>
+
+  <div class="screen">
+
+    <header class="top-zone">
+      <p class="protocol-name">Diaphragmatic Reset</p>
+      <p class="goal-text">Slow, even breaths to quiet the threat response.</p>
+    </header>
+
+    <div class="guidance-zone">
+
+      <!-- RoundDots: round 1 completed, round 2 active, round 3 empty -->
+      <div class="round-dots-row">
+        <div class="dots">
+          <div class="dot completed"></div>
+          <div class="dot active"></div>
+          <div class="dot empty"></div>
+        </div>
+        <span class="round-counter">2 / 3</span>
+      </div>
+
+      <!--
+        BreathingOrb structure:
+        orbWrapper → [ glowRing | orb | countdown* ]  (* sibling, not child of orb)
+        instructionSlot → below wrapper entirely
+      -->
+      <div class="orb-wrapper">
+        <div class="glow-ring inhale-glow"></div>
+        <div class="orb inhale-orb"></div>
+        <!-- countdown: centered over orb, decoupled from orb scale -->
+        <span class="countdown">3</span>
+      </div>
+
+      <div class="instruction-slot">
+        <p class="instruction-primary">Inhale through nose — 4 seconds</p>
+        <p class="instruction-secondary">let your belly lead</p>
+      </div>
+
+    </div>
+
+    <footer class="session-footer">
+      <button class="safety-button">I feel unwell</button>
+      <button class="stop-button">Stop</button>
+    </footer>
+
+  </div>
+</div>
+
+<!-- ── EXHALE STATE (orb contracting, countdown inside) ── -->
+<div class="device">
+  <div class="device-label">Exhale — Round 2 of 3</div>
+
+  <div class="bg-field" aria-hidden="true">
+    <div class="bg-base"></div>
+    <div class="bg-filter-radial"></div>
+    <div class="bg-filter-cross"></div>
+  </div>
+
+  <div class="screen">
+
+    <header class="top-zone">
+      <p class="protocol-name">Diaphragmatic Reset</p>
+      <p class="goal-text">Slow, even breaths to quiet the threat response.</p>
+    </header>
+
+    <div class="guidance-zone">
+
+      <div class="round-dots-row">
+        <div class="dots">
+          <div class="dot completed"></div>
+          <div class="dot active"></div>
+          <div class="dot empty"></div>
+        </div>
+        <span class="round-counter">2 / 3</span>
+      </div>
+
+      <div class="orb-wrapper">
+        <div class="glow-ring exhale-glow"></div>
+        <div class="orb exhale-orb"></div>
+        <span class="countdown">5</span>
+      </div>
+
+      <div class="instruction-slot">
+        <p class="instruction-primary">Exhale slowly — 7 seconds</p>
+        <p class="instruction-secondary">soften the jaw and shoulders</p>
+      </div>
+
+    </div>
+
+    <footer class="session-footer">
+      <button class="safety-button">I feel unwell</button>
+      <button class="stop-button">Stop</button>
+    </footer>
+
+  </div>
+</div>
+
+</body>
+</html>

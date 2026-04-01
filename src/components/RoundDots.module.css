@@ -23,7 +23,13 @@
   opacity: 1;
 }
 
+/* active — breath in progress: accent-tinted, Framer Motion drives opacity to 0.7 */
+.active {
+  background: var(--color-accent-primary);
+  opacity: 0.7;
+}
+
 .empty {
   background: var(--color-border);
-  opacity: 0.6;
+  opacity: 0.22;
 }

@@ -14,6 +14,12 @@ import { PainInputScreen } from './screens/PainInputScreen'
 import { SessionSetupScreen } from './screens/SessionSetupScreen'
 import { GuidedSessionScreen } from './screens/GuidedSessionScreen'
 import { SafetyStopScreen } from './screens/SafetyStopScreen'
+import { RDReviewScreen } from './screens/RDReviewScreen'
+import { SessionValidationScreen } from './screens/SessionValidationScreen'
+import { SessionIntakeScreen } from './screens/SessionIntakeScreen'
+import { HariSafetyGateScreen } from './screens/HariSafetyGateScreen'
+import { BodyContextScreen } from './screens/BodyContextScreen'
+import styles from './App.module.css'
 
 function ScreenRouter() {
   const { state } = useAppContext()
@@ -26,6 +32,7 @@ function ScreenRouter() {
           <HomeScreen />
         </ScreenTransition>
       )}
+      {/* DEPRECATED (M4.8.1) — pain_input unreachable in M4 production flow */}
       {activeScreen === 'pain_input' && (
         <ScreenTransition screenKey="pain_input">
           <PainInputScreen />
@@ -46,6 +53,31 @@ function ScreenRouter() {
           <SafetyStopScreen />
         </ScreenTransition>
       )}
+      {activeScreen === 'rd_review' && (
+        <ScreenTransition screenKey="rd_review">
+          <RDReviewScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'session_validation' && (
+        <ScreenTransition screenKey="session_validation">
+          <SessionValidationScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'session_intake' && (
+        <ScreenTransition screenKey="session_intake">
+          <SessionIntakeScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'hari_safety_gate' && (
+        <ScreenTransition screenKey="hari_safety_gate">
+          <HariSafetyGateScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'body_context' && (
+        <ScreenTransition screenKey="body_context">
+          <BodyContextScreen />
+        </ScreenTransition>
+      )}
     </AnimatePresence>
   )
 }
@@ -53,7 +85,15 @@ function ScreenRouter() {
 export default function App() {
   return (
     <AppProvider>
-      <ScreenRouter />
+      <div className={styles.appRoot}>
+        {/* D4-B4 Deep Current background — persistent across all screen transitions */}
+        <div className={styles.bgField} aria-hidden="true">
+          <div className={styles.bgBase} />
+          <div className={styles.bgFilterRadial} />
+          <div className={styles.bgFilterCross} />
+        </div>
+        <ScreenRouter />
+      </div>
     </AppProvider>
   )
 }

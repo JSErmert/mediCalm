@@ -1,4 +1,4 @@
-/* src/screens/SafetyStopScreen.module.css */
+/* src/screens/SafetyStopScreen.module.css — production only */
 .screen {
   display: flex;
   flex-direction: column;
@@ -6,7 +6,7 @@
   justify-content: center;
   min-height: 100dvh;
   padding: 2rem 1.5rem;
-  background: var(--color-background);
+  background: transparent;
 }
 
 .content {

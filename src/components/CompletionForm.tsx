@@ -12,6 +12,8 @@ interface Props {
   /** Used to look up the deterministic session reflection line */
   protocolId: string
   onSave: (feedback: SessionFeedback) => void
+  /** Called when the user discards the session from the post-session screen. M4.7.2 §5 Rule 3. */
+  onDiscard: () => void
   /** When true: hide change markers + note. Used for user_stopped path. */
   minimal?: boolean
 }
@@ -24,7 +26,7 @@ const RESULT_OPTIONS: { value: ResultOption; label: string }[] = [
   { value: 'worse',  label: 'Worse'  },
 ]
 
-export function CompletionForm({ sessionId, painBefore, protocolId, onSave, minimal = false }: Props) {
+export function CompletionForm({ sessionId, painBefore, protocolId, onSave, onDiscard, minimal = false }: Props) {
   const [painAfter, setPainAfter] = useState(painBefore)
   const [result, setResult] = useState<ResultOption | null>(null)
   const [changeMarkers, setChangeMarkers] = useState<string[]>([])
@@ -54,16 +56,9 @@ export function CompletionForm({ sessionId, painBefore, protocolId, onSave, mini
     <div className={styles.form}>
       <header className={styles.header}>
         <h2 className={styles.heading}>Session complete.</h2>
-        <p className={styles.subtext}>Notice what changed.</p>
-        {reflection && (
-          <p className={styles.reflection}>{reflection}</p>
-        )}
       </header>
 
-      <section className={styles.section} aria-label="Pain level after session">
-        <PainSlider value={painAfter} onChange={setPainAfter} />
-      </section>
-
+      {/* 1. How do you feel — immediate action, no preamble */}
       <section className={styles.section} aria-label="How do you feel?">
         <p className={styles.sectionLabel}>How do you feel?</p>
         <div className={styles.resultButtons} role="group" aria-label="Session result">
@@ -81,6 +76,12 @@ export function CompletionForm({ sessionId, painBefore, protocolId, onSave, mini
         </div>
       </section>
 
+      {/* 2. Pain after */}
+      <section className={styles.section} aria-label="Pain level after session">
+        <PainSlider value={painAfter} onChange={setPainAfter} />
+      </section>
+
+      {/* 3. Optional reflection — markers + note */}
       {!minimal && (
         <section className={styles.section}>
           <TagSelector
@@ -110,6 +111,12 @@ export function CompletionForm({ sessionId, painBefore, protocolId, onSave, mini
         </section>
       )}
 
+      {/* Protocol reflection — quiet tertiary, after interaction */}
+      {reflection && (
+        <p className={styles.reflection}>{reflection}</p>
+      )}
+
+      {/* M4.7.2: single save point — Save session (primary) + Discard session (secondary) */}
       <footer className={styles.footer}>
         <button
           className={styles.saveButton}
@@ -118,7 +125,14 @@ export function CompletionForm({ sessionId, painBefore, protocolId, onSave, mini
           disabled={result === null}
           aria-disabled={result === null}
         >
-          Save and finish
+          Save session
+        </button>
+        <button
+          className={styles.discardButton}
+          type="button"
+          onClick={onDiscard}
+        >
+          Discard session
         </button>
       </footer>
     </div>

@@ -33,47 +33,56 @@ export interface ExpressionProfile {
   show_microtext: boolean
 }
 
+/**
+ * M2.5.6: Breath range refinement.
+ * scale_min dropped to 0.10–0.12 — the orb must visually feel "empty" at rest.
+ * The full empty→full→release→reset cycle is now clearly perceptible.
+ * Glow scale values are absolute Framer Motion multipliers (no CSS baseline).
+ * Glow ring always extends beyond the orb rendered size at every phase.
+ */
+// M2.5.7: scale_min doubled (~2× M2.5.6). Resting state is clearly present
+// but visually contracted. Full range remains obvious (5× expansion).
 const NERVE_PROFILE: ExpressionProfile = {
   profile_id: 'nerve',
-  orb_scale_min: 0.75,
-  orb_scale_max: 0.95,
-  glow_scale_min: 0.40,
-  glow_scale_max: 0.50,
-  glow_opacity_min: 0.20,
-  glow_opacity_max: 0.35,
+  orb_scale_min: 0.26,
+  orb_scale_max: 0.85,
+  glow_scale_min: 0.32,
+  glow_scale_max: 1.05,
+  glow_opacity_min: 0.08,
+  glow_opacity_max: 0.20,
   show_microtext: false,
 }
 
 const SEVERE_PROFILE: ExpressionProfile = {
   profile_id: 'severe',
-  orb_scale_min: 0.72,
-  orb_scale_max: 1.0,
-  glow_scale_min: 0.45,
-  glow_scale_max: 0.62,
-  glow_opacity_min: 0.18,
+  orb_scale_min: 0.25,
+  orb_scale_max: 0.95,
+  glow_scale_min: 0.28,
+  glow_scale_max: 1.22,
+  glow_opacity_min: 0.12,
   glow_opacity_max: 0.32,
   show_microtext: false,
 }
 
 const MODERATE_PROFILE: ExpressionProfile = {
   profile_id: 'moderate',
-  orb_scale_min: 0.72,
-  orb_scale_max: 1.0,
-  glow_scale_min: 0.55,
-  glow_scale_max: 0.85,
-  glow_opacity_min: 0.35,
-  glow_opacity_max: 0.55,
+  orb_scale_min: 0.25,
+  orb_scale_max: 1.00,
+  glow_scale_min: 0.28,
+  glow_scale_max: 1.30,
+  glow_opacity_min: 0.16,
+  glow_opacity_max: 0.44,
   show_microtext: true,
 }
 
 const GENTLE_PROFILE: ExpressionProfile = {
   profile_id: 'gentle',
-  orb_scale_min: 0.72,
-  orb_scale_max: 1.0,
-  glow_scale_min: 0.55,
-  glow_scale_max: 0.85,
-  glow_opacity_min: 0.40,
-  glow_opacity_max: 0.62,
+  orb_scale_min: 0.25,
+  orb_scale_max: 1.00,
+  glow_scale_min: 0.28,
+  glow_scale_max: 1.38,
+  glow_opacity_min: 0.22,
+  glow_opacity_max: 0.56,
   show_microtext: true,
 }
 
@@ -87,7 +96,7 @@ const NERVE_SYMPTOM_TAGS = new Set([
  */
 export function deriveExpressionProfile(session: RuntimeSession): ExpressionProfile {
   // Nerve protocol always uses nerve profile regardless of pain level
-  if (session.protocol_id === 'PROTO_BURNING_NERVE_CALM_RESET') {
+  if (session.protocol_id === 'PROTO_REDUCED_EFFORT') {
     return NERVE_PROFILE
   }
 

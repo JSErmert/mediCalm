@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D4-B · Flow Resonance — mediCalm Background System</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --accent:   #1a8a8a;
+  --accent-d: #0f6060;
+  --tp: #1e2d3d; --ts: #5a6e80; --tt: #96aab8;
+  --oc: #2196a8; --om: #155e6e; --oe: #0d3d4a;
+}
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #dae5ea;
+  min-height: 100vh;
+  display: flex; justify-content: center; align-items: flex-start;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND SYSTEM: Flow Resonance ────────────────────────────────
+   Abstraction: river delta + breath flow convergence
+   Two intersecting flow fields travel from opposing sides and
+   converge toward the orb — the user feels they are at the
+   calm center of a flowing system. Interference where the fields
+   meet creates a currency-engraving-style moiré quality.
+   ─────────────────────────────────────────────────────────────────── */
+
+.bg { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+
+/* Base: atmospheric, slightly warmer + more directional than D4-A */
+.bg-base {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 85% 58% at 50% 42%,
+      rgba(208,228,236,0.82) 0%, rgba(218,232,239,0.50) 52%, transparent 76%),
+    radial-gradient(ellipse 60% 30% at 80% 5%,
+      rgba(205,224,232,0.35) 0%, transparent 58%),
+    radial-gradient(ellipse 50% 25% at 10% 95%,
+      rgba(210,226,234,0.32) 0%, transparent 56%),
+    linear-gradient(162deg, #d2e1e9 0%, #dae5ea 38%, #d6e2ea 74%, #cfdce4 100%);
+}
+
+/* Flow field layer — breathing scale animation */
+.bg-flow {
+  position: absolute; inset: 0;
+  transform-origin: 50% 40%;
+  animation: flow-breathe 9s cubic-bezier(0.45,0,0.45,1) infinite;
+}
+@keyframes flow-breathe {
+  0%,100% { transform: scale(1.000) translate(0px,0px); opacity: 1; }
+  43%     { transform: scale(1.026) translate(0.4px,-0.5px); opacity: 0.88; }
+  70%     { transform: scale(1.013) translate(-0.2px,0.3px); opacity: 0.94; }
+}
+
+/* Drift: the flow lines themselves appear to move downstream slowly */
+.bg-flow-drift {
+  position: absolute; inset: 0;
+  animation: flow-downstream 28s linear infinite;
+}
+@keyframes flow-downstream {
+  0%   { transform: translate(0px, 0px); }
+  100% { transform: translate(8px, 6px); }
+}
+
+/* Microdetail: cross-flow interference — two fields at 35° and 145° */
+.bg-micro {
+  position: absolute; inset: 0;
+  background-image:
+    repeating-linear-gradient(35deg,
+      transparent 0, transparent 18px,
+      rgba(26,138,138,0.026) 18px, rgba(26,138,138,0.026) 18.5px),
+    repeating-linear-gradient(145deg,
+      transparent 0, transparent 26px,
+      rgba(26,138,138,0.016) 26px, rgba(26,138,138,0.016) 26.5px);
+  animation: micro-drift 24s ease-in-out infinite;
+}
+@keyframes micro-drift {
+  0%,100% { transform:translate(0,0); opacity:0.88; }
+  50%     { transform:translate(3px,2px); opacity:1; }
+}
+
+/* Content */
+.page {
+  position: relative; z-index: 1; width: 100%; max-width: 440px;
+  display: flex; flex-direction: column; padding: 0 20px 40px; min-height: 100vh;
+}
+.wm { padding: 22px 0 0; }
+.wm span { font-size:0.65rem; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); opacity:0.78; }
+.hero { text-align:center; padding:34px 8px 0; }
+.hl { font-size:2.2rem; font-weight:300; color:var(--tp); line-height:1.14; letter-spacing:-0.026em; margin-bottom:14px; }
+.sub { font-size:0.8rem; color:var(--ts); line-height:1.74; max-width:310px; margin:0 auto; letter-spacing:0.006em; }
+.orb-zone { display:flex; flex-direction:column; align-items:center; padding:26px 0 20px; gap:12px; }
+.orb-field { position:relative; width:200px; height:200px; display:flex; align-items:center; justify-content:center; }
+.orb-glow { position:absolute; inset:22px; border-radius:50%;
+  background:radial-gradient(circle, rgba(22,130,148,0.22) 0%, rgba(22,130,148,0.09) 48%, transparent 76%);
+  animation:og 7s ease-in-out infinite; }
+.r4{position:absolute;inset:0px;border-radius:50%;border:1px solid rgba(26,138,138,0.060);animation:ri 7s ease-in-out infinite 0.00s;}
+.r3{position:absolute;inset:14px;border-radius:50%;border:1px solid rgba(26,138,138,0.092);animation:ri 7s ease-in-out infinite 0.35s;}
+.r2{position:absolute;inset:28px;border-radius:50%;border:1px solid rgba(26,138,138,0.124);animation:ri 7s ease-in-out infinite 0.70s;}
+.r1{position:absolute;inset:42px;border-radius:50%;border:1px solid rgba(26,138,138,0.158);animation:ri 7s ease-in-out infinite 1.05s;}
+.orb-sphere {
+  position:relative; width:112px; height:112px; border-radius:50%;
+  background:radial-gradient(circle at 36% 33%, var(--oc), var(--om) 52%, var(--oe) 100%);
+  box-shadow:0 12px 44px rgba(22,130,148,0.32),0 4px 14px rgba(0,0,0,0.15),inset 0 2px 0 rgba(255,255,255,0.12);
+  animation:oi 7s ease-in-out infinite;
+}
+.orb-lbl { font-size:0.60rem; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--tt); opacity:0.65; }
+@keyframes oi{0%,100%{transform:scale(0.88)}43%{transform:scale(1.0)}72%{transform:scale(0.93)}}
+@keyframes og{0%,100%{opacity:0.48;transform:scale(0.85)}43%{opacity:1;transform:scale(1.18)}}
+@keyframes ri{0%,100%{opacity:0.32;transform:scale(0.93)}43%{opacity:0.88;transform:scale(1.07)}}
+.cta{display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 0 36px;}
+.btn{width:200px;height:52px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-d) 100%);
+  color:#fff;border:none;border-radius:9999px;font-size:0.9rem;font-weight:500;font-family:inherit;letter-spacing:0.04em;cursor:pointer;
+  box-shadow:0 4px 18px rgba(26,138,138,0.28),0 1px 4px rgba(0,0,0,0.10);}
+.cta-sub{font-size:0.64rem;color:var(--tt);letter-spacing:0.04em;text-align:center;}
+.hd{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.hl2{flex:1;height:1px;background:rgba(0,0,0,0.07);}
+.hlbl{font-size:0.62rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--tt);white-space:nowrap;}
+.empty{font-size:0.875rem;color:var(--ts);text-align:center;padding:16px 0;line-height:1.7;}
+.badge{position:fixed;top:12px;right:12px;z-index:100;background:rgba(26,138,138,0.12);border:1px solid rgba(26,138,138,0.28);border-radius:6px;padding:4px 10px;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;color:var(--accent);}
+.concept-note{position:fixed;bottom:12px;left:12px;right:12px;z-index:100;max-width:300px;margin:0 auto;background:rgba(255,255,255,0.82);border:1px solid rgba(26,138,138,0.18);border-radius:8px;padding:10px 14px;font-size:0.64rem;color:var(--ts);line-height:1.6;backdrop-filter:blur(8px);}
+.concept-note strong{color:var(--accent);font-weight:600;display:block;margin-bottom:3px;}
+</style>
+</head>
+<body>
+
+<div class="badge">D4-B · FLOW RESONANCE</div>
+
+<div class="bg">
+  <div class="bg-base"></div>
+
+  <!-- Flow field + concentric rings — animate together on breathing cycle -->
+  <div class="bg-flow">
+    <div class="bg-flow-drift">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           style="position:absolute;inset:0;width:100%;height:100%"
+           viewBox="0 0 480 850" preserveAspectRatio="xMidYMid slice">
+
+        <!-- ── FLOW FIELD SYSTEM ──────────────────────────────────────────
+             Two opposing flow currents converge toward the orb center (240,340).
+             Field A enters from upper-left and lower-left (northeast direction)
+             Field B enters from upper-right and lower-right (northwest direction)
+             Their interference at center creates moiré-quality microdetail.
+             Each line has gentle curvature suggesting fluid dynamics.          -->
+
+        <!-- FIELD A — flowing toward center from left side, then continuing right -->
+        <!-- Upper-left quadrant flow lines (heading NE → center) -->
+        <g fill="none" stroke="#1a8a8a">
+          <!-- Converging upper flow - enters from left, passes through/near orb -->
+          <path d="M -30,60  C 60,80  140,110 200,170 C 240,210 240,280 240,340"
+                stroke-width="0.55" opacity="0.052" stroke-linecap="round"/>
+          <path d="M -30,120 C 50,138 120,162 185,215 C 225,252 238,300 240,340"
+                stroke-width="0.52" opacity="0.048" stroke-linecap="round"/>
+          <path d="M -30,185 C 40,198 105,218 172,262 C 212,292 236,320 240,340"
+                stroke-width="0.50" opacity="0.046" stroke-linecap="round"/>
+          <path d="M -30,255 C 40,264 95,278 158,308 C 200,330 228,338 240,340"
+                stroke-width="0.50" opacity="0.048" stroke-linecap="round"/>
+          <path d="M -30,320 C 50,324 110,330 175,334 C 208,336 228,339 240,340"
+                stroke-width="0.52" opacity="0.050" stroke-linecap="round"/>
+
+          <!-- Diverging lower flow - exits from orb heading right -->
+          <path d="M 240,340 C 252,342 282,344 320,355 C 380,372 440,395 510,410"
+                stroke-width="0.52" opacity="0.050" stroke-linecap="round"/>
+          <path d="M 240,340 C 254,348 290,362 338,382 C 400,408 460,428 510,442"
+                stroke-width="0.50" opacity="0.048" stroke-linecap="round"/>
+          <path d="M 240,340 C 252,356 282,378 328,408 C 388,444 450,468 510,482"
+                stroke-width="0.48" opacity="0.046" stroke-linecap="round"/>
+          <path d="M 240,340 C 250,362 275,392 318,432 C 376,482 440,510 510,525"
+                stroke-width="0.45" opacity="0.042" stroke-linecap="round"/>
+          <path d="M 240,340 C 245,368 264,406 304,458 C 360,522 428,558 510,572"
+                stroke-width="0.42" opacity="0.038" stroke-linecap="round"/>
+        </g>
+
+        <!-- FIELD B — flowing toward center from right side -->
+        <g fill="none" stroke="#1a8a8a">
+          <!-- Converging from right -->
+          <path d="M 510,50  C 420,72  340,105 295,162 C 262,204 245,278 240,340"
+                stroke-width="0.55" opacity="0.052" stroke-linecap="round"/>
+          <path d="M 510,115 C 425,133 348,158 298,208 C 262,248 243,300 240,340"
+                stroke-width="0.52" opacity="0.048" stroke-linecap="round"/>
+          <path d="M 510,182 C 432,196 356,216 302,258 C 264,290 244,320 240,340"
+                stroke-width="0.50" opacity="0.046" stroke-linecap="round"/>
+          <path d="M 510,250 C 435,260 364,275 308,305 C 270,328 248,338 240,340"
+                stroke-width="0.50" opacity="0.048" stroke-linecap="round"/>
+          <path d="M 510,318 C 440,322 372,328 316,333 C 278,336 254,339 240,340"
+                stroke-width="0.52" opacity="0.050" stroke-linecap="round"/>
+
+          <!-- Diverging to lower-left -->
+          <path d="M 240,340 C 228,342 198,346 158,358 C 96,378 30,402 -30,418"
+                stroke-width="0.52" opacity="0.050" stroke-linecap="round"/>
+          <path d="M 240,340 C 226,350 192,366 148,388 C 82,418 16,446 -30,460"
+                stroke-width="0.50" opacity="0.048" stroke-linecap="round"/>
+          <path d="M 240,340 C 224,358 184,382 136,412 C 66,452 -4,480 -30,494"
+                stroke-width="0.48" opacity="0.046" stroke-linecap="round"/>
+          <path d="M 240,340 C 222,365 174,396 124,436 C 50,490 -12,518 -30,528"
+                stroke-width="0.45" opacity="0.042" stroke-linecap="round"/>
+          <path d="M 240,340 C 218,372 162,412 108,462 C 32,524 -16,556 -30,568"
+                stroke-width="0.42" opacity="0.038" stroke-linecap="round"/>
+        </g>
+
+        <!-- ── CONCENTRIC RINGS (sit on top of flow) ──────────────────── -->
+        <g fill="none" stroke="#1a8a8a">
+          <circle cx="240" cy="340" r="44"  stroke-width="0.88" opacity="0.060"/>
+          <circle cx="240" cy="340" r="84"  stroke-width="0.80" opacity="0.055"/>
+          <circle cx="240" cy="340" r="130" stroke-width="0.74" opacity="0.052"/>
+          <circle cx="240" cy="340" r="182" stroke-width="0.68" opacity="0.048"/>
+          <circle cx="240" cy="340" r="240" stroke-width="0.62" opacity="0.044"/>
+          <circle cx="240" cy="340" r="305" stroke-width="0.56" opacity="0.040"/>
+          <circle cx="240" cy="340" r="378" stroke-width="0.50" opacity="0.034"/>
+        </g>
+
+        <!-- ── FINE SECONDARY FLOW LINES near convergence zone ───────────
+             These shorter strokes in the orb vicinity create the
+             currency-engraving density effect in the most important zone. -->
+        <g fill="none" stroke="#1a8a8a" opacity="0.042">
+          <path d="M 170,290 C 195,308 220,328 240,340" stroke-width="0.38"/>
+          <path d="M 185,270 C 205,295 225,318 240,340" stroke-width="0.36"/>
+          <path d="M 295,290 C 272,308 252,328 240,340" stroke-width="0.38"/>
+          <path d="M 308,270 C 280,295 258,318 240,340" stroke-width="0.36"/>
+          <path d="M 148,320 C 178,328 210,336 240,340" stroke-width="0.34"/>
+          <path d="M 338,318 C 308,326 272,334 240,340" stroke-width="0.34"/>
+          <path d="M 240,240 C 240,268 240,305 240,340" stroke-width="0.36"/>
+          <path d="M 240,440 C 240,412 240,374 240,340" stroke-width="0.36"/>
+        </g>
+
+      </svg>
+    </div>
+  </div>
+
+  <div class="bg-micro"></div>
+</div>
+
+<div class="page">
+  <div class="wm"><span>mediCalm</span></div>
+  <div class="hero">
+    <h1 class="hl">Just Breathe.</h1>
+    <p class="sub">Structured protocols for rib restriction, shallow breathing, neck and jaw tension, and protective overactivation — calibrated to your current intensity.</p>
+  </div>
+  <div class="orb-zone">
+    <div class="orb-field">
+      <div class="r4"></div><div class="r3"></div>
+      <div class="r2"></div><div class="r1"></div>
+      <div class="orb-glow"></div><div class="orb-sphere"></div>
+    </div>
+    <span class="orb-lbl">ready</span>
+  </div>
+  <div class="cta">
+    <button class="btn">Begin session</button>
+    <p class="cta-sub">Protocol calibrated to your intensity · approx. 4–6 min</p>
+  </div>
+  <div>
+    <div class="hd"><div class="hl2"></div><span class="hlbl">Past sessions</span><div class="hl2"></div></div>
+    <p class="empty">No sessions yet. Start your first session above.</p>
+  </div>
+</div>
+
+<div class="concept-note">
+  <strong>D4-B · Flow Resonance</strong>
+  River delta + breath convergence. Two flow fields enter from opposing sides and converge at the orb — the user is the calm center. Fine secondary strokes near the orb create engraving density. Field drifts downstream 28s.
+</div>
+
+</body>
+</html>

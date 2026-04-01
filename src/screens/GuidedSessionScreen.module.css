@@ -1,11 +1,16 @@
-/* GuidedSessionScreen — M2.5.2 Medical Light
- * Light background, orb as dominant focal point.
- * All text uses design tokens — no hardcoded rgba(255,255,255,...) values.
+/* GuidedSessionScreen — M2.5.5 Two-Zone Layout · D4-B4 Deep Current
+ *
+ * Zone 1 (top)    — static context: protocol name + goal only. Never changes.
+ * Zone 2 (center) — dynamic guidance: progress + orb + instructions.
+ * Footer          — safety controls, low visual weight.
+ *
+ * Background rendered by App.tsx (persistent across all screens).
+ * No competing text regions. No layout shifts.
  */
 
 .screen {
   min-height: 100dvh;
-  background: var(--color-bg-base);
+  background: transparent;
   display: flex;
   flex-direction: column;
 }
@@ -15,59 +20,70 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
   padding: 2rem 1.5rem 2rem;
+  gap: 0;
 }
+
+/* ── Zone 1: Context ─────────────────────────────────────────────────────── */
 
 .topZone {
   width: 100%;
   text-align: center;
-  padding-bottom: 0.5rem;
+  padding-bottom: 1.5rem;
+  flex-shrink: 0;
 }
 
 .protocolName {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--color-text-tertiary);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
 }
 
 .goalText {
   font-size: 0.8rem;
   color: var(--color-text-tertiary);
   line-height: 1.4;
-  margin-bottom: 0.4rem;
 }
 
-/* Tertiary numeric round counter — not the primary indicator */
+/* ── Zone 2: Guidance ────────────────────────────────────────────────────── */
+
+.guidanceZone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Progress row: dots (primary) + numeric (secondary), centered, subtle */
+.progressRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  flex-shrink: 0;
+}
+
 .roundCounter {
-  font-size: 0.67rem;
-  letter-spacing: 0.08em;
+  font-size: 0.65rem;
+  letter-spacing: 0.07em;
   color: var(--color-text-tertiary);
-  opacity: 0.65;
+  opacity: 0.6;
   font-variant-numeric: tabular-nums;
 }
 
+/* Orb wrapper — centers the BreathingOrb component */
 .orbArea {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Dot strip: directly below orb, no competing text */
-.dotsArea {
-  padding: 14px 0 0;
-  display: flex;
-  justify-content: center;
-}
-
-.emergenceArea {
-  display: flex;
-  justify-content: center;
-  padding: 1.5rem 0 1rem;
-}
+/* ── Footer ──────────────────────────────────────────────────────────────── */
 
 .sessionFooter {
   width: 100%;
@@ -75,6 +91,8 @@
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
+  padding-top: 1.5rem;
+  flex-shrink: 0;
 }
 
 .safetyButton {
@@ -110,7 +128,159 @@
   opacity: 1;
 }
 
-/* ── Safety interrupt ─────────────────────────────── */
+/* ── Reassessment (M4.6) ─────────────────────────────────────────────────── */
+
+.reassessmentPhase {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3rem 2rem 2rem;
+  text-align: center;
+}
+
+.reassessmentContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.reassessmentHeading {
+  font-size: 1.25rem;
+  font-weight: var(--weight-light, 300);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.reassessmentRoundLabel {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.responseGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  width: 100%;
+  max-width: 260px;
+}
+
+.responseButton {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.625rem 1.25rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full, 9999px);
+  background: var(--color-bg-card);
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.responseButton:hover {
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-subtle);
+  color: var(--color-accent-primary);
+}
+
+/* M4.6.1: selected state — highlights chosen response without triggering action */
+.responseButtonSelected {
+  background: var(--color-accent-subtle);
+  border-color: var(--color-accent-border);
+  color: var(--color-accent-primary);
+}
+
+/* M4.6.1: action section — appears after response is selected */
+.actionSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  max-width: 260px;
+  padding-top: 0.5rem;
+}
+
+.recommendationText {
+  font-size: 0.8125rem;
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* Primary action */
+.actionContinue {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--color-accent-primary);
+  color: var(--color-on-accent, #fff);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.actionContinue:hover { opacity: 0.88; }
+
+/* Secondary action */
+.actionFinish {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.625rem 1.25rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full, 9999px);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.actionFinish:hover { opacity: 0.7; }
+
+/* Always-available exit — subtle, never hidden */
+.actionExit {
+  width: 100%;
+  min-height: 40px;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: var(--radius-full, 9999px);
+  background: transparent;
+  color: var(--color-text-tertiary);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.15s ease;
+}
+.actionExit:hover { opacity: 0.6; }
+
+.reassessmentFooter {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+/* ── Safety interrupt ────────────────────────────────────────────────────── */
+
 .safetyInterruptPhase {
   flex: 1;
   display: flex;
@@ -120,7 +290,7 @@
   padding: 3rem 2rem;
   text-align: center;
   gap: 0.75rem;
-  background: var(--color-bg-base);
+  background: transparent;
 }
 
 .safetyHeading {
@@ -157,14 +327,16 @@
   opacity: 0.7;
 }
 
-/* ── Completion ───────────────────────────────────── */
+/* ── Completion ──────────────────────────────────────────────────────────── */
+
 .completionPhase {
   flex: 1;
   overflow-y: auto;
-  background: var(--color-bg-base);
+  background: transparent;
 }
 
-/* ── Stop confirm overlay ─────────────────────────── */
+/* ── Stop confirm overlay ────────────────────────────────────────────────── */
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -223,3 +395,22 @@
   transition: opacity 0.15s ease;
 }
 .confirmContinue:hover { opacity: 0.85; }
+
+/* ── Reduced motion ──────────────────────────────────────────────────────────
+ * Suppresses all opacity and color transitions on the main session surface.
+ * Behavior (hover states, selected states) remains fully functional.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .safetyButton,
+  .stopButton,
+  .responseButton,
+  .actionContinue,
+  .actionFinish,
+  .actionExit,
+  .returnHomeButton,
+  .confirmStop,
+  .confirmContinue {
+    transition: none;
+  }
+}
+

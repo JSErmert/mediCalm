@@ -2,9 +2,12 @@ import { useAppContext } from '../context/AppContext'
 import styles from './SafetyStopScreen.module.css'
 
 /**
- * Pre-session safety stop.
+ * Pre-session safety stop — production only.
  * Authority: Safety + Reassurance Spec (doc 06) § Pre-Session Safety Stop Copy
- * Shown when resolveSession() returns kind: 'safety_stop'.
+ * Shown when resolveSession() returns kind: 'safety_stop' AND dev override is off.
+ *
+ * In developer mode (localStorage.dev_override === 'true') this screen is never
+ * reached — PainInputScreen routes to RDReviewScreen instead.
  */
 export function SafetyStopScreen() {
   const { dispatch } = useAppContext()

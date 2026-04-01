@@ -1,0 +1,287 @@
+/**
+ * HariSafetyGateScreen — C4 HARI Safety Gate UI
+ *
+ * Two-step safety check:
+ *   Step 1: Yes/No — any concerning symptoms right now?
+ *   Step 2 (if Yes): select which category
+ *
+ * HOLD: advisory with option to proceed cautiously
+ * STOP: stop, seek clinical advice
+ * CLEAR: proceed to HARI engine
+ */
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--screen-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.header {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--screen-padding) var(--space-3);
+}
+
+.backButton {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  min-height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: color var(--transition-quick);
+}
+
+.backButton:hover {
+  color: var(--color-text-primary);
+}
+
+.heading {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-light);
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) var(--screen-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.lead {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+/* ── Symptom List (step 1) ───────────────────────────────────────────────── */
+
+.symptomList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.symptomItem {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  padding: var(--space-1) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.symptomDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+/* ── Flag Selector (step 2) ──────────────────────────────────────────────── */
+
+.flagGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.flagChip {
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-card);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition:
+    background var(--transition-quick),
+    border-color var(--transition-quick),
+    color var(--transition-quick);
+}
+
+.flagChip:hover {
+  border-color: var(--color-border-active);
+  color: var(--color-text-primary);
+}
+
+.flagChipSelected {
+  background: var(--color-accent-subtle);
+  border-color: var(--color-accent-border);
+  color: var(--color-accent-primary);
+}
+
+/* ── Gate Result States ──────────────────────────────────────────────────── */
+
+/* HOLD — advisory */
+.holdPanel {
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-left: 3px solid var(--color-text-tertiary);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* STOP — do not proceed */
+.stopPanel {
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-caution, var(--color-border-subtle));
+  border-left: 3px solid var(--color-caution, var(--color-text-tertiary));
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.panelTitle {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.panelMessage {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.footer {
+  flex-shrink: 0;
+  padding: var(--space-4) var(--screen-padding) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.actionPrimary {
+  width: 100%;
+  min-height: var(--touch-min);
+  background: var(--color-accent-primary);
+  color: var(--color-bg-base);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: opacity var(--transition-quick);
+}
+
+.actionPrimary:hover {
+  opacity: 0.88;
+}
+
+.actionYes {
+  width: 100%;
+  min-height: var(--touch-min);
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition:
+    color var(--transition-quick),
+    border-color var(--transition-quick);
+}
+
+.actionYes:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-border-active);
+}
+
+.actionBack {
+  width: 100%;
+  min-height: var(--touch-min);
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition:
+    color var(--transition-quick),
+    border-color var(--transition-quick);
+}
+
+.actionBack:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-border-active);
+}
+
+.confirmButton {
+  width: 100%;
+  min-height: var(--touch-min);
+  background: var(--color-accent-primary);
+  color: var(--color-bg-base);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: opacity var(--transition-quick);
+}
+
+.confirmButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.confirmButton:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.homeButton {
+  width: 100%;
+  min-height: var(--touch-min);
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition:
+    color var(--transition-quick),
+    border-color var(--transition-quick);
+}
+
+.homeButton:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-border-active);
+}

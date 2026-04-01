@@ -1,3 +1,15 @@
+/**
+ * PainInputScreen — M3.1.4 3-step layout.
+ *
+ * Vertical flex layout:
+ *   progressBar  — 2px accent line
+ *   header       — back button + step question
+ *   stepContent  — fills space, scrolls only on very small screens
+ *   footer       — single action button, pinned
+ */
+
+/* ── Screen ──────────────────────────────────────────────────────────────── */
+
 .screen {
   flex: 1;
   display: flex;
@@ -5,24 +17,44 @@
   max-width: var(--screen-max-width);
   margin: 0 auto;
   width: 100%;
-  padding: var(--space-6) var(--screen-padding) var(--space-10);
-  gap: var(--space-6);
-  overflow-y: auto;
 }
 
+/* ── Progress ────────────────────────────────────────────────────────────── */
+
+.progressBar {
+  height: 2px;
+  background: var(--color-border-subtle);
+  flex-shrink: 0;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--color-accent-primary);
+  border-radius: 0 1px 1px 0;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
 .header {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  padding: var(--space-5) var(--screen-padding) var(--space-3);
 }
 
 .backButton {
   align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
   min-height: var(--touch-min);
   display: flex;
   align-items: center;
+  cursor: pointer;
   transition: color var(--transition-quick);
 }
 
@@ -37,13 +69,26 @@
   line-height: var(--leading-tight);
 }
 
-.section {
+/* ── Step content ────────────────────────────────────────────────────────── */
+
+.stepContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3) var(--screen-padding) var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-5);
 }
 
-.noteLabel {
+/* Sub-section within a step (e.g. slider vs location on step 1) */
+.stepSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Small label for sub-sections (e.g. "Where do you feel it?" on step 1) */
+.subLabel {
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   color: var(--color-text-secondary);
@@ -51,18 +96,122 @@
   letter-spacing: 0.06em;
 }
 
+/* ── Chip grid ───────────────────────────────────────────────────────────── */
+
+.chipGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  min-height: 40px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-card);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  text-transform: capitalize;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--transition-quick),
+    border-color var(--transition-quick),
+    color var(--transition-quick);
+}
+
+.chip:hover {
+  border-color: var(--color-border-active);
+  color: var(--color-text-primary);
+}
+
+.chipSelected {
+  background: var(--color-accent-subtle);
+  border-color: var(--color-accent-border);
+  color: var(--color-accent-primary);
+}
+
+/* ── Grouped symptoms (step 2) ───────────────────────────────────────────── */
+
+.symptomGroups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.symptomGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Safety signals group — border separator, extra top spacing */
+.symptomGroupSafety {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.groupLabel {
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* Safety chips — visually quiet, restore on interaction */
+.chipSafety {
+  opacity: 0.65;
+}
+
+.chipSafety:hover,
+.chipSafety[aria-pressed="true"] {
+  opacity: 1;
+}
+
+/* ── Step 3 sections ────────────────────────────────────────────────────── */
+
+/* Each of the two sections in step 3 */
+.step3Section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+/* Separator between section 1 (position) and section 2 (context) */
+.step3Section + .step3Section {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* Wrapper for trigger chips within section 2 */
+.contextBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Note (step 3) ───────────────────────────────────────────────────────── */
+
+.noteSection {
+  padding-top: var(--space-2);
+}
+
 .noteInput {
+  width: 100%;
+  box-sizing: border-box;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
   font-family: inherit;
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   padding: var(--space-3) var(--space-4);
   resize: none;
-  transition: border-color var(--transition-quick);
   outline: none;
-  width: 100%;
+  transition: border-color var(--transition-quick);
 }
 
 .noteInput:focus {
@@ -73,41 +222,37 @@
   color: var(--color-text-disabled);
 }
 
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
 .footer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding-top: var(--space-2);
+  flex-shrink: 0;
+  padding: var(--space-3) var(--screen-padding) var(--space-8);
 }
 
-.submitButton {
+.actionButton {
   width: 100%;
   min-height: var(--touch-min);
   padding: var(--space-4);
   background: var(--color-accent-primary);
   color: var(--color-on-accent);
+  border: none;
   border-radius: var(--radius-full);
   font-size: var(--text-base);
   font-weight: var(--weight-semibold);
   font-family: inherit;
+  cursor: pointer;
   transition: opacity var(--transition-quick);
 }
 
-.submitButton:not(:disabled):hover {
+.actionButton:not(:disabled):hover {
   opacity: 0.88;
 }
 
-.submitButton:not(:disabled):active {
+.actionButton:not(:disabled):active {
   opacity: 0.72;
 }
 
-.submitButton:disabled {
+.actionButton:disabled {
   opacity: 0.35;
   cursor: not-allowed;
-}
-
-.validation {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  text-align: center;
 }

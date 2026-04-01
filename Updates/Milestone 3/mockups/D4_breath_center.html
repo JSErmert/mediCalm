@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D4 — Breath Center · mediCalm Mockup</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-base:        #f0f4f6;
+    --bg-surface:     #ffffff;
+    --accent:         #1a8a8a;
+    --accent-deep:    #0f6060;
+    --text-primary:   #1e2d3d;
+    --text-secondary: #5a6e80;
+    --text-tertiary:  #96aab8;
+    --border:         rgba(0,0,0,0.06);
+    --orb-center:     #2196a8;
+    --orb-mid:        #155e6e;
+    --orb-edge:       #0d3d4a;
+    --orb-glow:       rgba(22,130,148,0.18);
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── Background: Radial flow field ──────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    /* Soft luminous center with very quiet outer vignette */
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 42%, rgba(228,236,240,0.95) 0%, rgba(240,244,246,0.70) 50%, rgba(232,238,242,1) 100%),
+      linear-gradient(180deg, #e8edf1 0%, #f0f4f6 100%);
+    z-index: 0;
+  }
+
+  /* Flow field lines — concentric ripples from center */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Cg fill='none' stroke='%231a8a8a' opacity='0.06'%3E%3Ccircle cx='300' cy='300' r='80' stroke-width='0.7'/%3E%3Ccircle cx='300' cy='300' r='115' stroke-width='0.6'/%3E%3Ccircle cx='300' cy='300' r='155' stroke-width='0.55'/%3E%3Ccircle cx='300' cy='300' r='200' stroke-width='0.5'/%3E%3Ccircle cx='300' cy='300' r='250' stroke-width='0.45'/%3E%3Ccircle cx='300' cy='300' r='305' stroke-width='0.4'/%3E%3Ccircle cx='300' cy='300' r='50' stroke-width='0.8'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 600px 600px;
+    background-position: 50% 38%;
+    z-index: 0;
+    pointer-events: none;
+    animation: ripple-drift 60s ease-in-out infinite;
+  }
+
+  @keyframes ripple-drift {
+    0%, 100% { background-size: 600px 600px; opacity: 1; }
+    50% { background-size: 640px 640px; opacity: 0.85; }
+  }
+
+  .screen {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── Minimal wordmark ────────────────────────────────────────────────── */
+  .wordmark {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(26,138,138,0.65);
+    padding: 22px 0 0;
+    align-self: flex-start;
+  }
+
+  /* ── Hero headline — minimal ─────────────────────────────────────────── */
+  .hero {
+    text-align: center;
+    padding: 36px 20px 8px;
+    width: 100%;
+  }
+
+  .hero-headline {
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--text-primary);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .hero-sub {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ── Orb — dominant ─────────────────────────────────────────────────── */
+  .orb-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 0 24px;
+    width: 100%;
+  }
+
+  .orb-field {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 4 concentric glow rings */
+  .orb-ring-4 {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    border: 1px solid rgba(22,130,148,0.05);
+    animation: ring-breathe 6s ease-in-out infinite;
+  }
+
+  .orb-ring-3 {
+    position: absolute;
+    inset: 0px;
+    border-radius: 50%;
+    border: 1px solid rgba(22,130,148,0.08);
+    animation: ring-breathe 6s ease-in-out infinite 0.4s;
+  }
+
+  .orb-ring-2 {
+    position: absolute;
+    inset: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(22,130,148,0.10);
+    animation: ring-breathe 6s ease-in-out infinite 0.8s;
+  }
+
+  .orb-ring-1 {
+    position: absolute;
+    inset: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(22,130,148,0.12);
+    animation: ring-breathe 6s ease-in-out infinite 1.2s;
+  }
+
+  .orb-glow-field {
+    position: absolute;
+    inset: 30px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(22,130,148,0.22) 0%, rgba(22,130,148,0.08) 50%, transparent 80%);
+    animation: glow-breathe 6s ease-in-out infinite;
+  }
+
+  .orb-main {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 36% 33%, var(--orb-center), var(--orb-mid) 52%, var(--orb-edge) 100%);
+    box-shadow:
+      0 14px 52px rgba(22,130,148,0.36),
+      0 4px 16px rgba(0,0,0,0.16),
+      inset 0 2px 0 rgba(255,255,255,0.14);
+    animation: orb-main-breathe 6s ease-in-out infinite;
+  }
+
+  @keyframes orb-main-breathe {
+    0%, 100% { transform: scale(0.87); }
+    50% { transform: scale(1.0); }
+  }
+
+  @keyframes glow-breathe {
+    0%, 100% { opacity: 0.5; transform: scale(0.88); }
+    50% { opacity: 1; transform: scale(1.12); }
+  }
+
+  @keyframes ring-breathe {
+    0%, 100% { opacity: 0.4; transform: scale(0.96); }
+    50% { opacity: 0.9; transform: scale(1.04); }
+  }
+
+  .orb-state-label {
+    margin-top: 12px;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  /* ── Input — horizontal minimal ──────────────────────────────────────── */
+  .input-zone {
+    width: 100%;
+    padding: 0 0 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .input-prompt {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+  }
+
+  .intensity-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .intensity-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all 0.14s ease;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(4px);
+  }
+
+  .intensity-dot:hover {
+    border-color: rgba(26,138,138,0.35);
+    color: var(--accent);
+  }
+
+  .intensity-dot.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(26,138,138,0.30);
+  }
+
+  /* ── CTA — orb-proximal ──────────────────────────────────────────────── */
+  .cta-zone {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 0 0 44px;
+  }
+
+  .cta-btn {
+    width: 200px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 26px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: inherit;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    box-shadow:
+      0 4px 18px rgba(26,138,138,0.30),
+      0 1px 4px rgba(0,0,0,0.10);
+    transition: all 0.14s ease;
+  }
+
+  .cta-btn:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 22px rgba(26,138,138,0.38);
+  }
+
+  .cta-sub {
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── History — condensed ─────────────────────────────────────────────── */
+  .history-zone {
+    width: 100%;
+    padding-bottom: 40px;
+  }
+
+  .history-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .history-divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .history-divider-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.55);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    backdrop-filter: blur(6px);
+  }
+
+  .item-orb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 34%, var(--orb-center), var(--orb-mid) 55%, var(--orb-edge) 100%);
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .item-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .item-date {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+  }
+
+  .item-detail {
+    font-size: 0.62rem;
+    color: var(--text-tertiary);
+  }
+
+  .item-result {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .item-result.neutral {
+    font-weight: 400;
+    color: var(--text-tertiary);
+    font-size: 0.65rem;
+  }
+
+  .mockup-badge {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background: rgba(26,138,138,0.12);
+    border: 1px solid rgba(26,138,138,0.25);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="mockup-badge">D4 — BREATH CENTER</div>
+
+<div class="screen">
+
+  <span class="wordmark">mediCalm</span>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1 class="hero-headline">Breathe<br>through it.</h1>
+    <p class="hero-sub">Select your intensity and begin guided relief.</p>
+  </div>
+
+  <!-- Orb — dominant presence -->
+  <div class="orb-zone">
+    <div class="orb-field">
+      <div class="orb-ring-4"></div>
+      <div class="orb-ring-3"></div>
+      <div class="orb-ring-2"></div>
+      <div class="orb-ring-1"></div>
+      <div class="orb-glow-field"></div>
+      <div class="orb-main"></div>
+    </div>
+    <span class="orb-state-label">ready · idle</span>
+  </div>
+
+  <!-- Input -->
+  <div class="input-zone">
+    <p class="input-prompt">Current intensity</p>
+    <div class="intensity-row">
+      <div class="intensity-dot">1</div>
+      <div class="intensity-dot">2</div>
+      <div class="intensity-dot">3</div>
+      <div class="intensity-dot">4</div>
+      <div class="intensity-dot selected">5</div>
+      <div class="intensity-dot">6</div>
+      <div class="intensity-dot">7</div>
+      <div class="intensity-dot">8</div>
+      <div class="intensity-dot">9</div>
+      <div class="intensity-dot">10</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-zone">
+    <button class="cta-btn">Begin session</button>
+    <span class="cta-sub">approx. 4–6 min · calibrated protocol</span>
+  </div>
+
+  <!-- History -->
+  <div class="history-zone">
+    <div class="history-divider">
+      <div class="history-divider-line"></div>
+      <span class="history-divider-label">Past sessions</span>
+      <div class="history-divider-line"></div>
+    </div>
+    <div class="history-list">
+      <div class="history-item">
+        <div class="item-orb"></div>
+        <div class="item-body">
+          <span class="item-date">Today · 2:14 PM</span>
+          <span class="item-detail">Diaphragmatic · 5 min 30 s</span>
+        </div>
+        <span class="item-result">↓ 4</span>
+      </div>
+      <div class="history-item">
+        <div class="item-orb"></div>
+        <div class="item-body">
+          <span class="item-date">Yesterday · 9:08 AM</span>
+          <span class="item-detail">Box breathing · 4 min</span>
+        </div>
+        <span class="item-result">↓ 3</span>
+      </div>
+      <div class="history-item">
+        <div class="item-orb" style="opacity:0.35"></div>
+        <div class="item-body">
+          <span class="item-date">Mar 22 · 11:41 PM</span>
+          <span class="item-detail">4-7-8 · 2 min 12 s</span>
+        </div>
+        <span class="item-result neutral">stopped</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

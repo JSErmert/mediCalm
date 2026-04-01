@@ -65,6 +65,41 @@ export const SYMPTOM_TAGS = [
 
 export type SymptomTag = (typeof SYMPTOM_TAGS)[number]
 
+/**
+ * UI grouping for symptom chips — M3.1.1.
+ * Organises SYMPTOM_TAGS into labelled clusters for scan speed and recognition.
+ * Does NOT change canonical values or engine routing.
+ *
+ * safetyAdjacent: true → chips rendered with extra separation and reduced prominence.
+ */
+export const SYMPTOM_GROUPS = [
+  {
+    label: 'Sensation type',
+    tags: ['burning', 'tingling', 'numbness', 'nerve_like', 'radiating'] as const,
+    safetyAdjacent: false,
+  },
+  {
+    label: 'Pain quality',
+    tags: ['sharp', 'throbbing', 'aching', 'pressure', 'soreness', 'stiffness'] as const,
+    safetyAdjacent: false,
+  },
+  {
+    label: 'Body response',
+    tags: ['tightness', 'guarding', 'shallow_breathing'] as const,
+    safetyAdjacent: false,
+  },
+  {
+    label: 'Also present',
+    tags: ['instability', 'coordination_change', 'weakness'] as const,
+    safetyAdjacent: true,
+  },
+] as const
+
+// ── Position Tags ──────────────────────────────────────────────────────────────
+// Body position at the time of intake — required field in M3.3.2 Step 3.
+export const POSITION_TAGS = ['standing', 'sitting', 'lying_down'] as const
+export type PositionTag = (typeof POSITION_TAGS)[number]
+
 // ── Trigger Tags ───────────────────────────────────────────────────────────────
 // Context or activity associated with onset.
 export const TRIGGER_TAGS = [

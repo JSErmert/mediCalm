@@ -1,69 +1,149 @@
-/* src/components/BreathingOrb.module.css — M2.5.2 Medical Light
- * Orb is the primary pacing instrument. It must be the dominant focal point
- * on the light background — deep teal gradient with teal ambient shadow.
+/* src/components/BreathingOrb.module.css — M2.5.7
+ * Text is fully decoupled from orb scale.
+ * Countdown sits absolutely centred in orbWrapper — not a child of the scaled orb.
+ * Instruction slot below is outside the wrapper entirely.
+ * No text ever scales with the orb.
  */
 
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
   position: relative;
 }
 
-.orb {
+/* ── Orb wrapper ─────────────────────────────────────────────────────────────
+ * Fixed-size positioning context. Children:
+ *   glowRing  — absolute, behind orb
+ *   orb       — absolute, the scaled sphere
+ *   countdown — absolute, centered, NOT inside orb — no transform inheritance
+ */
+.orbWrapper {
+  position: relative;
   width: min(54vw, 260px);
   height: min(54vw, 260px);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 36% 34%,
-    var(--color-orb-center, #2196a8) 0%,
-    var(--color-orb-mid, #155e6e) 45%,
-    var(--color-orb-edge, #0d3d4a) 100%
-  );
-  box-shadow:
-    var(--shadow-orb, 0 8px 32px rgba(22, 130, 148, 0.22), 0 2px 8px rgba(0, 0, 0, 0.10)),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  flex-shrink: 0;
+}
+
+/* ── Ping rings — D4-B4 identity: continuous outward pulse, 4 staggered ─── */
+
+.pingRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(26, 138, 138, 0.14);
+  animation: orb-ring-pulse 8s cubic-bezier(0.2, 0, 0.8, 1) infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.pingRing:nth-child(1) { animation-delay:  0s; }
+.pingRing:nth-child(2) { animation-delay: -2s; }
+.pingRing:nth-child(3) { animation-delay: -4s; }
+.pingRing:nth-child(4) { animation-delay: -6s; }
+
+@keyframes orb-ring-pulse {
+  0%   { transform: scale(0.42); opacity: 0.65; }
+  100% { transform: scale(1.00); opacity: 0;    }
+}
+
+/* ── Orb sphere — D4-B4: white-hot core → ice teal → teal body → deep edge */
+
+.orb {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #dff6f8 0%,
+    #b8e8ed 6%,
+    #2196a8 30%,
+    #155e6e 62%,
+    #0d3d4a 100%
+  );
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.07),
+    0 0 36px rgba(33, 150, 168, 0.42),
+    0 0 70px rgba(26, 138, 138, 0.16),
+    inset 0 0 3px rgba(255, 255, 255, 0.12);
   z-index: 1;
 }
 
+/* ── Glow ring — D4-B4: bloom gradient with blur, scales with breathing ─── */
+
 .glowRing {
   position: absolute;
-  width: min(54vw, 260px);
-  height: min(54vw, 260px);
+  inset: 0;
   border-radius: 50%;
   background: radial-gradient(
-    circle,
-    var(--color-orb-glow, rgba(22, 130, 148, 0.16)),
-    transparent 72%
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(33, 150, 168, 0.20) 35%,
+    rgba(26, 138, 138, 0.06) 68%,
+    transparent 100%
   );
-  scale: 1.22;
+  filter: blur(14px);
   z-index: 0;
 }
 
+/* ── Countdown number ────────────────────────────────────────────────────────
+ * Absolutely centred in orbWrapper. Sibling of .orb, not a child.
+ * Never inherits orb's scale transform — size is always fixed.
+ */
 .countdown {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   font-size: clamp(2.25rem, 8vw, 3rem);
   font-weight: 200;
   font-variant-numeric: tabular-nums;
   color: var(--color-orb-text, rgba(255, 255, 255, 0.92));
   letter-spacing: -0.02em;
   user-select: none;
+  pointer-events: none;
+  z-index: 2;
 }
 
-.cueText {
-  font-size: 0.9375rem;
-  color: var(--color-text-secondary);
+/* ── Instruction slot ────────────────────────────────────────────────────────
+ * Outside orbWrapper entirely. Fixed min-height prevents layout shifts.
+ * Shows "Prepare to begin", phase instruction, or empty. Never scales.
+ */
+.instructionSlot {
+  min-height: 2.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
   text-align: center;
-  max-width: 240px;
+}
+
+.instructionPrimary {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
   line-height: 1.4;
   letter-spacing: 0.01em;
 }
 
+.instructionSecondary {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  line-height: 1.4;
+  letter-spacing: 0.015em;
+  opacity: 0.75;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .pingRing {
+    animation: none;
+    opacity: 0.18;
+    transform: scale(0.85);
+  }
   .orb,
   .glowRing {
     transition: opacity 0.04s ease !important;

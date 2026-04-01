@@ -23,6 +23,7 @@ interface HistoryCardProps {
     sessionId: string,
     patch: Pick<Partial<HistoryEntry>, 'pain_after' | 'result' | 'change_markers'>
   ) => void
+  onViewCaseFile?: (entry: HistoryEntry) => void
 }
 
 const RESULT_LABELS: Record<HistoryEntry['result'], string> = {
@@ -40,7 +41,7 @@ const RESULT_OPTIONS: { value: SessionResult; label: string }[] = [
   { value: 'worse',  label: 'Worse'  },
 ]
 
-export function HistoryCard({ entry, onDelete, onUpdate }: HistoryCardProps) {
+export function HistoryCard({ entry, onDelete, onUpdate, onViewCaseFile }: HistoryCardProps) {
   const [mode, setMode] = useState<CardMode>('view')
 
   // Edit form state — initialised from entry when edit mode opens
@@ -79,7 +80,7 @@ export function HistoryCard({ entry, onDelete, onUpdate }: HistoryCardProps) {
     onDelete?.(entry.session_id)
   }
 
-  const hasControls = onDelete || onUpdate
+  const hasControls = onDelete || onUpdate || onViewCaseFile
 
   return (
     <article
@@ -92,6 +93,11 @@ export function HistoryCard({ entry, onDelete, onUpdate }: HistoryCardProps) {
           <header className={styles.header}>
             <span className={styles.time}>{dateLabel} · {timeLabel}</span>
             <div className={styles.headerRight}>
+              {entry.session_type === 'HARI' && (
+                <span className={styles.hariLabel} aria-label="HARI-guided session">
+                  HARI
+                </span>
+              )}
               <span className={`${styles.result} ${styles[entry.result]}`}>
                 {RESULT_LABELS[entry.result]}
               </span>
@@ -111,6 +117,11 @@ export function HistoryCard({ entry, onDelete, onUpdate }: HistoryCardProps) {
 
           {mode === 'menu' && (
             <div className={styles.inlineMenu} role="group" aria-label="Session actions">
+              {onViewCaseFile && (
+                <button className={styles.menuAction} type="button" onClick={() => onViewCaseFile(entry)}>
+                  View case file
+                </button>
+              )}
               {onUpdate && (
                 <button className={styles.menuAction} type="button" onClick={openEdit}>
                   Edit feedback
@@ -175,6 +186,11 @@ export function HistoryCard({ entry, onDelete, onUpdate }: HistoryCardProps) {
                     {t.replace(/_/g, ' ')}
                   </span>
                 ))}
+                {entry.rounds_completed != null && entry.rounds_completed > 0 && (
+                  <span className={styles.rounds}>
+                    {entry.rounds_completed} {entry.rounds_completed === 1 ? 'round' : 'rounds'}
+                  </span>
+                )}
               </footer>
             </>
           )}

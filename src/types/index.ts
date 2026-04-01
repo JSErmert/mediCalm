@@ -41,6 +41,8 @@ export interface PainInputState {
   pain_level: number        // 0–10; integer
   location_tags: string[]   // at least one required
   symptom_tags: string[]    // at least one required
+  /** Body position at time of intake — required in M3.3.2 UI, optional here for backward compat */
+  current_position?: 'standing' | 'sitting' | 'lying_down'
   trigger_tag?: string      // optional; single value
   user_note?: string        // optional; never used as sole safety detector in v1
 }
@@ -80,6 +82,10 @@ export interface RuntimeSession {
   provenance_tags: ProvenanceLabel[]
   pain_input: PainInputState
   safety_assessment: SafetyAssessment
+  /** Set to true only when session was started via developer safety override. Never set in normal flow. */
+  safety_override_used?: boolean
+  /** HARI decision metadata — tracking only, does not affect M3 runtime. Present only for HARI-originated sessions. */
+  hari_metadata?: import('./hari').HariSessionMetadata
 }
 
 // ── Feedback ──────────────────────────────────────────────────────────────────
@@ -107,6 +113,7 @@ export interface HistoryEntry {
   pain_after: number
   location_tags: string[]
   symptom_tags: string[]
+  current_position?: string      // body position at intake (M3.3.2+)
   trigger_tag?: string
   selected_protocol_id: string
   selected_protocol_name: string
@@ -114,6 +121,27 @@ export interface HistoryEntry {
   change_markers: string[]
   session_status: SessionStatus
   session_duration_seconds: number
+  /** Number of breathing rounds completed. Absent in pre-M2.5.9 entries. */
+  rounds_completed?: number
+  /** True when session was started via developer safety override. Never set in normal sessions. */
+  safety_override_used?: boolean
+  /**
+   * M4.1 session validation status.
+   * 'pending' = not yet reviewed; 'validated' = kept; 'invalidated' = excluded.
+   * Absent in pre-M4 entries — treat as 'validated' for backward compat.
+   */
+  validation_status?: 'pending' | 'validated' | 'invalidated'
+  /**
+   * M4.7: session type differentiation.
+   * Absent in pre-M4.7 entries — treat as 'LEGACY' for backward compat.
+   * Authority: M4.7 §4–§5
+   */
+  session_type?: 'HARI' | 'LEGACY'
+  /**
+   * M4.7: HARI intelligence block — present only on HARI sessions.
+   * Authority: M4.7 §3–§4
+   */
+  hari_metadata?: import('./hari').PersistedHariMetadata
 }
 
 // ── Personalization ───────────────────────────────────────────────────────────
@@ -143,6 +171,47 @@ export interface AppSettings {
   reduced_motion_enabled: boolean
   haptics_enabled: boolean
 }
+
+// ── HARI types (M4) ───────────────────────────────────────────────────────────
+export type {
+  HariSessionIntake,
+  SessionIntent,
+  CurrentContext,
+  SymptomFocus,
+  FlareSensitivity,
+  SessionLengthPreference,
+  BodyContext,
+  BodyContextItem,
+  BodyContextCategory,
+  BodyContextSource,
+  BodyContextStatus,
+  BodyContextCertainty,
+  BodyContextSummary,
+  SafetyGateOutcome,
+  SafetyGateResult,
+  StateBand,
+  ConfidenceLevel,
+  StateEstimate,
+  HariLinkType,
+  LinkStrength,
+  HariLink,
+  LinkMap,
+  InterventionClass,
+  SoftnessLevel,
+  RoundCountProfile,
+  ReassessmentTiming,
+  InterventionPackage,
+  HariSessionResolution,
+  HariSessionMetadata,
+  SessionValidationStatus,
+  ReassessmentResponse,
+  ContinuationAction,
+  UserSelectedAction,
+  RoundPlan,
+  ContinuationDecision,
+  PersistedReassessmentResult,
+  PersistedHariMetadata,
+} from './hari'
 
 // ── Protocol + Mechanism (M2 stubs — types only) ──────────────────────────────
 

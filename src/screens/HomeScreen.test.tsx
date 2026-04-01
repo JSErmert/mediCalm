@@ -15,16 +15,16 @@ function renderWithProvider() {
 describe('HomeScreen', () => {
   beforeEach(() => localStorage.clear())
 
-  it('renders the primary question as a heading', () => {
+  it('renders the primary headline', () => {
     renderWithProvider()
     expect(
-      screen.getByRole('heading', { name: /what level is your pain/i })
+      screen.getByRole('heading', { name: /just breathe/i })
     ).toBeInTheDocument()
   })
 
-  it('renders the app name', () => {
+  it('renders the app wordmark', () => {
     renderWithProvider()
-    expect(screen.getByText('MediCalm')).toBeInTheDocument()
+    expect(screen.getByText('mediCalm')).toBeInTheDocument()
   })
 
   it('renders a labelled Start session button', () => {

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D4-B1 · Shore Tide — mediCalm Flow Resonance</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --accent: #1a8a8a; --accent-d: #0f6060;
+  --tp: #1e2d3d; --ts: #5a6e80; --tt: #96aab8;
+  --oc: #2196a8; --om: #155e6e; --oe: #0d3d4a;
+}
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex; justify-content: center; align-items: flex-start;
+  overflow-x: hidden;
+  background: #d6e1e9;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   D4-B1 · SHORE TIDE
+   Reference extraction: the receding tidal water on wet sand —
+   long-exposure motion streaks fanning upward toward the sea.
+
+   Power layer: Dense tidal streaks fanning FROM the orb (the sea)
+   OUTWARD and DOWNWARD toward viewer. Foreground = widest spread,
+   orb level = convergence source. Depth-coded: thick + close at
+   bottom (near viewer), thin + faint toward horizon (orb level).
+
+   Filter layer: Fine horizontal ruled-paper micro-dashes —
+   perpendicular to the tidal streaks — like looking at the shore
+   through a security document's horizontal line system. Converts
+   raw motion into disciplined calm.
+
+   Psychological: The user is standing at the shore. The water
+   comes from the orb. Entering the session = moving toward the sea.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+
+/* ── Layer 1: BASE GRADIENT ─────────────────────────────────────────
+   Reference: dark wet sand at bottom → luminous teal wave at center
+   → muted sky above. Depth-coded atmospheric gradient.          */
+.bg-base {
+  position: absolute; inset: 0;
+  background:
+    /* Luminous wave band at orb level — teal glow like the wave crest */
+    radial-gradient(ellipse 90% 30% at 50% 40%,
+      rgba(32,150,168,0.12) 0%,
+      rgba(26,138,138,0.07) 40%,
+      transparent 70%),
+    /* Sky — muted, slightly warm grey above */
+    radial-gradient(ellipse 100% 40% at 50% 0%,
+      rgba(208,222,230,0.60) 0%,
+      transparent 60%),
+    /* Wet sand dark — bottom corners */
+    radial-gradient(ellipse 80% 45% at 50% 100%,
+      rgba(180,200,212,0.50) 0%,
+      transparent 65%),
+    linear-gradient(180deg,
+      #ccd8e2 0%,
+      #d6e1e9 32%,
+      #d2dce6 58%,
+      #cad6e2 82%,
+      #c2d0dc 100%);
+}
+
+/* ── Layer 2: POWER — tidal streaks ────────────────────────────────
+   Animated as the breathing field. Lines radiate from the orb
+   downward/outward in a fan, suggesting water returning to sea.  */
+.bg-power {
+  position: absolute; inset: 0;
+  transform-origin: 50% 40%;
+  animation: tide-breathe 9s cubic-bezier(0.45,0,0.45,1) infinite;
+}
+@keyframes tide-breathe {
+  0%,100% { transform: scale(1.000) translateY(0px); opacity: 1; }
+  43%     { transform: scale(1.026) translateY(-1px); opacity: 0.88; }
+  70%     { transform: scale(1.012) translateY(0px); opacity: 0.95; }
+}
+
+/* Drift: the tide itself moves slowly toward the sea */
+.bg-tide-drift {
+  position: absolute; inset: 0;
+  animation: tide-draw 18s ease-in-out infinite;
+}
+@keyframes tide-draw {
+  0%,100% { transform: translateY(0px); }
+  50%     { transform: translateY(-4px); }
+}
+
+/* ── Layer 3: FILTER — horizontal ruled security lines ─────────────
+   Perpendicular to the streaks. Converts raw tide into calm grid.  */
+.bg-filter {
+  position: absolute; inset: 0;
+  background-image:
+    /* Fine ruled lines — like looking through banknote paper */
+    repeating-linear-gradient(0deg,
+      transparent 0, transparent 8px,
+      rgba(26,138,138,0.020) 8px, rgba(26,138,138,0.020) 8.4px),
+    /* Slightly coarser interval — creates hierarchy */
+    repeating-linear-gradient(0deg,
+      transparent 0, transparent 24px,
+      rgba(26,138,138,0.012) 24px, rgba(26,138,138,0.012) 24.5px);
+  /* Subtle diagonal offset — adds official document quality */
+  background-image:
+    repeating-linear-gradient(0deg,
+      transparent 0, transparent 8px,
+      rgba(26,138,138,0.020) 8px, rgba(26,138,138,0.020) 8.4px),
+    repeating-linear-gradient(0deg,
+      transparent 0, transparent 24px,
+      rgba(26,138,138,0.012) 24px, rgba(26,138,138,0.012) 24.5px),
+    repeating-linear-gradient(8deg,
+      transparent 0, transparent 36px,
+      rgba(26,138,138,0.008) 36px, rgba(26,138,138,0.008) 36.4px);
+}
+
+/* ── Content ──────────────────────────────────────────────────────── */
+.page { position:relative; z-index:1; width:100%; max-width:440px; display:flex; flex-direction:column; padding:0 20px 40px; min-height:100vh; }
+.wm { padding:22px 0 0; }
+.wm span { font-size:0.65rem; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); opacity:0.78; }
+.hero { text-align:center; padding:34px 8px 0; }
+.hl { font-size:2.2rem; font-weight:300; color:var(--tp); line-height:1.14; letter-spacing:-0.026em; margin-bottom:14px; }
+.sub { font-size:0.8rem; color:var(--ts); line-height:1.74; max-width:310px; margin:0 auto; letter-spacing:0.006em; }
+.orb-zone { display:flex; flex-direction:column; align-items:center; padding:26px 0 20px; gap:12px; }
+.orb-field { position:relative; width:200px; height:200px; display:flex; align-items:center; justify-content:center; }
+.og { position:absolute; inset:22px; border-radius:50%; background:radial-gradient(circle, rgba(22,130,148,0.22) 0%, rgba(22,130,148,0.09) 48%, transparent 76%); animation:og 7s ease-in-out infinite; }
+.r4{position:absolute;inset:0px;border-radius:50%;border:1px solid rgba(26,138,138,0.060);animation:ri 7s ease-in-out infinite 0.00s;}
+.r3{position:absolute;inset:14px;border-radius:50%;border:1px solid rgba(26,138,138,0.092);animation:ri 7s ease-in-out infinite 0.35s;}
+.r2{position:absolute;inset:28px;border-radius:50%;border:1px solid rgba(26,138,138,0.124);animation:ri 7s ease-in-out infinite 0.70s;}
+.r1{position:absolute;inset:42px;border-radius:50%;border:1px solid rgba(26,138,138,0.158);animation:ri 7s ease-in-out infinite 1.05s;}
+.os { position:relative; width:112px; height:112px; border-radius:50%;
+  background:radial-gradient(circle at 36% 33%, var(--oc), var(--om) 52%, var(--oe) 100%);
+  box-shadow:0 12px 44px rgba(22,130,148,0.32),0 4px 14px rgba(0,0,0,0.15),inset 0 2px 0 rgba(255,255,255,0.12);
+  animation:oi 7s ease-in-out infinite; }
+.ol { font-size:0.60rem; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--tt); opacity:0.65; }
+@keyframes oi{0%,100%{transform:scale(0.88)}43%{transform:scale(1.0)}72%{transform:scale(0.93)}}
+@keyframes og{0%,100%{opacity:0.48;transform:scale(0.85)}43%{opacity:1;transform:scale(1.18)}}
+@keyframes ri{0%,100%{opacity:0.32;transform:scale(0.93)}43%{opacity:0.88;transform:scale(1.07)}}
+.cta{display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 0 36px;}
+.btn{width:200px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent-d));color:#fff;border:none;border-radius:9999px;font-size:0.9rem;font-weight:500;font-family:inherit;letter-spacing:0.04em;cursor:pointer;box-shadow:0 4px 18px rgba(26,138,138,0.28),0 1px 4px rgba(0,0,0,0.10);}
+.cs{font-size:0.64rem;color:var(--tt);letter-spacing:0.04em;text-align:center;}
+.hd{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.hl2{flex:1;height:1px;background:rgba(0,0,0,0.07);}
+.hlbl{font-size:0.62rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--tt);white-space:nowrap;}
+.emp{font-size:0.875rem;color:var(--ts);text-align:center;padding:16px 0;line-height:1.7;}
+.badge{position:fixed;top:12px;right:12px;z-index:100;background:rgba(26,138,138,0.12);border:1px solid rgba(26,138,138,0.28);border-radius:6px;padding:4px 10px;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;color:var(--accent);}
+.note{position:fixed;bottom:12px;left:12px;right:12px;z-index:100;max-width:320px;margin:0 auto;background:rgba(255,255,255,0.84);border:1px solid rgba(26,138,138,0.18);border-radius:8px;padding:10px 14px;font-size:0.63rem;color:var(--ts);line-height:1.6;backdrop-filter:blur(8px);}
+.note strong{color:var(--accent);font-weight:600;display:block;margin-bottom:3px;}
+</style>
+</head>
+<body>
+<div class="badge">D4-B1 · SHORE TIDE</div>
+
+<div class="bg">
+  <div class="bg-base"></div>
+
+  <div class="bg-power">
+    <div class="bg-tide-drift">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           style="position:absolute;inset:0;width:100%;height:100%"
+           viewBox="0 0 480 850" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <!-- Gradient along each streak: fades in from orb, peaks, fades to edge -->
+          <!-- Vertical: bright at orb level, fading toward bottom (long exposure) -->
+          <linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#1a8a8a" stop-opacity="0.04"/>
+            <stop offset="35%"  stop-color="#1a8a8a" stop-opacity="0.09"/>
+            <stop offset="55%"  stop-color="#1a8a8a" stop-opacity="0.07"/>
+            <stop offset="85%"  stop-color="#1a8a8a" stop-opacity="0.035"/>
+            <stop offset="100%" stop-color="#1a8a8a" stop-opacity="0.01"/>
+          </linearGradient>
+          <linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#1a8a8a" stop-opacity="0.03"/>
+            <stop offset="40%"  stop-color="#1a8a8a" stop-opacity="0.08"/>
+            <stop offset="65%"  stop-color="#1a8a8a" stop-opacity="0.055"/>
+            <stop offset="100%" stop-color="#1a8a8a" stop-opacity="0.008"/>
+          </linearGradient>
+        </defs>
+
+        <!-- ── CONCENTRIC REGULATION RINGS ───────────────────────────── -->
+        <g fill="none" stroke="#1a8a8a">
+          <circle cx="240" cy="340" r="46"  stroke-width="0.86" opacity="0.062"/>
+          <circle cx="240" cy="340" r="88"  stroke-width="0.78" opacity="0.058"/>
+          <circle cx="240" cy="340" r="136" stroke-width="0.72" opacity="0.054"/>
+          <circle cx="240" cy="340" r="190" stroke-width="0.66" opacity="0.050"/>
+          <circle cx="240" cy="340" r="250" stroke-width="0.60" opacity="0.046"/>
+          <circle cx="240" cy="340" r="316" stroke-width="0.54" opacity="0.042"/>
+          <circle cx="240" cy="340" r="390" stroke-width="0.48" opacity="0.036"/>
+        </g>
+
+        <!-- ── TIDAL STREAKS — Power Layer ──────────────────────────────
+             Fan of lines radiating FROM orb (240,340) outward/downward.
+             Simulates the receding wave streaks in the reference photo.
+             Each streak uses gradient opacity: bright at orb level,
+             fading at the foreground edges — long-exposure blur quality.
+
+             Three spread zones:
+             A) Far left fan — heading to lower-left corner
+             B) Center-bottom fan — heading straight down
+             C) Far right fan — heading to lower-right corner
+             Density increases closer to orb (convergence zone).          -->
+
+        <!-- Fan Zone A — diverging left -->
+        <g fill="none" stroke="url(#sg1)">
+          <path d="M 240,340 C 210,400 155,490 80,620"  stroke-width="0.72"/>
+          <path d="M 240,340 C 218,402 172,495 112,628" stroke-width="0.68"/>
+          <path d="M 240,340 C 225,406 188,500 144,632" stroke-width="0.65"/>
+          <path d="M 240,340 C 230,408 200,504 168,636" stroke-width="0.62"/>
+          <path d="M 240,340 C 234,410 210,508 188,640" stroke-width="0.60"/>
+          <path d="M 240,340 C 235,412 216,512 200,644" stroke-width="0.57"/>
+          <!-- Fine secondary streaks — engraving density near orb -->
+          <path d="M 240,340 C 212,398 158,486 90,614"  stroke-width="0.44"/>
+          <path d="M 240,340 C 214,400 165,491 100,619" stroke-width="0.42"/>
+          <path d="M 240,340 C 222,404 180,497 130,630" stroke-width="0.40"/>
+          <path d="M 240,340 C 227,407 194,501 158,634" stroke-width="0.38"/>
+        </g>
+
+        <!-- Fan Zone B — center/slight angle -->
+        <g fill="none" stroke="url(#sg2)">
+          <path d="M 240,340 C 238,415 236,530 234,680" stroke-width="0.70"/>
+          <path d="M 240,340 C 240,416 240,532 240,682" stroke-width="0.68"/>
+          <path d="M 240,340 C 242,416 244,532 246,682" stroke-width="0.68"/>
+          <path d="M 240,340 C 244,418 250,536 256,684" stroke-width="0.65"/>
+          <!-- Fine secondary -->
+          <path d="M 240,340 C 237,414 234,528 232,678" stroke-width="0.42"/>
+          <path d="M 240,340 C 241,415 242,530 243,680" stroke-width="0.40"/>
+          <path d="M 240,340 C 243,417 247,534 251,683" stroke-width="0.40"/>
+        </g>
+
+        <!-- Fan Zone C — diverging right -->
+        <g fill="none" stroke="url(#sg1)">
+          <path d="M 240,340 C 246,410 262,508 292,644" stroke-width="0.57"/>
+          <path d="M 240,340 C 248,410 268,510 304,646" stroke-width="0.60"/>
+          <path d="M 240,340 C 252,408 274,503 316,638" stroke-width="0.62"/>
+          <path d="M 240,340 C 256,406 284,498 332,634" stroke-width="0.65"/>
+          <path d="M 240,340 C 262,404 296,494 352,630" stroke-width="0.68"/>
+          <path d="M 240,340 C 270,402 312,490 380,626" stroke-width="0.72"/>
+          <!-- Fine secondary -->
+          <path d="M 240,340 C 244,412 258,506 284,642" stroke-width="0.38"/>
+          <path d="M 240,340 C 250,410 272,504 320,640" stroke-width="0.40"/>
+          <path d="M 240,340 C 258,406 290,496 346,632" stroke-width="0.42"/>
+          <path d="M 240,340 C 266,403 304,492 368,628" stroke-width="0.44"/>
+        </g>
+
+        <!-- Converging upper section — lighter, tide coming in from horizon -->
+        <g fill="none" stroke="#1a8a8a" opacity="0.035">
+          <path d="M 60,80  C 120,160 180,250 240,340" stroke-width="0.50"/>
+          <path d="M 140,60 C 180,150 210,240 240,340" stroke-width="0.48"/>
+          <path d="M 240,50 C 240,140 240,240 240,340" stroke-width="0.46"/>
+          <path d="M 340,60 C 300,150 270,240 240,340" stroke-width="0.48"/>
+          <path d="M 420,80 C 360,160 300,250 240,340" stroke-width="0.50"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="bg-filter"></div>
+</div>
+
+<div class="page">
+  <div class="wm"><span>mediCalm</span></div>
+  <div class="hero">
+    <h1 class="hl">Just Breathe.</h1>
+    <p class="sub">Structured protocols for rib restriction, shallow breathing, neck and jaw tension, and protective overactivation — calibrated to your current intensity.</p>
+  </div>
+  <div class="orb-zone">
+    <div class="orb-field">
+      <div class="r4"></div><div class="r3"></div><div class="r2"></div><div class="r1"></div>
+      <div class="og"></div><div class="os"></div>
+    </div>
+    <span class="ol">ready</span>
+  </div>
+  <div class="cta">
+    <button class="btn">Begin session</button>
+    <p class="cs">Protocol calibrated to your intensity · approx. 4–6 min</p>
+  </div>
+  <div>
+    <div class="hd"><div class="hl2"></div><span class="hlbl">Past sessions</span><div class="hl2"></div></div>
+    <p class="emp">No sessions yet. Start your first session above.</p>
+  </div>
+</div>
+
+<div class="note">
+  <strong>D4-B1 · Shore Tide</strong>
+  Receding tidal water on wet sand. Streaks radiate FROM the orb (the sea) outward to viewer. Long-exposure gradient opacity per streak. Filter: fine horizontal ruled lines perpendicular to flow. Tide draws slowly toward sea on 18s cycle.
+</div>
+</body>
+</html>

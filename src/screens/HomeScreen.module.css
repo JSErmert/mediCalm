@@ -1,3 +1,11 @@
+/* HomeScreen.module.css — D4-B4 Deep Current
+   Authority: M3.5.2 D4-B4 Deep Current (locked background identity)
+              M3.4.1 mediCalm Homepage UI Contract (Direction 4: Breath Center)
+   Background rendered by App.tsx (persistent across all screens).
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* ── Screen container ─────────────────────────────────────────────────── */
+
 .screen {
   flex: 1;
   display: flex;
@@ -5,74 +13,274 @@
   max-width: var(--screen-max-width);
   margin: 0 auto;
   width: 100%;
-  padding: var(--space-10) var(--screen-padding) var(--space-8);
-  gap: var(--space-8);
+  padding: 0 var(--screen-padding) var(--space-8);
+  color: rgba(255, 255, 255, 0.88);
 }
 
-.header {
+
+/* ══════════════════════════════════════════════════════════════════════
+   WORDMARK
+   ══════════════════════════════════════════════════════════════════════ */
+
+.wordmarkBar {
+  padding: 22px 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+.wordmark {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════════════════════════════════ */
+
+.hero {
+  text-align: center;
+  padding: 34px 8px 0;
+}
+
+.headline {
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.14;
+  letter-spacing: -0.026em;
+  margin-bottom: 14px;
+}
+
+.sub {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.42);
+  line-height: 1.74;
+  max-width: 320px;
+  margin: 0 auto;
+  letter-spacing: 0.006em;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   IDLE ORB — D4-B4 Deep Current system
+   Architecture:
+     orbField  — 220×220 positioning context
+     orbRing   — 4 identical ping rings (staggered by nth-child)
+     orbGlow   — centered bloom glow (expands beyond sphere at peak)
+     orbSphere — luminous sphere with white-core → teal gradient
+
+   Orb ring physics: ping from scale(0.42) opacity(0.65) → scale(1.0) opacity(0)
+   Orb breathing: 8s cycle — 0.88 rest → 1.0 peak → 0.93 settle
+   Glow blooms: scale(0.78) → scale(1.28) at peak, tied to same cycle
+   ══════════════════════════════════════════════════════════════════════ */
+
+.orbZone {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  align-items: center;
+  padding: 26px 0 20px;
+  gap: 12px;
 }
 
-.appName {
-  font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  color: var(--color-accent-primary);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.question {
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-light);
-  color: var(--color-text-primary);
-  line-height: var(--leading-tight);
-}
-
-.cta {
+.orbField {
+  position: relative;
+  width: 220px;
+  height: 220px;
   display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ping rings — all same size, staggered 2s apart for continuous outward pulse */
+.orbRing {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 1px solid rgba(26, 138, 138, 0.14);
+  animation: orb-ring-pulse 8s cubic-bezier(0.2, 0, 0.8, 1) infinite;
+}
+
+.orbRing:nth-child(1) { animation-delay:  0s; }
+.orbRing:nth-child(2) { animation-delay: -2s; }
+.orbRing:nth-child(3) { animation-delay: -4s; }
+.orbRing:nth-child(4) { animation-delay: -6s; }
+
+/* Glow — perfectly centered via inset+margin, blooms on expansion */
+.orbGlow {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(33, 150, 168, 0.20) 35%,
+    rgba(26, 138, 138, 0.06) 68%,
+    transparent 100%
+  );
+  animation: glow-breathe 8s ease-in-out infinite;
+  filter: blur(14px);
+}
+
+/* Sphere — white-hot core → ice teal → teal body → deep edge */
+.orbSphere {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #dff6f8 0%,
+    #b8e8ed 6%,
+    #2196a8 30%,
+    #155e6e 62%,
+    #0d3d4a 100%
+  );
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.07),
+    0 0 36px rgba(33, 150, 168, 0.42),
+    0 0 70px rgba(26, 138, 138, 0.16),
+    0 0 110px rgba(26, 138, 138, 0.07),
+    inset 0 0 3px rgba(255, 255, 255, 0.12);
+  animation: orb-idle 8s ease-in-out infinite;
+}
+
+.orbLabel {
+  font-size: 0.60rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(26, 138, 138, 0.55);
+}
+
+/* ── Orb animations ───────────────────────────────────────────────────── */
+
+@keyframes orb-ring-pulse {
+  0%   { transform: scale(0.42); opacity: 0.65; }
+  100% { transform: scale(1.00); opacity: 0; }
+}
+
+@keyframes orb-idle {
+  0%, 100% { transform: scale(0.88); }
+  45%       { transform: scale(1.00); }
+  72%       { transform: scale(0.93); }
+}
+
+@keyframes glow-breathe {
+  0%, 100% { transform: scale(0.78); opacity: 0.55; }
+  45%       { transform: scale(1.28); opacity: 1.00; }
+  72%       { transform: scale(1.00); opacity: 0.72; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   CTA
+   ══════════════════════════════════════════════════════════════════════ */
+
+.ctaZone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 0 36px;
 }
 
 .startButton {
+  width: 220px;
   min-height: var(--touch-min);
-  padding: var(--space-3) var(--space-8);
-  background: var(--color-accent-primary);
-  color: var(--color-on-accent);
+  height: 52px;
+  background: rgba(26, 138, 138, 0.12);
+  color: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(26, 138, 138, 0.38);
   border-radius: var(--radius-full);
-  font-size: var(--text-base);
-  font-weight: var(--weight-semibold);
+  font-size: 0.9rem;
+  font-weight: 500;
   font-family: inherit;
-  transition: opacity var(--transition-quick);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition:
+    opacity var(--transition-quick),
+    background var(--transition-quick),
+    box-shadow var(--transition-quick);
 }
 
 .startButton:hover {
-  opacity: 0.88;
+  background: rgba(26, 138, 138, 0.20);
+  box-shadow: 0 0 22px rgba(26, 138, 138, 0.22);
 }
 
 .startButton:active {
-  opacity: 0.72;
+  opacity: 0.76;
 }
+
+.ctaSub {
+  font-size: 0.64rem;
+  color: rgba(255, 255, 255, 0.28);
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.bodyContextLink {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.64rem;
+  font-family: inherit;
+  color: rgba(26, 138, 138, 0.55);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(26, 138, 138, 0.28);
+  transition: color 0.15s ease;
+}
+
+.bodyContextLink:hover {
+  color: rgba(26, 138, 138, 0.85);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   HISTORY
+   ══════════════════════════════════════════════════════════════════════ */
 
 .history {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
   flex: 1;
 }
 
-.historyHeading {
-  font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  color: var(--color-text-secondary);
+.historyDivider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.historyDividerLine {
+  flex: 1;
+  height: 1px;
+  background: rgba(26, 138, 138, 0.18);
+}
+
+.historyLabel {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.28);
+  white-space: nowrap;
 }
 
 .emptyState {
   font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  padding: var(--space-2) 0;
+  color: rgba(255, 255, 255, 0.32);
+  text-align: center;
+  padding: var(--space-4) 0;
   line-height: var(--leading-relaxed);
 }
 
@@ -81,4 +289,82 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   DEV BANNER — R&D override control
+   ══════════════════════════════════════════════════════════════════════ */
+
+.devBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px dashed rgba(26, 138, 138, 0.22);
+  border-radius: var(--radius-md);
+  margin-top: auto;
+}
+
+.devBannerLabel {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  flex-shrink: 0;
+}
+
+.devBannerText {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.28);
+  flex: 1;
+}
+
+.devBannerToggle {
+  background: none;
+  border: 1px solid rgba(26, 138, 138, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.32);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.12s ease;
+  font-family: inherit;
+}
+
+.devBannerToggle:hover {
+  border-color: rgba(26, 138, 138, 0.50);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.devBannerToggleOn {
+  border-color: rgba(26, 138, 138, 0.55);
+  color: rgba(26, 138, 138, 0.80);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   Authority: Accessibility + Motion Fallbacks (doc 17)
+   All animations disabled. Static states at resting values.
+   ══════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .bgFilterRadial {
+    animation: none;
+  }
+  .orbRing {
+    animation: none;
+    opacity: 0.18;
+    transform: scale(0.85);
+  }
+  .orbSphere {
+    animation: none;
+    transform: scale(0.94);
+  }
+  .orbGlow {
+    animation: none;
+    opacity: 0.55;
+    transform: scale(1.0);
+  }
 }

@@ -24,6 +24,7 @@ export function PainSlider({ value, onChange }: PainSliderProps) {
         max={10}
         step={1}
         value={value}
+        style={{ '--slider-fill': `${value * 10}%` } as React.CSSProperties}
         aria-label="Pain level"
         aria-valuemin={0}
         aria-valuemax={10}

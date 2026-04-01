@@ -1,0 +1,186 @@
+/**
+ * SessionValidationScreen — M4.1 §18 Previous Session Validation Gate
+ *
+ * Vertical flex layout:
+ *   header       — back button + title
+ *   content      — session summary + validation question
+ *   actions      — keep / invalidate buttons
+ */
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--screen-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.header {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--screen-padding) var(--space-3);
+}
+
+.backButton {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  min-height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: color var(--transition-quick);
+}
+
+.backButton:hover {
+  color: var(--color-text-primary);
+}
+
+.heading {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-light);
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) var(--screen-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.lead {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+/* ── Session Summary Card ────────────────────────────────────────────────── */
+
+.sessionCard {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sessionMeta {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+.sessionProtocol {
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+}
+
+.sessionResult {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.resultDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.resultDotBetter {
+  background: var(--color-accent-primary);
+}
+
+.resultDotSame {
+  background: var(--color-text-tertiary);
+}
+
+.resultDotWorse {
+  background: var(--color-caution);
+}
+
+.resultDotInterrupted {
+  background: var(--color-text-tertiary);
+}
+
+/* ── Validation Question ─────────────────────────────────────────────────── */
+
+.question {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+  padding-top: var(--space-1);
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────────── */
+
+.actions {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--screen-padding) var(--space-6);
+}
+
+.actionPrimary {
+  width: 100%;
+  min-height: var(--touch-min);
+  background: var(--color-accent-primary);
+  color: var(--color-bg-base);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: opacity var(--transition-quick);
+}
+
+.actionPrimary:hover {
+  opacity: 0.88;
+}
+
+.actionSecondary {
+  width: 100%;
+  min-height: var(--touch-min);
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition:
+    color var(--transition-quick),
+    border-color var(--transition-quick);
+}
+
+.actionSecondary:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-border-active);
+}
+
+.horizonNote {
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  padding-top: var(--space-1);
+}

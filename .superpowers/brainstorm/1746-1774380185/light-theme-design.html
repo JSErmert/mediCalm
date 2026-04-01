@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M2.5.2 Light Theme Design</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0d1117;
+  color: #e2e8f0;
+  padding: 32px 20px 56px;
+}
+
+/* ─── Section chrome ─────────────────────────────── */
+.section { margin-bottom: 52px; }
+.section-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4a5568;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-bottom: 20px;
+}
+
+/* ─── 1. COLOR SYSTEM ─────────────────────────────── */
+.palette-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 96px;
+}
+.swatch-color {
+  height: 56px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.swatch-name {
+  font-size: 0.67rem;
+  color: #6b7a99;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+}
+.swatch-hex {
+  font-size: 0.67rem;
+  color: #4a5568;
+  font-family: monospace;
+}
+
+/* Dark → Light comparison */
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.theme-panel {
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.theme-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* ─── 2. ELEVATION MODEL ──────────────────────────── */
+.elevation-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 480px;
+}
+.elev-layer {
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.elev-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.elev-desc {
+  font-size: 0.72rem;
+  text-align: right;
+  opacity: 0.7;
+  line-height: 1.4;
+}
+.elev-shadow {
+  font-size: 0.65rem;
+  font-family: monospace;
+  opacity: 0.5;
+  margin-top: 3px;
+}
+
+/* ─── 3. SESSION SCREEN MOCKUP ────────────────────── */
+.phone-frame {
+  width: 300px;
+  height: 560px;
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+}
+
+/* The light theme inside the frame */
+.session-light {
+  width: 100%;
+  height: 100%;
+  background: #f2f5f7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px 20px;
+  position: relative;
+  gap: 0;
+}
+
+.sess-top {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.sess-protocol {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7a8fa0;
+}
+.sess-goal {
+  font-size: 0.62rem;
+  color: #9aabbb;
+  margin-top: 2px;
+}
+.sess-round-counter {
+  font-size: 0.56rem;
+  color: #b0bec8;
+  margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sess-orb-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Orb on light — deep teal core, ambient glow */
+.orb-light-sim {
+  position: relative;
+  width: 148px;
+  height: 148px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.orb-ambient {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(22, 130, 148, 0.14) 0%,
+    rgba(22, 130, 148, 0.06) 50%,
+    transparent 75%
+  );
+  animation: orb-pulse 11s cubic-bezier(0.33,0,0.67,1) infinite;
+}
+.orb-body {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 34%,
+    #2196a8 0%,
+    #155e6e 45%,
+    #0d3d4a 100%
+  );
+  box-shadow:
+    0 8px 28px rgba(22, 130, 148, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  animation: orb-body-pulse 11s cubic-bezier(0.25,0.46,0.45,0.94) infinite;
+}
+.orb-countdown {
+  font-size: 2.4rem;
+  font-weight: 200;
+  color: rgba(255,255,255,0.92);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+@keyframes orb-pulse {
+  0%,100% { transform: scale(0.7); opacity: 0.6; }
+  36%      { transform: scale(1.0); opacity: 1; }
+}
+@keyframes orb-body-pulse {
+  0%,100% { transform: scale(0.72); }
+  36%      { transform: scale(1.0); }
+}
+
+/* Dot strip */
+.sess-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 14px;
+}
+.s-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.s-dot.filled { background: #7a8fa0; }
+.s-dot.empty  { background: #c8d4dc; }
+
+/* Emergence cues */
+.sess-cues {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 0 8px;
+}
+.cue-line {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #1a2a38;
+  font-weight: 500;
+}
+.cue-line.muted { opacity: 0.35; font-weight: 400; }
+
+/* Footer */
+.sess-footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  padding-top: 10px;
+}
+.sess-unwell {
+  font-size: 0.6rem;
+  color: #9aabbb;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.6;
+}
+.sess-stop {
+  font-size: 0.62rem;
+  color: #7a8fa0;
+  border: 1px solid #c8d4dc;
+  border-radius: 4px;
+  padding: 3px 10px;
+}
+
+/* ─── 4. ORB CLOSE-UP ─────────────────────────────── */
+.orb-comparison {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.orb-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.orb-demo-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.orb-bg-dark {
+  width: 180px;
+  height: 180px;
+  border-radius: 12px;
+  background: #1a1c2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.orb-bg-light {
+  width: 180px;
+  height: 180px;
+  border-radius: 12px;
+  background: #f2f5f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Dark theme orb (existing) */
+.orb-dark-style {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #e8f0fe, #c5d8f8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.orb-dark-count { font-size: 2rem; font-weight: 300; color: #1a2230; }
+
+.orb-dark-glow {
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(160,200,250,0.35), transparent 70%);
+}
+
+/* Light theme orb (new) */
+.orb-light-style {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 34%, #2196a8 0%, #155e6e 45%, #0d3d4a 100%);
+  box-shadow:
+    0 8px 28px rgba(22, 130, 148, 0.28),
+    0 2px 8px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+.orb-light-count { font-size: 2rem; font-weight: 200; color: rgba(255,255,255,0.92); }
+.orb-light-glow {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(22,130,148,0.18), transparent 72%);
+  z-index: 0;
+}
+
+.orb-note {
+  font-size: 0.7rem;
+  color: #4a5568;
+  text-align: center;
+  max-width: 160px;
+  line-height: 1.5;
+}
+
+/* Profile dots */
+.profile-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.profile-chip {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 120px;
+}
+.p-name { font-weight: 600; font-size: 0.72rem; }
+.p-desc { font-size: 0.66rem; opacity: 0.65; line-height: 1.4; }
+
+/* Side-by-side frames */
+.frames-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     1. COLOR SYSTEM
+═══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">Section 1 of 4</div>
+  <div class="section-title">Color System — Light Medical Theme</div>
+
+  <div class="comparison">
+    <!-- CURRENT dark -->
+    <div class="theme-panel" style="background:#1a1c2e">
+      <div class="theme-label" style="color:#5a6a8a">Current — Dark</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="background:#1a1c2e;border:1px solid rgba(255,255,255,0.1);border-radius:5px;height:28px;display:flex;align-items:center;padding:0 8px;font-size:0.65rem;color:#6b7a99;">Base #1a1c2e</div>
+        <div style="background:#20223a;border-radius:5px;height:28px;display:flex;align-items:center;padding:0 8px;font-size:0.65rem;color:#6b7a99;">Surface #20223a</div>
+        <div style="background:#252848;border-radius:5px;height:28px;display:flex;align-items:center;padding:0 8px;font-size:0.65rem;color:#6b7a99;">Card #252848</div>
+        <div style="background:#5ecfcf;border-radius:5px;height:28px;display:flex;align-items:center;padding:0 8px;font-size:0.65rem;color:#1a2230;font-weight:600;">Accent #5ecfcf</div>
+        <div style="background:#e8edf2;border-radius:5px;height:28px;display:flex;align-items:center;padding:0 8px;font-size:0.65rem;color:#1a2230;">Text #e8edf2</div>
+      </div>
+    </div>
+
+    <!-- NEW light -->
+    <div class="theme-panel" style="background:#f2f5f7;border-color:rgba(0,0,0,0.08)">
+      <div class="theme-label" style="color:#7a8fa0">New — Medical Light</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="background:#f2f5f7;border:1px solid rgba(0,0,0,0.08);border-radius:5px;height:28px;display:flex;align-items:center;padding:0 8px;font-size:0.65rem;color:#7a8fa0;">Base #f2f5f7</div>
+        <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.06);border-radius:5px;height:28px;box-shadow:0 1px 3px rgba(0,0,0,0.06);display:flex;align-items:center;padding:0 8px;font-size:0.65rem;color:#7a8fa0;">Surface #ffffff ↑ shadow</div>
+        <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.06);border-radius:5px;height:28px;box-shadow:0 2px 8px rgba(0,0,0,0.07);display:flex;align-items:center;padding:0 8px;font-size:0.65rem;color:#7a8fa0;">Card #ffffff ↑↑ shadow</div>
+        <div style="background:#1a8a8a;border-radius:5px;height:28px;display:flex;align-items:center;padding:0 8px;font-size:0.65rem;color:#fff;font-weight:600;">Accent #1a8a8a (darkened)</div>
+        <div style="background:#1e2d3d;border-radius:5px;height:28px;display:flex;align-items:center;padding:0 8px;font-size:0.65rem;color:#fff;">Text #1e2d3d (dark slate)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full palette -->
+  <div class="palette-row">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#f2f5f7;border:1px solid rgba(0,0,0,0.08)"></div>
+      <div class="swatch-name">bg-base<br>off-white</div>
+      <div class="swatch-hex">#f2f5f7</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#edf1f4;border:1px solid rgba(0,0,0,0.07)"></div>
+      <div class="swatch-name">bg-subtle<br>depth layer</div>
+      <div class="swatch-hex">#edf1f4</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#ffffff;border:1px solid rgba(0,0,0,0.07)"></div>
+      <div class="swatch-name">surface<br>white elevated</div>
+      <div class="swatch-hex">#ffffff</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1a8a8a"></div>
+      <div class="swatch-name">accent-primary<br>muted teal</div>
+      <div class="swatch-hex">#1a8a8a</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#e8f5f5"></div>
+      <div class="swatch-name">accent-subtle<br>teal wash</div>
+      <div class="swatch-hex">#e8f5f5</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1e2d3d"></div>
+      <div class="swatch-name">text-primary<br>dark slate</div>
+      <div class="swatch-hex">#1e2d3d</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#5a6e80"></div>
+      <div class="swatch-name">text-secondary<br>mid gray</div>
+      <div class="swatch-hex">#5a6e80</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#96aab8"></div>
+      <div class="swatch-name">text-tertiary<br>light gray</div>
+      <div class="swatch-hex">#96aab8</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#c94040"></div>
+      <div class="swatch-name">safety-stop<br>muted red</div>
+      <div class="swatch-hex">#c94040</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     2. ELEVATION MODEL
+═══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">Section 2 of 4</div>
+  <div class="section-title">Elevation Model — 4 Layers</div>
+
+  <div class="elevation-stack">
+    <div class="elev-layer" style="background:#edf1f4;border:1px solid rgba(0,0,0,0.05)">
+      <div>
+        <div class="elev-name" style="color:#7a8fa0">Layer 0 — Base</div>
+        <div class="elev-shadow" style="color:#96aab8">background: #f2f5f7 · no shadow</div>
+      </div>
+      <div class="elev-desc" style="color:#96aab8">Screen backgrounds<br>Guided session BG</div>
+    </div>
+
+    <div class="elev-layer" style="background:#ffffff;border:1px solid rgba(0,0,0,0.06);box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);">
+      <div>
+        <div class="elev-name" style="color:#5a6e80">Layer 1 — Surface</div>
+        <div class="elev-shadow" style="color:#96aab8">0 1px 3px rgba(0,0,0,.06)</div>
+      </div>
+      <div class="elev-desc" style="color:#7a8fa0">Input sections<br>Tag selector groups</div>
+    </div>
+
+    <div class="elev-layer" style="background:#ffffff;border:1px solid rgba(0,0,0,0.06);box-shadow:0 2px 8px rgba(0,0,0,0.07),0 1px 3px rgba(0,0,0,0.05);">
+      <div>
+        <div class="elev-name" style="color:#3a5060">Layer 2 — Card</div>
+        <div class="elev-shadow" style="color:#96aab8">0 2px 8px rgba(0,0,0,.07)</div>
+      </div>
+      <div class="elev-desc" style="color:#5a6e80">History cards<br>Session setup panel<br>Completion form</div>
+    </div>
+
+    <div class="elev-layer" style="background:#ffffff;border:1px solid rgba(0,0,0,0.06);box-shadow:0 4px 20px rgba(0,0,0,0.09),0 2px 6px rgba(0,0,0,0.06);">
+      <div>
+        <div class="elev-name" style="color:#1e2d3d">Layer 3 — Modal / Orb</div>
+        <div class="elev-shadow" style="color:#96aab8">0 4px 20px rgba(0,0,0,.09)<br>+ teal ambient glow</div>
+      </div>
+      <div class="elev-desc" style="color:#3a5060">Stop confirm dialog<br>Orb ambient glow layer</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     3. GUIDED SESSION SCREEN MOCKUP
+═══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">Section 3 of 4</div>
+  <div class="section-title">Guided Session Screen — Light Theme</div>
+
+  <div class="frames-row">
+    <!-- Current dark -->
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
+      <div style="font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a5568">Current Dark</div>
+      <div class="phone-frame">
+        <div style="width:100%;height:100%;background:#1a1c2e;display:flex;flex-direction:column;align-items:center;padding:28px 20px 20px;gap:0;">
+          <div style="text-align:center;margin-bottom:8px;">
+            <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.25)">Rib Expansion Reset</div>
+            <div style="font-size:0.56rem;color:rgba(255,255,255,0.18);margin-top:2px;">Reduce compression and restore rib motion.</div>
+            <div style="font-size:0.55rem;color:rgba(255,255,255,0.15);margin-top:3px;">2 / 8</div>
+          </div>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+            <div style="position:relative;width:140px;height:140px;display:flex;align-items:center;justify-content:center;">
+              <div style="position:absolute;width:164px;height:164px;border-radius:50%;background:radial-gradient(circle,rgba(160,200,250,0.35),transparent 70%);"></div>
+              <div style="width:126px;height:126px;border-radius:50%;background:radial-gradient(circle at 38% 38%,#e8f0fe,#c5d8f8);display:flex;align-items:center;justify-content:center;position:relative;z-index:1;">
+                <span style="font-size:2.2rem;font-weight:300;color:#1a2230;">4</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:10px;">
+            <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2)"></div>
+            <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.55)"></div>
+            <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2)"></div>
+            <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2)"></div>
+            <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2)"></div>
+          </div>
+          <div style="width:100%;display:flex;flex-direction:column;gap:5px;padding:8px 0;">
+            <div style="font-size:0.7rem;font-weight:500;color:#e8edf2;">Inhale four. Expand ribs.</div>
+            <div style="font-size:0.7rem;font-weight:400;color:#e8edf2;opacity:0.35;">Exhale seven. Drop shoulders.</div>
+            <div style="font-size:0.7rem;font-weight:400;color:#e8edf2;opacity:0.35;">Jaw loose. Neck soft.</div>
+          </div>
+          <div style="width:100%;display:flex;justify-content:center;gap:18px;margin-top:8px;">
+            <span style="font-size:0.58rem;color:rgba(255,255,255,0.35);text-decoration:underline;">I feel unwell</span>
+            <span style="font-size:0.6rem;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.18);border-radius:4px;padding:3px 10px;">Stop</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New light -->
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
+      <div style="font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:#1a8a8a">New Medical Light</div>
+      <div class="phone-frame">
+        <div class="session-light">
+          <div class="sess-top">
+            <div class="sess-protocol">Rib Expansion Reset</div>
+            <div class="sess-goal">Reduce compression and restore rib motion.</div>
+            <div class="sess-round-counter">2 / 8</div>
+          </div>
+
+          <div class="sess-orb-area">
+            <div class="orb-light-sim">
+              <div class="orb-ambient"></div>
+              <div class="orb-body">
+                <span class="orb-countdown">4</span>
+              </div>
+            </div>
+            <div class="sess-dots">
+              <div class="s-dot filled"></div>
+              <div class="s-dot filled"></div>
+              <div class="s-dot empty"></div>
+              <div class="s-dot empty"></div>
+              <div class="s-dot empty"></div>
+              <div class="s-dot empty"></div>
+              <div class="s-dot empty"></div>
+              <div class="s-dot empty"></div>
+            </div>
+          </div>
+
+          <div class="sess-cues">
+            <div class="cue-line">Inhale four. Expand ribs.</div>
+            <div class="cue-line muted">Exhale seven. Drop shoulders.</div>
+            <div class="cue-line muted">Jaw loose. Neck soft.</div>
+          </div>
+
+          <div class="sess-footer">
+            <span class="sess-unwell">I feel unwell</span>
+            <span class="sess-stop">Stop</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     4. ORB DOMINANCE ON LIGHT BACKGROUND
+═══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">Section 4 of 4</div>
+  <div class="section-title">Orb Contrast — Dark vs Light Background</div>
+
+  <div class="orb-comparison">
+    <div class="orb-demo">
+      <div class="orb-bg-dark">
+        <div class="orb-dark-glow"></div>
+        <div class="orb-dark-style">
+          <span class="orb-dark-count">4</span>
+        </div>
+      </div>
+      <div class="orb-note" style="color:#5a6a8a">Existing: light orb on dark BG. Low visual weight — blends into background.</div>
+    </div>
+
+    <div class="orb-demo">
+      <div class="orb-bg-light">
+        <div class="orb-light-glow"></div>
+        <div class="orb-light-style">
+          <span class="orb-light-count">4</span>
+        </div>
+      </div>
+      <div class="orb-note" style="color:#5a6a8a">New: deep teal orb on light BG. High contrast, elevated presence, strong focal point.</div>
+    </div>
+  </div>
+
+  <!-- Profile chips on light -->
+  <div style="margin-top:28px;">
+    <div style="font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a5568;margin-bottom:12px;">Expression profiles on light background</div>
+    <div class="profile-row">
+      <div class="profile-chip" style="background:#f5f0fa;border:1px solid #e0d0f0;">
+        <div class="p-name" style="color:#7a3fa8">Nerve / Burning</div>
+        <div class="p-desc" style="color:#8a6aaa">Narrow scale 0.75–0.95<br>Very soft ambient glow<br>Quieter teal, desaturated</div>
+      </div>
+      <div class="profile-chip" style="background:#fdf0f0;border:1px solid #f0d8d8;">
+        <div class="p-name" style="color:#a83030">Severe / Acute</div>
+        <div class="p-desc" style="color:#8a5050">Full scale 0.72–1.0<br>Contained glow<br>Deeper teal shadow</div>
+      </div>
+      <div class="profile-chip" style="background:#f0f5ff;border:1px solid #d0e0f8;">
+        <div class="p-name" style="color:#2060a8">Moderate</div>
+        <div class="p-desc" style="color:#5070a0">Full scale<br>Standard glow<br>Microtext on</div>
+      </div>
+      <div class="profile-chip" style="background:#f0faf5;border:1px solid #c8ecd8;">
+        <div class="p-name" style="color:#206040">Gentle / Low</div>
+        <div class="p-desc" style="color:#406858">Full scale<br>Richest glow<br>Most spacious feel</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

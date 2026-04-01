@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D2 — Atmospheric Terrain · mediCalm Mockup</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-base:        #e9edf1;
+    --bg-surface:     #f7f9fb;
+    --accent:         #1a8a8a;
+    --accent-deep:    #0f6060;
+    --accent-mist:    rgba(26,138,138,0.08);
+    --text-primary:   #1e2d3d;
+    --text-secondary: #5a6e80;
+    --text-tertiary:  #96aab8;
+    --border:         rgba(0,0,0,0.06);
+    --orb-center:     #2196a8;
+    --orb-mid:        #155e6e;
+    --orb-edge:       #0d3d4a;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px;
+    position: relative;
+    overflow-x: hidden;
+    background: var(--bg-base);
+  }
+
+  /* ── Background: Atmospheric Terrain ─────────────────────────────────── */
+  /* Layer 0: atmospheric sky gradient */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 100% 60% at 50% 0%, rgba(200,215,224,0.5) 0%, transparent 70%),
+      radial-gradient(ellipse 80% 40% at 30% 100%, rgba(180,205,214,0.3) 0%, transparent 70%),
+      linear-gradient(180deg, #dce6ec 0%, #e9edf1 35%, #e4e9ee 100%);
+    z-index: 0;
+  }
+
+  /* Layer 1: flowing terrain SVG lines */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900' viewBox='0 0 900 900'%3E%3Cg fill='none' stroke='%231a8a8a' stroke-width='0.8' opacity='0.055'%3E%3Cpath d='M0,450 Q150,400 300,430 Q450,460 600,420 Q750,380 900,410'/%3E%3Cpath d='M0,480 Q120,435 280,460 Q440,485 600,450 Q750,415 900,440'/%3E%3Cpath d='M0,510 Q140,468 300,495 Q460,522 620,485 Q760,450 900,472'/%3E%3Cpath d='M0,420 Q160,375 320,400 Q480,425 640,392 Q780,360 900,382'/%3E%3Cpath d='M0,390 Q180,348 360,370 Q520,390 680,358 Q810,328 900,348'/%3E%3Cpath d='M0,360 Q200,320 400,340 Q560,358 740,325 Q840,305 900,318'/%3E%3Cpath d='M0,540 Q130,502 290,528 Q460,555 630,518 Q770,485 900,505'/%3E%3Cpath d='M0,570 Q145,535 310,558 Q478,582 648,548 Q785,518 900,538'/%3E%3Cpath d='M0,330 Q220,292 440,310 Q590,325 760,294 Q858,275 900,288'/%3E%3Cpath d='M0,300 Q240,264 480,280 Q622,292 792,262 Q875,245 900,258'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 900px 900px;
+    background-position: 0 30%;
+    z-index: 0;
+    pointer-events: none;
+    animation: terrain-drift 40s linear infinite;
+  }
+
+  @keyframes terrain-drift {
+    0% { background-position: 0 30%; }
+    100% { background-position: 60px 30%; }
+  }
+
+  .screen {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ────────────────────────────────────────────────────────────── */
+  .header {
+    padding: 24px 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .header-note {
+    font-size: 0.62rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── Orb — atmospheric center ──────────────────────────────────────────── */
+  .orb-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0 12px;
+    gap: 0;
+  }
+
+  .orb-atmosphere {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .orb-halo-3 {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(22,130,148,0.06) 0%, transparent 70%);
+    animation: halo-breathe 5s ease-in-out infinite;
+  }
+
+  .orb-halo-2 {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(22,130,148,0.12) 0%, transparent 70%);
+    animation: halo-breathe 5s ease-in-out infinite 0.3s;
+  }
+
+  .orb-halo-1 {
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(22,130,148,0.18) 0%, transparent 70%);
+    animation: halo-breathe 5s ease-in-out infinite 0.6s;
+  }
+
+  .orb-sphere {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 34%, var(--orb-center), var(--orb-mid) 55%, var(--orb-edge) 100%);
+    box-shadow:
+      0 10px 40px rgba(22,130,148,0.32),
+      0 3px 12px rgba(0,0,0,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.14);
+    animation: orb-float 5s ease-in-out infinite;
+  }
+
+  @keyframes orb-float {
+    0%, 100% { transform: scale(0.9); }
+    50% { transform: scale(1.0); }
+  }
+
+  @keyframes halo-breathe {
+    0%, 100% { opacity: 0.6; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* ── Hero copy — centered ──────────────────────────────────────────────── */
+  .hero {
+    text-align: center;
+    padding: 20px 12px 32px;
+  }
+
+  .hero-headline {
+    font-size: 1.55rem;
+    font-weight: 300;
+    color: var(--text-primary);
+    line-height: 1.28;
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+
+  .hero-sub {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  /* ── Input — chip selection ────────────────────────────────────────────── */
+  .input-section {
+    padding: 0 0 24px;
+  }
+
+  .input-prompt {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  .intensity-chips {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .chip {
+    flex: 1;
+    max-width: 120px;
+    padding: 14px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.09);
+    background: rgba(255,255,255,0.70);
+    cursor: pointer;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    transition: all 0.16s ease;
+  }
+
+  .chip:hover {
+    border-color: rgba(26,138,138,0.30);
+    background: rgba(255,255,255,0.85);
+  }
+
+  .chip.selected {
+    border-color: rgba(26,138,138,0.50);
+    background: rgba(26,138,138,0.07);
+  }
+
+  .chip-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 3px;
+  }
+
+  .chip.selected .chip-label {
+    color: var(--accent);
+  }
+
+  .chip-desc {
+    display: block;
+    font-size: 0.62rem;
+    color: var(--text-tertiary);
+    line-height: 1.4;
+  }
+
+  /* ── CTA ───────────────────────────────────────────────────────────────── */
+  .cta-section {
+    padding: 0 0 36px;
+  }
+
+  .cta-btn {
+    width: 100%;
+    height: 54px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 27px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(26,138,138,0.28), 0 1px 4px rgba(0,0,0,0.10);
+    transition: all 0.14s ease;
+  }
+
+  .cta-btn:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 24px rgba(26,138,138,0.36);
+  }
+
+  .cta-footnote {
+    text-align: center;
+    font-size: 0.68rem;
+    color: var(--text-tertiary);
+    margin-top: 10px;
+  }
+
+  /* ── History — floating cards ──────────────────────────────────────────── */
+  .history-section {
+    padding-bottom: 40px;
+  }
+
+  .history-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+  }
+
+  .history-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .history-card {
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .card-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .card-date {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+  }
+
+  .card-type {
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.04em;
+  }
+
+  .card-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
+  }
+
+  .card-reduction {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .card-duration {
+    font-size: 0.62rem;
+    color: var(--text-tertiary);
+  }
+
+  /* ── Mockup badge ──────────────────────────────────────────────────────── */
+  .mockup-badge {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background: rgba(26,138,138,0.12);
+    border: 1px solid rgba(26,138,138,0.25);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="mockup-badge">D2 — ATMOSPHERIC TERRAIN</div>
+
+<div class="screen">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="logo">mediCalm</span>
+    <span class="header-note">physiological relief</span>
+  </div>
+
+  <!-- Orb hero -->
+  <div class="orb-hero">
+    <div class="orb-atmosphere">
+      <div class="orb-halo-3"></div>
+      <div class="orb-halo-2"></div>
+      <div class="orb-halo-1"></div>
+      <div class="orb-sphere"></div>
+    </div>
+  </div>
+
+  <!-- Hero copy -->
+  <div class="hero">
+    <h1 class="hero-headline">Guided relief for what<br>your body is holding<br>right now.</h1>
+    <p class="hero-sub">Precision breathing calibrated to your current intensity — rib restriction, shallow breathing, neck and jaw tension, protective overactivation.</p>
+  </div>
+
+  <!-- Chip input -->
+  <div class="input-section">
+    <p class="input-prompt">How intense is it right now?</p>
+    <div class="intensity-chips">
+      <div class="chip">
+        <span class="chip-label">Low</span>
+        <span class="chip-desc">mild awareness<br>1–3</span>
+      </div>
+      <div class="chip selected">
+        <span class="chip-label">Moderate</span>
+        <span class="chip-desc">noticeable tension<br>4–6</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">High</span>
+        <span class="chip-desc">strong discomfort<br>7–10</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <button class="cta-btn">Enter guided session</button>
+    <p class="cta-footnote">Protocol selected to match your intensity · 4–6 min</p>
+  </div>
+
+  <!-- History -->
+  <div class="history-section">
+    <div class="history-label">Recent sessions</div>
+    <div class="history-cards">
+      <div class="history-card">
+        <div class="card-left">
+          <span class="card-date">Today, 2:14 PM</span>
+          <span class="card-type">Diaphragmatic · moderate</span>
+        </div>
+        <div class="card-right">
+          <span class="card-reduction">↓ 4 points</span>
+          <span class="card-duration">5 min 30 s</span>
+        </div>
+      </div>
+      <div class="history-card">
+        <div class="card-left">
+          <span class="card-date">Yesterday, 9:08 AM</span>
+          <span class="card-type">Box breathing · low</span>
+        </div>
+        <div class="card-right">
+          <span class="card-reduction">↓ 3 points</span>
+          <span class="card-duration">4 min 00 s</span>
+        </div>
+      </div>
+      <div class="history-card">
+        <div class="card-left">
+          <span class="card-date">Mar 22, 11:41 PM</span>
+          <span class="card-type">4-7-8 · high</span>
+        </div>
+        <div class="card-right">
+          <span class="card-reduction" style="color: var(--text-tertiary); font-weight: 400;">— interrupted</span>
+          <span class="card-duration">2 min 12 s</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

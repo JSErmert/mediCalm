@@ -15,9 +15,23 @@ function reducer(state: AppState, action: AppAction): AppState {
     case 'SET_SAFETY_STOP':
       return { ...state, safetyAssessment: action.assessment }
     case 'CLEAR_SESSION':
-      return { ...state, activeSession: null, safetyAssessment: null, pendingPainInput: null }
+      return {
+        ...state,
+        activeSession: null,
+        safetyAssessment: null,
+        pendingPainInput: null,
+        hariIntake: null,
+        interventionPackage: null,
+        sessionFraming: null,
+      }
     case 'UPDATE_SETTINGS':
       return { ...state, settings: { ...state.settings, ...action.settings } }
+    case 'SET_HARI_INTAKE':
+      return { ...state, hariIntake: action.intake }
+    case 'CLEAR_HARI_INTAKE':
+      return { ...state, hariIntake: null, interventionPackage: null, sessionFraming: null }
+    case 'SET_INTERVENTION_PACKAGE':
+      return { ...state, interventionPackage: action.pkg, sessionFraming: action.framing }
   }
 }
 
@@ -28,6 +42,9 @@ function getInitialState(): AppState {
     activeSession: null,
     safetyAssessment: null,
     settings: loadSettings(),
+    hariIntake: null,
+    interventionPackage: null,
+    sessionFraming: null,
   }
 }
 
