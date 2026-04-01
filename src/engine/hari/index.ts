@@ -28,7 +28,7 @@ import type {
   HariSessionResolution,
   SafetyGateResult,
 } from '../../types/hari'
-import { buildBodyContextSummary } from './bodyContext'
+import { buildBodyContextSummary } from './bodyContextSummary'
 import { classifySafetyFlags, safetyGateClear, type SafetyFlagClass } from './safetyGate'
 import { estimateState } from './stateEstimation'
 import { buildLinkMap } from './linkMapping'
@@ -86,7 +86,7 @@ export function runSafetyGate(
 }
 
 // Re-export key types and utilities for use in screens
-export { buildBodyContextSummary } from './bodyContext'
+export { buildBodyContextSummary } from './bodyContextSummary'
 export { SAFETY_FLAG_LABELS, STEP_1_SYMPTOMS } from './safetyGate'
 // Re-export bridge functions — session creation lives in sessionBridge
 export { synthesizePainInput, mapInterventionToProtocol, buildHariSession } from './sessionBridge'

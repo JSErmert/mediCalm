@@ -33,7 +33,7 @@ import type {
 } from '../types/hari'
 import { useAppContext } from '../context/AppContext'
 import { loadBodyContext } from '../storage/bodyContext'
-import { buildBodyContextSummary } from '../engine/hari/bodyContext'
+import { buildBodyContextSummary } from '../engine/hari/bodyContextSummary'
 import { getEligibleHariHistory } from '../storage/sessionHistory'
 import { getOrComputePatternSummary } from '../engine/hari/patternReader'
 import { computeAdaptiveIntakeDefaults } from '../engine/hari/adaptiveIntakeDefaults'

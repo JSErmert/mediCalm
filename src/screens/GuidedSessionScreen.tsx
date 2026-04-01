@@ -6,7 +6,7 @@ import { BreathingOrb } from '../components/BreathingOrb'
 import { CompletionForm } from '../components/CompletionForm'
 import { RoundDots } from '../components/RoundDots'
 import { saveSession } from '../storage/sessionHistory'
-import { deriveExpressionProfile } from '../engine/expressionProfile'
+import { deriveExpressionProfile } from '../engine/presentation/expressionProfile'
 import { decideContinuation } from '../engine/hari/reassessmentLoop'
 import styles from './GuidedSessionScreen.module.css'
 

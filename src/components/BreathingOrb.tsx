@@ -16,8 +16,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import type { TimingProfile } from '../types'
-import type { ExpressionProfile } from '../engine/expressionProfile'
-import { getMicroGuidance } from '../engine/microGuidance'
+import type { ExpressionProfile } from '../engine/presentation/expressionProfile'
+import { getMicroGuidance } from '../engine/presentation/microGuidance'
 import styles from './BreathingOrb.module.css'
 
 interface Props {

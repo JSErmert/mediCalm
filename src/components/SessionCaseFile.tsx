@@ -11,7 +11,7 @@
  *   Interpretation — re-derived at view time from stored intake fields
  */
 import type { HistoryEntry, PainInputState } from '../types'
-import { interpretSession } from '../engine/interpretationLayer'
+import { interpretSession } from '../engine/presentation/interpretationLayer'
 import styles from './SessionCaseFile.module.css'
 
 interface Props {

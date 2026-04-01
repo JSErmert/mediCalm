@@ -11,9 +11,9 @@
  * Safety logic (runSafetyPrecheck, resolveSession) is unaffected.
  */
 import type { PainInputState, RuntimeSession, SafetyAssessment } from '../types'
-import { scoreMechanisms } from './mechanismScoring'
-import { selectProtocol } from './protocolSelection'
-import { buildSession } from './sessionBuilder'
+import { scoreMechanisms } from '../engine/mechanismScoring'
+import { selectProtocol } from '../engine/protocolSelection'
+import { buildSession } from '../engine/sessionBuilder'
 
 export function buildDevSession(
   input: PainInputState,

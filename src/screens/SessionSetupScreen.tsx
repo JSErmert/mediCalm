@@ -16,7 +16,7 @@
 import { useMemo } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { PROTOCOLS } from '../data/protocols'
-import { interpretSession } from '../engine/interpretationLayer'
+import { interpretSession } from '../engine/presentation/interpretationLayer'
 import { getOrComputePatternSummary } from '../engine/hari/patternReader'
 import { computeSessionInsights } from '../engine/hari/sessionInsights'
 import { SessionInsightsPanel } from '../components/SessionInsightsPanel'

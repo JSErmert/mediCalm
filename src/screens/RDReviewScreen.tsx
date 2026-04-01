@@ -16,8 +16,8 @@
  *                      routes to session_setup (NOT directly to guided_session)
  */
 import { useAppContext } from '../context/AppContext'
-import { interpretSession } from '../engine/interpretationLayer'
-import { buildDevSession } from '../engine/devOverride'
+import { interpretSession } from '../engine/presentation/interpretationLayer'
+import { buildDevSession } from '../utils/devOverride'
 import { PROTOCOLS } from '../data/protocols'
 import styles from './RDReviewScreen.module.css'
 

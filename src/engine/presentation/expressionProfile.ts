@@ -13,7 +13,7 @@
  *
  * Authority: M2.5 UX refinement pass design spec
  */
-import type { RuntimeSession } from '../types'
+import type { RuntimeSession } from '../../types'
 
 export interface ExpressionProfile {
   profile_id: 'nerve' | 'severe' | 'moderate' | 'gentle'

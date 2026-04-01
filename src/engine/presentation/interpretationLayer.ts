@@ -15,7 +15,7 @@
  * Authority: Source Truth Doctrine (doc 02) — claims boundaries
  *            Safety + Reassurance Spec (doc 06) — language constraints
  */
-import type { PainInputState } from '../types'
+import type { PainInputState } from '../../types'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
