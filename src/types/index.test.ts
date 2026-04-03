@@ -6,6 +6,8 @@ import type {
   SessionResult,
   HistoryEntry,
   RuntimeSession,
+  EntryState,
+  UserProfile,
 } from './index'
 
 describe('core types', () => {
@@ -34,12 +36,9 @@ describe('core types', () => {
   })
 
   it('SafetyMode is union of three expected strings', () => {
-    const a: SafetyMode = 'NORMAL_GUIDANCE_MODE'
-    const b: SafetyMode = 'INTERRUPTED_CAUTION_MODE'
-    const c: SafetyMode = 'SAFETY_STOP_MODE'
-    expectTypeOf(a).toEqualTypeOf<SafetyMode>()
-    expectTypeOf(b).toEqualTypeOf<SafetyMode>()
-    expectTypeOf(c).toEqualTypeOf<SafetyMode>()
+    expectTypeOf<SafetyMode>().toEqualTypeOf<
+      'NORMAL_GUIDANCE_MODE' | 'INTERRUPTED_CAUTION_MODE' | 'SAFETY_STOP_MODE'
+    >()
   })
 
   it('SessionResult is union of four expected strings', () => {
@@ -53,5 +52,25 @@ describe('core types', () => {
 
   it('RuntimeSession pain_input is PainInputState', () => {
     expectTypeOf<RuntimeSession['pain_input']>().toEqualTypeOf<PainInputState>()
+  })
+
+  it('EntryState covers all seven M6 states', () => {
+    expectTypeOf<EntryState>().toEqualTypeOf<
+      'pain' | 'anxious' | 'angry' | 'sad' | 'exhausted' | 'tight' | 'overwhelmed'
+    >()
+  })
+
+  it('HistoryEntry accepts M6 state_entry field', () => {
+    expectTypeOf<HistoryEntry['state_entry']>().toEqualTypeOf<EntryState[] | undefined>()
+  })
+
+  it('HistoryEntry session_type includes STATE', () => {
+    expectTypeOf<NonNullable<HistoryEntry['session_type']>>().toEqualTypeOf<
+      'HARI' | 'LEGACY' | 'STATE'
+    >()
+  })
+
+  it('UserProfile accepts optional name field', () => {
+    expectTypeOf<UserProfile['name']>().toEqualTypeOf<string | undefined>()
   })
 })

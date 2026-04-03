@@ -14,6 +14,28 @@ export type ProvenanceLabel =
   | 'design_decision'
   | 'validation_needed'
 
+// ── M6 State Entry ────────────────────────────────────────────────────────────
+
+/**
+ * M6 entry states — all interpreted as autonomic dysregulation by HARI.
+ * Authority: M6.0 Architecture Lock § State Entry Layer
+ */
+export type EntryState =
+  | 'pain'
+  | 'anxious'
+  | 'angry'
+  | 'sad'
+  | 'exhausted'
+  | 'tight'
+  | 'overwhelmed'
+
+/**
+ * M6 outcome primary — replaces pain_before/after delta for STATE sessions.
+ * Authority: M6.0 § Completion Model
+ * Note: 'interrupted' is handled via session_status, not outcome_primary.
+ */
+export type M6OutcomePrimary = 'better' | 'same' | 'worse'
+
 // ── Safety ────────────────────────────────────────────────────────────────────
 
 /** Authority: Safety + Reassurance Spec (doc 06) § Safety Modes */
@@ -136,7 +158,23 @@ export interface HistoryEntry {
    * Absent in pre-M4.7 entries — treat as 'LEGACY' for backward compat.
    * Authority: M4.7 §4–§5
    */
-  session_type?: 'HARI' | 'LEGACY'
+  session_type?: 'HARI' | 'LEGACY' | 'STATE'
+  /**
+   * M6: selected entry states — present only on session_type === 'STATE' sessions.
+   * Authority: M6.0 § Completion Model, M6.2 § M6 Schema Additions
+   */
+  state_entry?: EntryState[]
+  /**
+   * M6: primary outcome for STATE sessions. Replaces pain delta.
+   * Authority: M6.0 § Completion Model
+   */
+  outcome_primary?: M6OutcomePrimary
+  /**
+   * M6: state-specific outcome descriptor string.
+   * Per-state values defined at M6.6 (completion screen milestone).
+   * Authority: M6.0 § Completion Model
+   */
+  outcome_marker?: string
   /**
    * M4.7: HARI intelligence block — present only on HARI sessions.
    * Authority: M4.7 §3–§4
@@ -163,6 +201,8 @@ export interface UserProfile {
   created_at: string
   last_opened_at: string
   timezone: string
+  /** Optional display name. Captured in a future onboarding milestone. */
+  name?: string
 }
 
 /** Authority: Data Schema (doc 15) § AppSettings */
