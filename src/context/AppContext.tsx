@@ -1,10 +1,11 @@
 import { createContext, useContext } from 'react'
-import type { AppSettings, PainInputState, RuntimeSession, SafetyAssessment } from '../types'
+import type { AppSettings, PainInputState, RuntimeSession, SafetyAssessment, EntryState } from '../types'
 import type { HariSessionIntake, InterventionPackage } from '../types/hari'
 
 /**
  * AppScreen — all screens the app can display.
  * M4 adds: session_validation, session_intake, hari_safety_gate
+ * M6.2 adds: state_selection, sad_safety, support_resources
  */
 export type AppScreen =
   | 'home'
@@ -17,6 +18,9 @@ export type AppScreen =
   | 'session_intake'       // M4.2 MVP — HARI 5-field intake
   | 'hari_safety_gate'     // C4 — pre-engine safety eligibility gate
   | 'body_context'         // M4.7.1 — user-managed persistent Body Context
+  | 'state_selection'      // M6.1 — M6 state-aware entry point
+  | 'sad_safety'           // M6.1.1 — SAD pre-intake safety gate
+  | 'support_resources'    // M6.1.1 — escalation exit support references
 
 export interface AppState {
   activeScreen: AppScreen
@@ -33,6 +37,13 @@ export interface AppState {
   interventionPackage: InterventionPackage | null
   /** M4.5: Pre-session framing text for the session setup screen */
   sessionFraming: string | null
+  /**
+   * M6.2: Selected entry states from StateSelectionScreen.
+   * Preserved across HomeScreen → StateSelectionScreen → SADSafetyScreen → Intake.
+   * Cleared on session save, escalation exit, or home reset.
+   * Authority: M6.2 § AppContext Additions
+   */
+  pendingStateEntry: EntryState[] | null
 }
 
 export type AppAction =
@@ -46,6 +57,8 @@ export type AppAction =
   | { type: 'SET_HARI_INTAKE'; intake: HariSessionIntake }
   | { type: 'CLEAR_HARI_INTAKE' }
   | { type: 'SET_INTERVENTION_PACKAGE'; pkg: InterventionPackage; framing: string }
+  | { type: 'SET_STATE_ENTRY'; entry: EntryState[] }   // M6.2
+  | { type: 'CLEAR_STATE_ENTRY' }                       // M6.2
 
 interface AppContextValue {
   state: AppState

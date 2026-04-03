@@ -12,11 +12,17 @@ function TestConsumer() {
       <span data-testid="input">
         {state.pendingPainInput ? state.pendingPainInput.pain_level : 'none'}
       </span>
+      <span data-testid="state-entry">
+        {state.pendingStateEntry ? state.pendingStateEntry.join(',') : 'none'}
+      </span>
       <button onClick={() => dispatch({ type: 'NAVIGATE', screen: 'pain_input' })}>
         go-input
       </button>
       <button onClick={() => dispatch({ type: 'NAVIGATE', screen: 'home' })}>
         go-home
+      </button>
+      <button onClick={() => dispatch({ type: 'NAVIGATE', screen: 'state_selection' })}>
+        go-state-selection
       </button>
       <button
         onClick={() =>
@@ -30,6 +36,19 @@ function TestConsumer() {
       </button>
       <button onClick={() => dispatch({ type: 'CLEAR_PAIN_INPUT' })}>
         clear-input
+      </button>
+      <button
+        onClick={() =>
+          dispatch({ type: 'SET_STATE_ENTRY', entry: ['sad', 'anxious'] })
+        }
+      >
+        set-state-entry
+      </button>
+      <button onClick={() => dispatch({ type: 'CLEAR_STATE_ENTRY' })}>
+        clear-state-entry
+      </button>
+      <button onClick={() => dispatch({ type: 'CLEAR_SESSION' })}>
+        clear-session
       </button>
     </div>
   )
@@ -62,5 +81,36 @@ describe('AppContext', () => {
     expect(screen.getByTestId('input').textContent).toBe('7')
     await userEvent.click(screen.getByText('clear-input'))
     expect(screen.getByTestId('input').textContent).toBe('none')
+  })
+
+  it('pendingStateEntry starts as null', () => {
+    render(<AppProvider><TestConsumer /></AppProvider>)
+    expect(screen.getByTestId('state-entry').textContent).toBe('none')
+  })
+
+  it('SET_STATE_ENTRY stores selected states', async () => {
+    render(<AppProvider><TestConsumer /></AppProvider>)
+    await userEvent.click(screen.getByText('set-state-entry'))
+    expect(screen.getByTestId('state-entry').textContent).toBe('sad,anxious')
+  })
+
+  it('CLEAR_STATE_ENTRY resets pendingStateEntry to null', async () => {
+    render(<AppProvider><TestConsumer /></AppProvider>)
+    await userEvent.click(screen.getByText('set-state-entry'))
+    await userEvent.click(screen.getByText('clear-state-entry'))
+    expect(screen.getByTestId('state-entry').textContent).toBe('none')
+  })
+
+  it('CLEAR_SESSION clears pendingStateEntry', async () => {
+    render(<AppProvider><TestConsumer /></AppProvider>)
+    await userEvent.click(screen.getByText('set-state-entry'))
+    await userEvent.click(screen.getByText('clear-session'))
+    expect(screen.getByTestId('state-entry').textContent).toBe('none')
+  })
+
+  it('navigates to state_selection', async () => {
+    render(<AppProvider><TestConsumer /></AppProvider>)
+    await userEvent.click(screen.getByText('go-state-selection'))
+    expect(screen.getByTestId('screen').textContent).toBe('state_selection')
   })
 })

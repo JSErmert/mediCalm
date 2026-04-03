@@ -23,6 +23,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         hariIntake: null,
         interventionPackage: null,
         sessionFraming: null,
+        pendingStateEntry: null,
       }
     case 'UPDATE_SETTINGS':
       return { ...state, settings: { ...state.settings, ...action.settings } }
@@ -32,6 +33,10 @@ function reducer(state: AppState, action: AppAction): AppState {
       return { ...state, hariIntake: null, interventionPackage: null, sessionFraming: null }
     case 'SET_INTERVENTION_PACKAGE':
       return { ...state, interventionPackage: action.pkg, sessionFraming: action.framing }
+    case 'SET_STATE_ENTRY':
+      return { ...state, pendingStateEntry: action.entry }
+    case 'CLEAR_STATE_ENTRY':
+      return { ...state, pendingStateEntry: null }
   }
 }
 
@@ -45,6 +50,7 @@ function getInitialState(): AppState {
     hariIntake: null,
     interventionPackage: null,
     sessionFraming: null,
+    pendingStateEntry: null,
   }
 }
 
