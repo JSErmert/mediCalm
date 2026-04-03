@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AppProvider } from '../context/AppProvider'
 import { HomeScreen } from './HomeScreen'
+import { useAppContext } from '../context/AppContext'
 
 function renderWithProvider() {
   return render(
@@ -49,5 +50,22 @@ describe('HomeScreen', () => {
     const btn = screen.getByRole('button', { name: /start a new guided session/i })
     await userEvent.click(btn)
     // Navigation is handled by AppContext; this confirms no error is thrown
+  })
+
+  it('Start button navigates to state_selection', async () => {
+    let capturedScreen = ''
+    function ScreenCapture() {
+      const { state } = useAppContext()
+      capturedScreen = state.activeScreen
+      return null
+    }
+    render(
+      <AppProvider>
+        <ScreenCapture />
+        <HomeScreen />
+      </AppProvider>
+    )
+    await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
+    expect(capturedScreen).toBe('state_selection')
   })
 })

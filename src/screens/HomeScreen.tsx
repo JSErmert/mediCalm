@@ -45,11 +45,12 @@ export function HomeScreen() {
   }, [])
 
   function handleStart() {
-    // M4.1 §18: If previous session is pending validation, show gate first.
+    // M6.2: All new sessions enter via state selection.
+    // Session validation gate is preserved — if unvalidated session exists, gate first.
     if (hasUnvalidatedSession()) {
       dispatch({ type: 'NAVIGATE', screen: 'session_validation' })
     } else {
-      dispatch({ type: 'NAVIGATE', screen: 'session_intake' })
+      dispatch({ type: 'NAVIGATE', screen: 'state_selection' })
     }
   }
 
