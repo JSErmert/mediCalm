@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AppProvider } from '../context/AppProvider'
 import { HomeScreen } from './HomeScreen'
@@ -66,6 +66,6 @@ describe('HomeScreen', () => {
       </AppProvider>
     )
     await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
-    expect(capturedScreen).toBe('state_selection')
+    await waitFor(() => expect(capturedScreen).toBe('state_selection'))
   })
 })

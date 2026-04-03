@@ -7,6 +7,7 @@ import App from './App'
 // M6.2: Start now routes to StateSelectionScreen. Pain button → session_intake.
 async function navigatePastStateSelection() {
   await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
+  // Selects Pain (any valid state would work — Pain chosen as the most-tested path)
   await userEvent.click(screen.getByRole('button', { name: /select pain state/i }))
 }
 
