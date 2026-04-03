@@ -4,6 +4,8 @@
  *
  * Uses Framer Motion AnimatePresence for crossfade transitions (300ms, ease).
  * Screen routing is driven by AppContext state machine.
+ *
+ * M6.2: adds state_selection, sad_safety, support_resources routing.
  */
 import { AnimatePresence } from 'framer-motion'
 import { AppProvider } from './context/AppProvider'
@@ -19,6 +21,9 @@ import { SessionValidationScreen } from './screens/SessionValidationScreen'
 import { SessionIntakeScreen } from './screens/SessionIntakeScreen'
 import { HariSafetyGateScreen } from './screens/HariSafetyGateScreen'
 import { BodyContextScreen } from './screens/BodyContextScreen'
+import { StateSelectionScreen } from './screens/StateSelectionScreen'
+import { SADSafetyScreen } from './screens/SADSafetyScreen'
+import { SupportResourcesScreen } from './screens/SupportResourcesScreen'
 import styles from './App.module.css'
 
 function ScreenRouter() {
@@ -76,6 +81,21 @@ function ScreenRouter() {
       {activeScreen === 'body_context' && (
         <ScreenTransition screenKey="body_context">
           <BodyContextScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'state_selection' && (
+        <ScreenTransition screenKey="state_selection">
+          <StateSelectionScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'sad_safety' && (
+        <ScreenTransition screenKey="sad_safety">
+          <SADSafetyScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'support_resources' && (
+        <ScreenTransition screenKey="support_resources">
+          <SupportResourcesScreen />
         </ScreenTransition>
       )}
     </AnimatePresence>
