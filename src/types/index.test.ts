@@ -7,6 +7,7 @@ import type {
   HistoryEntry,
   RuntimeSession,
   EntryState,
+  M6OutcomePrimary,
   UserProfile,
 } from './index'
 
@@ -58,6 +59,10 @@ describe('core types', () => {
     expectTypeOf<EntryState>().toEqualTypeOf<
       'pain' | 'anxious' | 'angry' | 'sad' | 'exhausted' | 'tight' | 'overwhelmed'
     >()
+  })
+
+  it('M6OutcomePrimary covers better, same, worse', () => {
+    expectTypeOf<M6OutcomePrimary>().toEqualTypeOf<'better' | 'same' | 'worse'>()
   })
 
   it('HistoryEntry accepts M6 state_entry field', () => {
