@@ -28,7 +28,7 @@ export function SADSafetyScreen() {
       <button type="button" onClick={handleNo} aria-label="No, continue">
         No, continue
       </button>
-      <button type="button" onClick={handleYes} aria-label="Yes">
+      <button type="button" onClick={handleYes} aria-label="Yes, I am feeling persistently low">
         Yes
       </button>
       <button type="button" onClick={handleBack} aria-label="Back to state selection">
