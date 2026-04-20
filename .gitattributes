@@ -4,3 +4,6 @@
 .gitignore          export-ignore
 tsconfig.tsbuildinfo export-ignore
 .git/               export-ignore
+test-results/       export-ignore
+playwright-report/  export-ignore
+coverage/           export-ignore
