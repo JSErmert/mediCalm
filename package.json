@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "e2e": "playwright test",
-    "capture": "playwright test e2e/baseline-capture.spec.ts"
+    "capture": "playwright test e2e/baseline-capture.spec.ts",
+    "snapshot:review": "git archive --format=zip --prefix=mediCalm/ HEAD -o mediCalm-review-snapshot.zip"
   },
   "dependencies": {
     "framer-motion": "^11.15.0",

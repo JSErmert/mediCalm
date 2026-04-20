@@ -11,3 +11,4 @@ tsconfig.tsbuildinfo
 playwright-report/
 coverage/
 *.log
+mediCalm-review-snapshot.zip
