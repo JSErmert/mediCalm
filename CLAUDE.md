@@ -1,4 +1,4 @@
-Build MediCalm using the markdown pack as the primary authority, following 00_mediCalm_document_hierarchy_map.md.
+Build MediCalm using the markdown pack as the primary authority, following docs/context/00_mediCalm_document_hierarchy_map.md.
 
 Use Context7 for all current framework, library, API, animation, storage, accessibility, audio, and deployment decisions so implementation stays up to date and avoids deprecated or insecure patterns.
 
