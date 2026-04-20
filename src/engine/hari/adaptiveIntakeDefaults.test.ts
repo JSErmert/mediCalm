@@ -19,9 +19,7 @@ import type {
   FlareSensitivity,
   SessionIntent,
   SessionLengthPreference,
-  RoundCountProfile,
 } from '../../types/hari'
-import type { OutcomeTrajectory } from '../../types/patterns'
 
 // ── Fixture builders ──────────────────────────────────────────────────────────
 

@@ -65,14 +65,14 @@ export function SessionValidationScreen() {
     if (!entry) return
     resolveSessionValidation(entry.session_id, 'validated')
     clearValidationGate()
-    dispatch({ type: 'NAVIGATE', screen: 'session_intake' })
+    dispatch({ type: 'NAVIGATE', screen: 'state_selection' })
   }
 
   function handleInvalidate() {
     if (!entry) return
     resolveSessionValidation(entry.session_id, 'invalidated')
     clearValidationGate()
-    dispatch({ type: 'NAVIGATE', screen: 'session_intake' })
+    dispatch({ type: 'NAVIGATE', screen: 'state_selection' })
   }
 
   function handleBack() {
@@ -81,7 +81,7 @@ export function SessionValidationScreen() {
 
   // If no pending session (edge case), skip straight to intake
   if (entry === null) {
-    dispatch({ type: 'NAVIGATE', screen: 'session_intake' })
+    dispatch({ type: 'NAVIGATE', screen: 'state_selection' })
     return null
   }
 

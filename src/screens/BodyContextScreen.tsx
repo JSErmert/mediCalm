@@ -214,7 +214,7 @@ export function BodyContextScreen() {
         >
           ← Back
         </button>
-        <h1 className={styles.heading}>Body Context</h1>
+        <h1 className={styles.heading}>Your State</h1>
         <p className={styles.subheading}>
           Add anything that tends to affect how your body feels over time.
         </p>
@@ -432,7 +432,7 @@ export function BodyContextScreen() {
             {showResetConfirm ? (
               <div className={styles.resetConfirm} role="group" aria-label="Confirm reset">
                 <p className={styles.resetConfirmText}>
-                  Remove all Body Context? This cannot be undone.
+                  Remove all Your State entries? This cannot be undone.
                 </p>
                 <div className={styles.resetConfirmActions}>
                   <button
@@ -457,7 +457,7 @@ export function BodyContextScreen() {
                 className={styles.resetButton}
                 onClick={() => setShowResetConfirm(true)}
               >
-                Reset all Body Context
+                Reset all Your State
               </button>
             )}
           </div>

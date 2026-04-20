@@ -1,0 +1,224 @@
+/* StateSelectionScreen.module.css
+   D4-B4 Deep Current — Layout C v1.2 (approved)
+   Authority: M6.1 State Selection Screen
+*/
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--screen-max-width);
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 var(--screen-padding) var(--space-8);
+  color: var(--color-text-primary);
+}
+
+.wordmark {
+  font-size: 0.60rem;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.18);
+  text-align: center;
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-8);
+}
+
+.heading {
+  font-size: 1.2rem;
+  font-weight: var(--weight-light);
+  color: var(--color-text-primary);
+  letter-spacing: -0.018em;
+  line-height: var(--leading-tight);
+  margin-bottom: 5px;
+}
+
+.sub {
+  font-size: 0.68rem;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-6);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: var(--space-5);
+}
+
+.row {
+  display: flex;
+  gap: 9px;
+}
+
+.chip {
+  flex: 1;
+  padding: 11px 0;
+  border-radius: var(--radius-full);
+  font-size: 0.84rem;
+  font-weight: var(--weight-regular);
+  font-family: var(--font-sans);
+  letter-spacing: 0.01em;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  min-height: var(--touch-min);
+  transition:
+    color var(--transition-quick),
+    background var(--transition-quick),
+    border-color var(--transition-quick);
+}
+
+.heavy {
+  flex: 0 0 calc(50% - 4.5px);
+  margin: 0 auto;
+}
+
+.off {
+  background: rgba(10, 26, 36, 0.85);
+  border: 1px solid rgba(26, 138, 138, 0.15);
+  color: rgba(255, 255, 255, 0.46);
+}
+
+.on {
+  background: rgba(26, 138, 138, 0.12);
+  border: 1px solid rgba(26, 138, 138, 0.50);
+  color: rgba(255, 255, 255, 0.92);
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.on::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(26, 138, 138, 0.55);
+  animation: ping 0.70s cubic-bezier(0.2, 0, 0.8, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    box-shadow:
+      0 0 0 2px rgba(26, 138, 138, 0.06),
+      0 0 10px rgba(26, 138, 138, 0.16),
+      0 0 22px rgba(26, 138, 138, 0.07);
+  }
+  50% {
+    box-shadow:
+      0 0 0 4px rgba(26, 138, 138, 0.09),
+      0 0 20px rgba(26, 138, 138, 0.30),
+      0 0 42px rgba(26, 138, 138, 0.14);
+  }
+}
+
+@keyframes ping {
+  0%   { transform: scale(1.0);  opacity: 0.65; }
+  100% { transform: scale(1.75); opacity: 0; }
+}
+
+.subBlock {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition:
+    max-height 0.38s cubic-bezier(0.0, 0.0, 0.4, 1.0),
+    opacity 0.30s ease;
+}
+
+.subBlockOpen {
+  pointer-events: auto;
+  max-height: 52px;
+  opacity: 1;
+  overflow: visible;
+}
+
+.subRow {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  overflow: visible;
+}
+
+/* ── Sub-chips: shared base properties ── */
+.subChip,
+.subChipWide {
+  border-radius: var(--radius-full);
+  font-size: 0.74rem;
+  font-weight: var(--weight-regular);
+  font-family: var(--font-sans);
+  letter-spacing: 0.01em;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: var(--touch-min);
+  transition:
+    color var(--transition-quick),
+    background var(--transition-quick),
+    border-color var(--transition-quick);
+}
+
+/* ── Sub-chip: Angry + Sad (fixed 68px) ── */
+.subChip {
+  flex: 0 0 68px;
+  padding: 9px 0;
+}
+
+/* ── Sub-chip-wide: Overwhelmed (flex-grow) ── */
+.subChipWide {
+  flex: 1;
+  padding: 9px 10px;
+}
+
+/* Off state for sub-chips: dashed border signals sub-level */
+.subChip.off,
+.subChipWide.off {
+  background: rgba(8, 20, 30, 0.80);
+  border: 1px dashed rgba(26, 138, 138, 0.20);
+  color: rgba(255, 255, 255, 0.40);
+}
+/* Sub-chip on state is handled by the shared .on class below */
+
+.continueBtn {
+  width: 100%;
+  height: 46px;
+  background: rgba(26, 138, 138, 0.10);
+  border: 1px solid rgba(26, 138, 138, 0.32);
+  border-radius: var(--radius-full);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.82rem;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  margin-top: var(--space-1);
+  transition: opacity var(--transition-quick);
+}
+
+.continueBtn:hover {
+  background: rgba(26, 138, 138, 0.17);
+  box-shadow: 0 0 20px rgba(26, 138, 138, 0.12);
+}
+
+.continueBtn:active {
+  opacity: 0.80;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .on {
+    animation: none;
+    box-shadow: 0 0 10px rgba(26, 138, 138, 0.16);
+  }
+  .on::after {
+    display: none;
+  }
+  .subBlock {
+    transition: none;
+  }
+}

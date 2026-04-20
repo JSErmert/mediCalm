@@ -513,3 +513,209 @@ export interface PersistedHariMetadata {
  * Authority: M4.1 §18 (Previous Session Validation Gate)
  */
 export type SessionValidationStatus = 'pending' | 'validated' | 'invalidated'
+
+// ── M6.4 — HARI State Interpretation Engine ───────────────────────────────────
+
+/**
+ * Emotional/physical states the user can report in the M6 intake flow.
+ * Authority: M6.4 State Interpretation Engine spec
+ */
+export type HariEmotionalState =
+  | 'overwhelmed'
+  | 'exhausted'
+  | 'pain'
+  | 'anxious'
+  | 'tight'
+  | 'angry'
+  | 'sad'
+
+/**
+ * Breath ratio pattern — inhale/exhale counts.
+ * Authority: M6.4 per-state mapping
+ */
+export type BreathPattern = '2/4' | '3/5' | '4/7'
+
+/**
+ * Effort level required for the session.
+ * Authority: M6.4 per-state mapping
+ */
+export type EffortLevel = 'minimal' | 'reduced' | 'standard'
+
+/**
+ * Session bias — primary regulatory goal for this session.
+ * Authority: M6.4 per-state mapping
+ */
+export type SessionBias =
+  | 'protect_decompress'
+  | 'restore_minimize_effort'
+  | 'simplify_downshift'
+  | 'calm_downregulate'
+  | 'support_stabilize'
+  | 'release_expand'
+  | 'release_ground'
+
+/**
+ * Input to the state interpretation engine.
+ * Authority: M6.4
+ */
+export interface StateInterpretationInput {
+  /** Active emotional/physical states reported by the user (1–7). */
+  states: HariEmotionalState[]
+  /** Current intensity 0–10 (integer). Used for safety downgrade threshold. */
+  intensity: number
+  /** Flare sensitivity — maps to FlareSensitivity where 'high' triggers downgrade. */
+  sensitivity: 'low' | 'moderate' | 'high' | 'not_sure'
+}
+
+/**
+ * Output of the state interpretation engine.
+ * Authority: M6.4
+ */
+export interface StateInterpretationResult {
+  /** True when 5+ states active — triggers overload protocol. */
+  overload: boolean
+  /** Highest-priority state driving breath, effort, and bias. */
+  primary: HariEmotionalState
+  /**
+   * Second state in priority order.
+   * Present only in unified mode (1–2 states). Absent in prioritized (3–4) and overload (5+).
+   */
+  secondary?: HariEmotionalState
+  /** Breath ratio pattern for this session (may be safety-downgraded). */
+  breath: BreathPattern
+  /** Effort level for this session. */
+  effort: EffortLevel
+  /** Primary regulatory bias for this session. */
+  bias: SessionBias
+}
+
+// ── M6.5 — Session Configuration Layer ───────────────────────────────────────
+
+/**
+ * Deterministic session execution blueprint produced by M6.5.
+ * Consumed by the guided session layer — not stored in Body Context.
+ * Authority: M6.5 Session Configuration Layer spec
+ */
+export interface SessionConfig {
+  /** Human-readable session name derived from bias. */
+  sessionName: string
+  /** Breath ratio pattern preserved from M6.4. */
+  breathPattern: BreathPattern
+  /** Inhale duration in seconds. */
+  inhaleSeconds: number
+  /** Hold duration in seconds (0 for all current patterns). */
+  holdSeconds: number
+  /** Exhale duration in seconds. */
+  exhaleSeconds: number
+  /** Effort level preserved from M6.4. */
+  effortLevel: EffortLevel
+  /** Instruction tone label for the guided session layer. */
+  instructionTone: string
+  /** Short opening prompt shown at session start. */
+  openingPrompt: string
+  /** Total session duration in seconds. */
+  durationSeconds: number
+  /** Session bias preserved from M6.4. */
+  bias: SessionBias
+  /** True when the overload protocol is active — guides rendering layer. */
+  overloadSafe: boolean
+}
+
+// ── M6.8 — Input → Breathwork Architecture ───────────────────────────────────
+
+/**
+ * Regulatory goal derived from input states.
+ * Abstracts emotional/physical state from specific breath ratios.
+ * Authority: M6.8
+ */
+export type RegulatoryGoal =
+  | 'decompress'    // overwhelmed, pain — soften, no effort, safe
+  | 'restore'       // exhausted, sad — minimal demand, support recovery
+  | 'stabilize'     // mixed/uncertain — steady, predictable
+  | 'downregulate'  // anxious — extended exhale, parasympathetic
+  | 'expand'        // tight — lateral breath, spacious
+  | 'ground'        // angry — rhythmic, anchored
+  | 'activate'      // sad/exhausted when feasible — mild energy support
+
+/**
+ * Regulatory need profile — intermediate layer between input and breath selection.
+ * Decouples state interpretation from direct ratio assignment.
+ * Authority: M6.8
+ */
+export interface NeedProfile {
+  primaryGoal: RegulatoryGoal
+  secondaryGoal?: RegulatoryGoal
+  effortCapacity: EffortLevel
+  /** Safety constraint level — drives feasibility decisions. */
+  safetyLevel: 'high' | 'moderate' | 'standard'
+  /** True when sad/exhausted primary and conditions allow mild activation. */
+  activationPermitted: boolean
+  /** True when breath was safety-downgraded (intensity >= 7 or sensitivity high). */
+  breathDowngraded: boolean
+  overload: boolean
+}
+
+/**
+ * Feasibility constraints derived from NeedProfile.
+ * Applied before breath family selection to enforce safe session bounds.
+ * Authority: M6.8
+ */
+export interface FeasibilityProfile {
+  maxDurationSeconds: number
+  holdsPermitted: boolean
+  minInhaleSeconds: number
+  feasibilityApplied: boolean
+  feasibilityNote?: string
+}
+
+/**
+ * Named breath family — a regulatory category of breathing approaches.
+ * Separates goal from specific timing to prevent direct state → ratio mapping.
+ * Authority: M6.8
+ */
+export type BreathFamilyName =
+  | 'flare_safe_soft_exhale'  // pain + high sensitivity — low effort (3/6)
+  | 'decompression_expand'    // pain, standard sensitivity — expansion (4/6)
+  | 'restorative'             // exhausted, sad — gentle support (3/6)
+  | 'neutral_reset'           // mixed/uncertain — moderate steady (4/6)
+  | 'calm_downregulate'       // anxious, overwhelmed — strong exhale bias (4/7)
+  | 'lateral_expansion'       // tight — spacious, expansive (3/5)
+  | 'grounding'               // angry — anchored rhythm (3/5)
+  | 'gentle_activation'       // sad/exhausted when feasible — inhale-dominant (4/3)
+
+/**
+ * Concrete breath family instance — timing and session framing.
+ * Authority: M6.8
+ */
+export interface BreathFamily {
+  name: BreathFamilyName
+  inhaleSeconds: number
+  holdSeconds: number
+  exhaleSeconds: number
+  sessionName: string
+  instructionTone: string
+  openingPrompt: string
+}
+
+/**
+ * Final breath prescription — concrete session execution parameters.
+ * Output of the M6.8 pipeline. Runtime input replacing FeasibleSessionProfile.
+ * Authority: M6.8
+ */
+export interface BreathPrescription {
+  family: BreathFamilyName
+  inhaleSeconds: number
+  holdSeconds: number
+  exhaleSeconds: number
+  durationSeconds: number
+  sessionName: string
+  instructionTone: string
+  openingPrompt: string
+  overloadSafe: boolean
+  feasibilityApplied: boolean
+  feasibilityNote?: string
+  /** M7.1: True when the adaptation layer modified this prescription. */
+  adaptationApplied?: boolean
+  /** M7.1: Plain-language note describing what was adapted and why. */
+  adaptationNote?: string
+}

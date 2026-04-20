@@ -37,6 +37,8 @@ import { buildBodyContextSummary } from '../engine/hari/bodyContextSummary'
 import { getEligibleHariHistory } from '../storage/sessionHistory'
 import { getOrComputePatternSummary } from '../engine/hari/patternReader'
 import { computeAdaptiveIntakeDefaults } from '../engine/hari/adaptiveIntakeDefaults'
+import { interpretStates } from '../engine/hari/stateInterpretation'
+import type { HariEmotionalState } from '../types/hari'
 import styles from './SessionIntakeScreen.module.css'
 
 // ── Option Definitions ────────────────────────────────────────────────────────
@@ -82,7 +84,7 @@ const SESSION_LENGTH_OPTIONS: { value: SessionLengthPreference; label: string }[
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function SessionIntakeScreen() {
-  const { dispatch } = useAppContext()
+  const { state, dispatch } = useAppContext()
 
   const [sessionIntent, setSessionIntent] = useState<SessionIntent | null>(null)
   const [currentContext, setCurrentContext] = useState<CurrentContext | null>(null)
@@ -161,6 +163,16 @@ export function SessionIntakeScreen() {
       baseline_intensity: baselineIntensity,
       flare_sensitivity: flareSensitivity,
       session_length_preference: sessionLength,
+    }
+
+    // M6.4: interpret pending state entry into breath/effort/bias parameters
+    if (state.pendingStateEntry && state.pendingStateEntry.length > 0) {
+      const interpretationResult = interpretStates({
+        states: state.pendingStateEntry as HariEmotionalState[],
+        intensity: baselineIntensity,
+        sensitivity: flareSensitivity,
+      })
+      dispatch({ type: 'SET_STATE_INTERPRETATION', result: interpretationResult })
     }
 
     dispatch({ type: 'SET_HARI_INTAKE', intake })

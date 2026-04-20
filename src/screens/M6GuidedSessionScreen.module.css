@@ -1,0 +1,194 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 100dvh;
+  padding: 3rem 1.5rem 2rem;
+  gap: 2rem;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+
+.sessionHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.sessionName {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+  margin: 0;
+}
+
+.openingPrompt {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.65));
+  max-width: 28ch;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Breath Area ─────────────────────────────────────────────────────────────── */
+
+.breathArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.phaseLabel {
+  font-size: 1.75rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--color-text-primary, rgba(255, 255, 255, 0.9));
+  margin: 0;
+  min-height: 2.25rem;
+}
+
+.phaseCount {
+  font-size: 3.5rem;
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  color: var(--color-accent, rgba(180, 210, 230, 0.75));
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  min-width: 2ch;
+  text-align: center;
+}
+
+/* ── Timer ───────────────────────────────────────────────────────────────────── */
+
+.timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.timerValue {
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.55));
+  font-variant-numeric: tabular-nums;
+}
+
+.timerLabel {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.35));
+}
+
+/* ── Progress Bar ────────────────────────────────────────────────────────────── */
+
+.progressBar {
+  width: 100%;
+  max-width: 20rem;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: rgba(180, 210, 230, 0.5);
+  border-radius: 1px;
+  transition: width 0.95s linear;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────────── */
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 20rem;
+}
+
+.pauseButton {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.pauseButton:hover {
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.endButton {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.endButton:hover {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ── Completion ──────────────────────────────────────────────────────────────── */
+
+.completion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex: 1;
+  text-align: center;
+}
+
+.completionTitle {
+  font-size: 2.25rem;
+  font-weight: 300;
+  color: var(--color-text-primary, rgba(255, 255, 255, 0.9));
+  margin: 0;
+}
+
+.completionSub {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+  margin: 0;
+}
+
+.homeButton {
+  margin-top: 1.5rem;
+  padding: 0.875rem 2rem;
+  border-radius: 0.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.homeButton:hover {
+  background: rgba(255, 255, 255, 0.11);
+}

@@ -1,10 +1,14 @@
 /**
- * SADSafetyScreen — M6.1.1 SAD Safety Gate (STUB)
+ * SADSafetyScreen — M6.1.1 SAD Safety Gate
  *
- * Full implementation: M6.1.1
+ * Appears when Sad is in state_entry. Brief boundary check only.
+ * No, continue → session_intake (preserve state).
+ * Yes → CLEAR_STATE_ENTRY → support_resources.
+ * Back → state_selection (preserve selections).
  * Authority: M6.1.1 SAD Safety Screen spec (v2.1)
  */
 import { useAppContext } from '../context/AppContext'
+import styles from './SADSafetyScreen.module.css'
 
 export function SADSafetyScreen() {
   const { dispatch } = useAppContext()
@@ -23,17 +27,26 @@ export function SADSafetyScreen() {
   }
 
   return (
-    <main aria-label="SAD safety check">
-      <h1>Before we continue, a quick check</h1>
-      <button type="button" onClick={handleNo} aria-label="No, continue">
-        No, continue
+    <main className={styles.screen} aria-label="SAD safety check">
+      <button type="button" className={styles.back} onClick={handleBack} aria-label="Back to state selection">
+        ← Back
       </button>
-      <button type="button" onClick={handleYes} aria-label="Yes, I am feeling persistently low">
-        Yes
-      </button>
-      <button type="button" onClick={handleBack} aria-label="Back to state selection">
-        Back
-      </button>
+
+      <div className={styles.content}>
+        <h1 className={styles.heading}>Before we continue, a quick check</h1>
+        <p className={styles.body}>
+          Are you feeling persistently low — in a way that goes beyond today?
+        </p>
+
+        <div className={styles.actions}>
+          <button type="button" className={styles.noCta} onClick={handleNo}>
+            No, continue
+          </button>
+          <button type="button" className={styles.yesCta} onClick={handleYes}>
+            Yes
+          </button>
+        </div>
+      </div>
     </main>
   )
 }

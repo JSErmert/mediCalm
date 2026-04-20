@@ -225,23 +225,120 @@
   text-align: center;
 }
 
-.bodyContextLink {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 0.64rem;
-  font-family: inherit;
-  color: rgba(26, 138, 138, 0.55);
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  text-decoration-color: rgba(26, 138, 138, 0.28);
-  transition: color 0.15s ease;
+/* ── Context row — Your State + Your Patterns ─────────────────────────── */
+
+.contextRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+  width: 100%;
+  max-width: 22rem;
 }
 
-.bodyContextLink:hover {
-  color: rgba(26, 138, 138, 0.85);
+.yourStateCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(26, 138, 138, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-family: inherit;
+  min-height: var(--touch-min, 44px);
+}
+
+.yourStateCard:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.contextCardLabel {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(26, 138, 138, 0.6);
+  margin-bottom: 0.3rem;
+}
+
+.contextCardSub {
+  display: block;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1.4;
+}
+
+.contextCardHint {
+  display: block;
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1.5;
+  margin-top: 0.25rem;
+}
+
+.yourPatternsCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(26, 138, 138, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+}
+
+/* ── Continue What Helped ─────────────────────────────────────────────────── */
+
+.continueZone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 22rem;
+}
+
+.continueCard {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.75rem 1.5rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(26, 138, 138, 0.28);
+  background: rgba(26, 138, 138, 0.07);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.continueCard:hover {
+  background: rgba(26, 138, 138, 0.14);
+  border-color: rgba(26, 138, 138, 0.45);
+}
+
+.continueCard:active {
+  opacity: 0.76;
+}
+
+.continueCardTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.continueCardSub {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.continueConfirm {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.52);
+  font-style: italic;
+  text-align: center;
+  padding: 0.5rem 0;
 }
 
 /* ══════════════════════════════════════════════════════════════════════

@@ -90,3 +90,13 @@ export { buildBodyContextSummary } from './bodyContextSummary'
 export { SAFETY_FLAG_LABELS, STEP_1_SYMPTOMS } from './safetyGate'
 // Re-export bridge functions — session creation lives in sessionBridge
 export { synthesizePainInput, mapInterventionToProtocol, buildHariSession } from './sessionBridge'
+// M6.4 — State Interpretation Engine
+export { interpretStates } from './stateInterpretation'
+// M6.5 — Session Configuration Layer
+export { buildSessionConfig } from './sessionConfig'
+// M6.8 — Input → Breathwork Architecture
+export { classifyNeedProfile } from './needProfile'
+export { selectBreathFamily, prescribeBreath } from './breathFamily'
+export { buildFeasibilityProfile } from './feasibility'
+// M7.1 — Controlled Adaptation Layer
+export { isSimilarState, applyHARIAdaptation } from './adaptation'

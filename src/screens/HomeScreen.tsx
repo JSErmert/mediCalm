@@ -12,13 +12,15 @@
  * No streaks. No badges. No gamification. Worse/interrupted outcomes are labelled accurately.
  */
 import { useEffect, useState } from 'react'
-import type { HistoryEntry } from '../types'
+import type { HistoryEntry, RuntimeSession } from '../types'
 import { loadHistory, deleteSession, updateSessionFeedback } from '../storage/sessionHistory'
 import { hasUnvalidatedSession } from '../storage/bodyContext'
 import { useAppContext } from '../context/AppContext'
 import { isDevOverride } from '../utils/devFlags'
 import { HistoryCard } from '../components/HistoryCard'
 import { SessionCaseFile } from '../components/SessionCaseFile'
+import { YourPatternsPanel } from '../components/YourPatternsPanel'
+import { buildContinueWhatHelpedSession } from '../engine/hari/continueWhatHelped'
 import styles from './HomeScreen.module.css'
 
 export function HomeScreen() {
@@ -26,6 +28,8 @@ export function HomeScreen() {
   const [history, setHistory] = useState<HistoryEntry[]>([])
   const [devMode, setDevMode] = useState(isDevOverride())
   const [caseFileEntry, setCaseFileEntry] = useState<HistoryEntry | null>(null)
+  const [showContinue, setShowContinue] = useState(false)
+  const [continueConfirmed, setContinueConfirmed] = useState(false)
 
   function handleToggleDev() {
     if (devMode) {
@@ -39,9 +43,13 @@ export function HomeScreen() {
 
   useEffect(() => {
     const stored = loadHistory()
-    setHistory([...stored].sort(
+    const sorted = [...stored].sort(
       (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    ))
+    )
+    setHistory(sorted)
+    if (sorted.length > 0) {
+      setShowContinue(true)
+    }
   }, [])
 
   function handleStart() {
@@ -52,6 +60,45 @@ export function HomeScreen() {
     } else {
       dispatch({ type: 'NAVIGATE', screen: 'state_selection' })
     }
+  }
+
+  function handleContinueWhatHelped() {
+    const { prescription } = buildContinueWhatHelpedSession()
+
+    // Build a minimal synthetic RuntimeSession so GuidedSessionScreen can run
+    // and save the session to history via its existing completion flow.
+    const roundEstimate = Math.max(1, Math.round(
+      prescription.durationSeconds /
+      (prescription.inhaleSeconds + prescription.holdSeconds + prescription.exhaleSeconds)
+    ))
+    const syntheticSession: RuntimeSession = {
+      session_id: `cwh_${Date.now()}`,
+      created_at: new Date().toISOString(),
+      protocol_id: prescription.family,
+      protocol_name: prescription.sessionName,
+      goal: prescription.openingPrompt,
+      display_mode: 'breath_only',
+      timing_profile: {
+        inhale_seconds: prescription.inhaleSeconds,
+        exhale_seconds: prescription.exhaleSeconds,
+        rounds: roundEstimate,
+      },
+      cue_sequence: [],
+      estimated_length_seconds: prescription.durationSeconds,
+      status: 'completed',
+      stop_conditions: [],
+      allowed_follow_up: [],
+      provenance_tags: [],
+      pain_input: { pain_level: 0, location_tags: [], symptom_tags: [] },
+      safety_assessment: { mode: 'DIRECT_SESSION_MODE', safety_tags: [], stop_reason: null },
+    }
+
+    dispatch({ type: 'SET_ACTIVE_SESSION', session: syntheticSession })
+    dispatch({ type: 'SET_BREATH_PRESCRIPTION', prescription })
+    setContinueConfirmed(true)
+    setTimeout(() => {
+      dispatch({ type: 'NAVIGATE', screen: 'guided_session' })
+    }, 900)
   }
 
   function handleDelete(sessionId: string) {
@@ -111,14 +158,40 @@ export function HomeScreen() {
           Begin session
         </button>
         <p className={styles.ctaSub}>Protocol calibrated to your intensity · approx. 4–6 min</p>
-        <button
-          type="button"
-          className={styles.bodyContextLink}
-          onClick={() => dispatch({ type: 'NAVIGATE', screen: 'body_context' })}
-          aria-label="Manage Body Context"
-        >
-          Body Context
-        </button>
+
+        <div className={styles.contextRow}>
+          <button
+            type="button"
+            className={styles.yourStateCard}
+            onClick={() => dispatch({ type: 'NAVIGATE', screen: 'body_context' })}
+            aria-label="Manage Your State"
+          >
+            <span className={styles.contextCardLabel}>Your State</span>
+            <span className={styles.contextCardSub}>Body notes &amp; context</span>
+            <span className={styles.contextCardHint}>Input relevant information about your current state</span>
+          </button>
+          <div className={styles.yourPatternsCard}>
+            <YourPatternsPanel />
+          </div>
+        </div>
+
+        {showContinue && (
+          <div className={styles.continueZone}>
+            {continueConfirmed ? (
+              <p className={styles.continueConfirm}>We'll start with what's been helping</p>
+            ) : (
+              <button
+                type="button"
+                className={styles.continueCard}
+                onClick={handleContinueWhatHelped}
+                aria-label="Continue what helped in recent sessions"
+              >
+                <span className={styles.continueCardTitle}>Continue What Helped</span>
+                <span className={styles.continueCardSub}>Based on what helped recently</span>
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ── Session history ─────────────────────────────────────────── */}

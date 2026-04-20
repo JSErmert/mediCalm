@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { SessionFeedback, HistoryEntry } from '../types'
 import type { ReassessmentResponse, ContinuationAction, PersistedReassessmentResult, PersistedHariMetadata } from '../types/hari'
 import { useAppContext } from '../context/AppContext'
@@ -8,6 +8,7 @@ import { RoundDots } from '../components/RoundDots'
 import { saveSession } from '../storage/sessionHistory'
 import { deriveExpressionProfile } from '../engine/presentation/expressionProfile'
 import { decideContinuation } from '../engine/hari/reassessmentLoop'
+import { buildDeliveryConfig } from '../engine/hari/sessionConfig'
 import styles from './GuidedSessionScreen.module.css'
 
 /**
@@ -33,13 +34,21 @@ export function GuidedSessionScreen() {
 
   const expressionProfile = deriveExpressionProfile(session)
 
+  // M6.8.3 — pendingBreathPrescription takes priority (Continue What Helped, already prescription-ready).
+  // M6+M7.1 — normal M6 flow builds via buildDeliveryConfig (M6 prescription + M7.1 adaptation).
+  const sessionConfig = state.pendingBreathPrescription
+    ?? (state.stateInterpretationResult
+      ? buildDeliveryConfig(state.stateInterpretationResult)
+      : null)
+
   // M4.6 — HARI round tracking
   const maxHariRounds = session.hari_metadata?.max_rounds ?? 1
   const [hariRoundNumber, setHariRoundNumber] = useState(1)
   // nextRoundBreathCount: can be shortened by continuation decision
-  const [nextRoundBreathCount, setNextRoundBreathCount] = useState(
-    session.hari_metadata?.round_plan.breath_count ?? session.timing_profile.rounds
-  )
+  const baseRoundCount = sessionConfig
+    ? Math.max(1, Math.round(sessionConfig.durationSeconds / (sessionConfig.inhaleSeconds + sessionConfig.holdSeconds + sessionConfig.exhaleSeconds)))
+    : (session.hari_metadata?.round_plan.breath_count ?? session.timing_profile.rounds)
+  const [nextRoundBreathCount, setNextRoundBreathCount] = useState(baseRoundCount)
   // M4.6.1 — selected response (null until user picks one)
   const [selectedResponse, setSelectedResponse] = useState<ReassessmentResponse | null>(null)
   // M4.7 — accumulated reassessment history across all rounds this session
@@ -54,14 +63,29 @@ export function GuidedSessionScreen() {
   // orbKey increments to force-remount BreathingOrb on "Continue session"
   const [orbKey, setOrbKey] = useState(0)
 
-  // M4.6: current round timing profile — overrides rounds with M4.6 breath count
-  const currentTimingProfile = {
-    ...session.timing_profile,
-    rounds: nextRoundBreathCount,
-  }
+  // M4.6 + M6.5: current round timing profile
+  // If SessionConfig is available, use its breath timing; otherwise use session timing_profile.
+  const currentTimingProfile = sessionConfig
+    ? {
+        inhale_seconds: sessionConfig.inhaleSeconds,
+        exhale_seconds: sessionConfig.exhaleSeconds,
+        rounds: nextRoundBreathCount,
+      }
+    : {
+        ...session.timing_profile,
+        rounds: nextRoundBreathCount,
+      }
 
   const startTimeRef = useRef(Date.now())
   const elapsedAtStopRef = useRef(0)
+
+  // M6: time-based progress for SessionConfig sessions
+  const [, setProgressTick] = useState(0)
+  useEffect(() => {
+    if (!sessionConfig || phase !== 'breathing') return
+    const interval = setInterval(() => setProgressTick((n) => n + 1), 1000)
+    return () => clearInterval(interval)
+  }, [sessionConfig, phase])
 
   function getElapsedSeconds() {
     return Math.floor((Date.now() - startTimeRef.current) / 1000)
@@ -314,6 +338,14 @@ export function GuidedSessionScreen() {
   // currentRound shown to user is completedRounds + 1 (which round they're on now)
   const currentDisplayRound = Math.min(completedRounds + 1, totalRounds)
 
+  // M6: time-based progress + duration label
+  const m6DurationLabel = sessionConfig
+    ? `About ${Math.max(1, Math.round(sessionConfig.durationSeconds / 60))} minute${Math.round(sessionConfig.durationSeconds / 60) === 1 ? '' : 's'}`
+    : null
+  const m6ProgressFraction = sessionConfig
+    ? Math.min(1, (Date.now() - startTimeRef.current) / 1000 / sessionConfig.durationSeconds)
+    : 0
+
   return (
     <main className={styles.screen}>
 
@@ -321,25 +353,31 @@ export function GuidedSessionScreen() {
         <div className={styles.breathingPhase}>
           {/* Zone 1 — static context, never changes */}
           <header className={styles.topZone} aria-label="Protocol context">
-            <p className={styles.protocolName}>{session.protocol_name}</p>
-            <p className={styles.goalText}>{session.goal}</p>
+            <p className={styles.protocolName}>{sessionConfig ? sessionConfig.sessionName : session.protocol_name}</p>
+            <p className={styles.goalText}>{sessionConfig ? sessionConfig.openingPrompt : session.goal}</p>
+            {m6DurationLabel && (
+              <p className={styles.durationLabel}>{m6DurationLabel}</p>
+            )}
           </header>
 
           {/* Zone 2 — all dynamic guidance: progress + orb + instructions */}
           <div className={styles.guidanceZone}>
-            <div
-              className={styles.progressRow}
-              aria-label={`Round ${currentDisplayRound} of ${totalRounds}`}
-            >
-              <RoundDots
-                totalRounds={totalRounds}
-                completedRounds={completedRounds}
-                currentRound={currentDisplayRound}
-              />
-              <span className={styles.roundCounter}>
-                {currentDisplayRound} / {totalRounds}
-              </span>
-            </div>
+            {/* M6: suppress mechanical round counter for time-based sessions */}
+            {!sessionConfig && (
+              <div
+                className={styles.progressRow}
+                aria-label={`Round ${currentDisplayRound} of ${totalRounds}`}
+              >
+                <RoundDots
+                  totalRounds={totalRounds}
+                  completedRounds={completedRounds}
+                  currentRound={currentDisplayRound}
+                />
+                <span className={styles.roundCounter}>
+                  {currentDisplayRound} / {totalRounds}
+                </span>
+              </div>
+            )}
 
             <div className={styles.orbArea}>
               {orbRunning && (
@@ -350,9 +388,21 @@ export function GuidedSessionScreen() {
                   protocolId={session.protocol_id}
                   onRoundComplete={handleRoundComplete}
                   onAllRoundsComplete={handleAllRoundsComplete}
+                  gentleLabels={!!sessionConfig}
+                  preStartDelay={sessionConfig ? 1500 : 0}
                 />
               )}
             </div>
+
+            {/* M6: subtle time-based progress bar — no numbers, no dots */}
+            {sessionConfig && (
+              <div className={styles.timeProgress} aria-hidden="true">
+                <div
+                  className={styles.timeProgressBar}
+                  style={{ width: `${m6ProgressFraction * 100}%` }}
+                />
+              </div>
+            )}
           </div>
 
           <footer className={styles.sessionFooter}>

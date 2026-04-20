@@ -26,6 +26,10 @@ interface Props {
   protocolId?: string
   onRoundComplete?: (roundNumber: number) => void
   onAllRoundsComplete?: () => void
+  /** When true, replaces mechanical phase text with gentle labels ("Breathe in" / "Breathe out"). */
+  gentleLabels?: boolean
+  /** Milliseconds of silence before the entry countdown begins. Default: 0. */
+  preStartDelay?: number
 }
 
 type OrbPhase = 'entry' | 'inhale' | 'exhale' | 'pause'
@@ -62,6 +66,8 @@ export function BreathingOrb({
   protocolId,
   onRoundComplete,
   onAllRoundsComplete,
+  gentleLabels = false,
+  preStartDelay = 0,
 }: Props) {
   const { inhale_seconds, exhale_seconds, rounds } = timingProfile
   const expr = expressionProfile ?? DEFAULT_EXPRESSION
@@ -78,6 +84,7 @@ export function BreathingOrb({
     if (doneRef.current) return
 
     let interval: ReturnType<typeof setInterval>
+    let preStartTimer: ReturnType<typeof setTimeout>
 
     function startInhale() {
       setPhase('inhale')
@@ -125,19 +132,30 @@ export function BreathingOrb({
       }, INTER_BREATH_PAUSE_MS)
     }
 
-    let entryRemaining = ENTRY_SECONDS
-    setCountdown(entryRemaining)
-    interval = setInterval(() => {
-      entryRemaining -= 1
-      if (entryRemaining >= 1) {
-        setCountdown(entryRemaining)
-      } else {
-        clearInterval(interval)
-        setTimeout(startInhale, ENTRY_POST_PAUSE_MS)
-      }
-    }, 1000)
+    function startEntry() {
+      let entryRemaining = ENTRY_SECONDS
+      setCountdown(entryRemaining)
+      interval = setInterval(() => {
+        entryRemaining -= 1
+        if (entryRemaining >= 1) {
+          setCountdown(entryRemaining)
+        } else {
+          clearInterval(interval)
+          setTimeout(startInhale, ENTRY_POST_PAUSE_MS)
+        }
+      }, 1000)
+    }
 
-    return () => clearInterval(interval)
+    if (preStartDelay > 0) {
+      preStartTimer = setTimeout(startEntry, preStartDelay)
+    } else {
+      startEntry()
+    }
+
+    return () => {
+      clearTimeout(preStartTimer)
+      clearInterval(interval)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -157,8 +175,12 @@ export function BreathingOrb({
 
   // ── Single below-orb text slot ──────────────────────────────────────────────
   // "Prepare to begin" during entry. Phase instruction during breathing. Empty during pause.
-  const line1 =
-    phase === 'entry' ? 'Prepare to begin'
+  const line1 = gentleLabels
+    ? phase === 'entry' ? 'Settle'
+    : phase === 'inhale' ? 'Breathe in'
+    : phase === 'exhale' ? 'Breathe out'
+    : ''
+    : phase === 'entry' ? 'Prepare to begin'
     : phase === 'inhale' ? `Inhale through nose — ${inhale_seconds} seconds`
     : phase === 'exhale' ? `Exhale slowly — ${exhale_seconds} seconds`
     : ''

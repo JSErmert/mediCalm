@@ -57,7 +57,6 @@ const ACTIVE_MIN_RAW_COUNT = 3
 const ACTIVE_MIN_NET_WEIGHTED_SCORE = 1.8
 const HIGH_CONFIDENCE_MIN_RAW_COUNT = 5
 const HIGH_CONFIDENCE_MIN_NET_WEIGHTED_SCORE = 3.0
-const HIGH_CONFIDENCE_CLEAN_WINDOW = 3     // no contradictions at positions 0–2
 
 // ── Internal types ────────────────────────────────────────────────────────────
 

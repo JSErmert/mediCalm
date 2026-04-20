@@ -36,6 +36,19 @@ export type EntryState =
  */
 export type M6OutcomePrimary = 'better' | 'same' | 'worse'
 
+/**
+ * M6.8.2 — Subtle shift outcome language.
+ * Replaces generic better/same/worse for post-session display in Your Patterns.
+ * Authority: M6.8.2 Part 4
+ */
+export type ShiftOutcome =
+  | 'relaxed'
+  | 'open'
+  | 'steady'
+  | 'energized'
+  | 'no_change'
+  | 'tense_tight'
+
 // ── Safety ────────────────────────────────────────────────────────────────────
 
 /** Authority: Safety + Reassurance Spec (doc 06) § Safety Modes */
@@ -175,6 +188,11 @@ export interface HistoryEntry {
    * Authority: M6.0 § Completion Model
    */
   outcome_marker?: string
+  /**
+   * M6.8.2: Subtle shift outcome for Your Patterns display.
+   * Authority: M6.8.2 Part 4
+   */
+  shift_outcome?: ShiftOutcome
   /**
    * M4.7: HARI intelligence block — present only on HARI sessions.
    * Authority: M4.7 §3–§4

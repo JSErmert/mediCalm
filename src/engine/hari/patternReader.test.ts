@@ -73,7 +73,7 @@ function makeSession(overrides: Partial<HistoryEntry> = {}): HistoryEntry {
     location_tags: [],
     symptom_tags: [],
     current_position: 'sitting',
-    trigger_tag: null,
+    trigger_tag: undefined,
     selected_protocol_id: 'PROTO_CALM_DOWNREGULATE',
     selected_protocol_name: 'Calm Downregulate',
     result: 'better',

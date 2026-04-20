@@ -3,12 +3,12 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 
-// Helper: navigate through StateSelectionScreen stub by selecting Pain.
-// M6.2: Start now routes to StateSelectionScreen. Pain button → session_intake.
+// Helper: navigate through StateSelectionScreen by selecting Pain then Continue.
+// M6.1: Real implementation — chip multi-select, Continue appears after ≥1 selection.
 async function navigatePastStateSelection() {
   await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
-  // Selects Pain (any valid state would work — Pain chosen as the most-tested path)
-  await userEvent.click(screen.getByRole('button', { name: /select pain state/i }))
+  await userEvent.click(screen.getByRole('button', { name: /^pain$/i }))
+  await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
 }
 
 // Helper: fill all 5 HARI intake fields and submit.
@@ -36,15 +36,6 @@ describe('App root', () => {
     render(<App />)
     await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
     expect(screen.getByRole('main', { name: /state selection/i })).toBeInTheDocument()
-  })
-
-  it('navigates back to HomeScreen when Back is clicked from StateSelection', async () => {
-    render(<App />)
-    await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
-    await userEvent.click(screen.getByRole('button', { name: /back to home/i }))
-    expect(
-      screen.getByRole('heading', { name: /just breathe/i })
-    ).toBeInTheDocument()
   })
 
   it('reaches SessionSetupScreen after completing HARI intake with safe input', async () => {

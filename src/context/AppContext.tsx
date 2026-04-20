@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { AppSettings, PainInputState, RuntimeSession, SafetyAssessment, EntryState } from '../types'
-import type { HariSessionIntake, InterventionPackage } from '../types/hari'
+import type { HariSessionIntake, InterventionPackage, StateInterpretationResult, BreathPrescription } from '../types/hari'
 
 /**
  * AppScreen — all screens the app can display.
@@ -21,6 +21,7 @@ export type AppScreen =
   | 'state_selection'      // M6.1 — M6 state-aware entry point
   | 'sad_safety'           // M6.1.1 — SAD pre-intake safety gate
   | 'support_resources'    // M6.1.1 — escalation exit support references
+  // 'm6_guided_session' retired in M6.8.4 — all sessions route through 'guided_session'
 
 export interface AppState {
   activeScreen: AppScreen
@@ -44,6 +45,18 @@ export interface AppState {
    * Authority: M6.2 § AppContext Additions
    */
   pendingStateEntry: EntryState[] | null
+  /**
+   * M6.4: Output of interpretStates — computed in SessionIntakeScreen on submit.
+   * Feeds breath pattern, effort level, and session bias into session configuration.
+   * Cleared on CLEAR_SESSION.
+   */
+  stateInterpretationResult: StateInterpretationResult | null
+  /**
+   * M6.8.3: Pre-built BreathPrescription for Continue What Helped flow.
+   * When set, GuidedSessionScreen uses it as sessionConfig, bypassing buildDeliveryConfig.
+   * Cleared on CLEAR_SESSION.
+   */
+  pendingBreathPrescription: BreathPrescription | null
 }
 
 export type AppAction =
@@ -57,8 +70,10 @@ export type AppAction =
   | { type: 'SET_HARI_INTAKE'; intake: HariSessionIntake }
   | { type: 'CLEAR_HARI_INTAKE' }
   | { type: 'SET_INTERVENTION_PACKAGE'; pkg: InterventionPackage; framing: string }
-  | { type: 'SET_STATE_ENTRY'; entry: EntryState[] }   // M6.2
-  | { type: 'CLEAR_STATE_ENTRY' }                       // M6.2
+  | { type: 'SET_STATE_ENTRY'; entry: EntryState[] }              // M6.2
+  | { type: 'CLEAR_STATE_ENTRY' }                                 // M6.2
+  | { type: 'SET_STATE_INTERPRETATION'; result: StateInterpretationResult } // M6.4
+  | { type: 'SET_BREATH_PRESCRIPTION'; prescription: BreathPrescription }  // M6.8.3
 
 interface AppContextValue {
   state: AppState

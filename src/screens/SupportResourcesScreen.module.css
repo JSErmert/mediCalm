@@ -1,0 +1,91 @@
+/* SupportResourcesScreen.module.css
+   D4-B4 Deep Current — Escalation exit + support resources
+   Authority: M6.1.1 SAD Safety Screen spec (v2.1)
+*/
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--screen-max-width);
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 var(--screen-padding) var(--space-8);
+  color: var(--color-text-primary);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-10) 0;
+}
+
+.heading {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-light);
+  color: var(--color-text-primary);
+  letter-spacing: -0.018em;
+  line-height: var(--leading-tight);
+  margin-bottom: var(--space-4);
+}
+
+.body {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-6);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border-subtle);
+  margin-bottom: var(--space-6);
+}
+
+.resourcesLabel {
+  font-size: 0.60rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(26, 138, 138, 0.50);
+  margin-bottom: var(--space-3);
+}
+
+.resourceItem {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-6);
+}
+
+.resourceItem strong {
+  color: var(--color-text-primary);
+  font-weight: var(--weight-medium);
+}
+
+.returnBtn {
+  width: 100%;
+  height: 50px;
+  background: rgba(26, 138, 138, 0.10);
+  border: 1px solid rgba(26, 138, 138, 0.32);
+  border-radius: var(--radius-full);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  min-height: var(--touch-min);
+  margin-top: auto;
+  transition: background var(--transition-quick);
+}
+
+.returnBtn:hover {
+  background: rgba(26, 138, 138, 0.17);
+}
+
+.returnBtn:active {
+  opacity: 0.80;
+}
