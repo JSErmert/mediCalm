@@ -87,7 +87,11 @@ export function runSafetyGate(
 
 // Re-export key types and utilities for use in screens
 export { buildBodyContextSummary } from './bodyContextSummary'
-export { SAFETY_FLAG_LABELS, STEP_1_SYMPTOMS } from './safetyGate'
+export {
+  SAFETY_FLAG_LABELS,
+  STEP_1_NEURO_SYMPTOMS,
+  STEP_1_CARDIO_SYMPTOMS,
+} from './safetyGate'
 // Re-export bridge functions — session creation lives in sessionBridge
 export { synthesizePainInput, mapInterventionToProtocol, buildHariSession } from './sessionBridge'
 // M6.4 — State Interpretation Engine

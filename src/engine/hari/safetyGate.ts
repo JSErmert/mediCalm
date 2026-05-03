@@ -170,31 +170,54 @@ function holdMessage(flag: SafetyFlagClass): string {
 }
 
 // ── Label Helpers for UI ──────────────────────────────────────────────────────
+//
+// All clinical terminology is paired with a plain-language parenthetical
+// per PT spec 2026-05-02 §5 ("Always pair clinical terminology with a
+// plain language parenthetical").
 
 export const SAFETY_FLAG_LABELS: Record<SafetyFlagClass, string> = {
-  // Generic flags
+  // Generic (retained)
   new_worsening_weakness: 'New or worsening weakness',
   coordination_change: 'Coordination trouble',
   symptoms_severe_or_concerning: 'Symptoms feel unusually severe or concerning',
   not_sure: 'Not sure',
-  // Neurological red flags
-  numbness_extremities_or_saddle: 'Numbness in arms, legs, hands, feet, or groin/saddle area',
-  dizziness_balance_loss: 'Dizziness or sudden loss of balance',
+  // Neuro
+  numbness_extremities_or_saddle: 'Numbness or tingling in hands, arms, legs, or groin and inner thigh',
+  dizziness_balance_loss: 'Dizziness or loss of balance',
   double_vision: 'Double vision',
   speech_difficulty: 'Difficulty speaking or slurred speech',
   swallowing_difficulty: 'Difficulty swallowing',
-  drop_attacks: 'Sudden drop attacks (legs give way without warning)',
-  // Cardiovascular red flags
-  chest_pain_or_pressure: 'Chest pain or pressure',
-  radiating_pain_jaw_arm: 'Pain radiating to jaw, neck, or arm',
-  interscapular_pain: 'Pain between the shoulder blades',
+  drop_attacks: 'Sudden drop attacks (unexpectedly falling without warning)',
+  // Cardio
+  chest_pain_or_pressure: 'Chest pain or chest pressure',
+  radiating_pain_jaw_arm: 'Pain radiating to your jaw, neck, left shoulder, or left arm',
+  interscapular_pain: 'Pain between your shoulder blades',
   dyspnea_at_rest: 'Shortness of breath at rest',
-  irregular_heartbeat: 'Irregular or unusually rapid heartbeat',
+  irregular_heartbeat: 'Rapid or irregular heartbeat',
 }
 
-export const STEP_1_SYMPTOMS = [
-  'New or worsening weakness',
-  'Coordination trouble',
-  'Major numbness or sensation change',
-  'Symptoms feel unusually severe or concerning',
+/**
+ * Section A — Neurological symptoms shown in Step 1.
+ * Order matches PT spec 2026-05-02 §2 Section A.
+ */
+export const STEP_1_NEURO_SYMPTOMS = [
+  'Numbness or tingling in your hands, arms, legs, or groin and inner thigh area',
+  'Dizziness or loss of balance',
+  'Double vision',
+  'Difficulty speaking or slurred speech',
+  'Difficulty swallowing',
+  'Sudden drop attacks (unexpectedly falling without warning)',
 ] as const
+
+/**
+ * Section B — Cardiovascular symptoms shown in Step 1.
+ * Order matches PT spec 2026-05-02 §2 Section B.
+ */
+export const STEP_1_CARDIO_SYMPTOMS = [
+  'Chest pain or chest pressure',
+  'Pain radiating to your jaw, neck, left shoulder, or left arm',
+  'Pain between your shoulder blades',
+  'Shortness of breath at rest',
+  'Rapid or irregular heartbeat',
+] as const
+
