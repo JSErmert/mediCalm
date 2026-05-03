@@ -68,4 +68,17 @@ describe('HomeScreen', () => {
     await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
     await waitFor(() => expect(capturedScreen).toBe('state_selection'))
   })
+
+  it('renders revised hero copy with PT-approved terminology', () => {
+    renderWithProvider()
+    expect(screen.getByText(/ribcage compression/i)).toBeInTheDocument()
+    expect(screen.getByText(/deviated breathing mechanics/i)).toBeInTheDocument()
+    expect(screen.getByText(/neck, shoulder, and jaw tension/i)).toBeInTheDocument()
+  })
+
+  it('does not contain retired terminology in hero', () => {
+    renderWithProvider()
+    expect(screen.queryByText(/rib restriction/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/shallow breathing/i)).not.toBeInTheDocument()
+  })
 })

@@ -128,9 +128,10 @@ export function HomeScreen() {
       <div className={styles.hero}>
         <h1 className={styles.headline}>Just Breathe.</h1>
         <p className={styles.sub}>
-          Structured protocols for rib restriction, shallow breathing,
-          neck and jaw tension, and protective overactivation —
-          calibrated to your current intensity.
+          Structured breathing protocol addressing ribcage compression
+          (limited rib expansion), deviated breathing mechanics, neck,
+          shoulder, and jaw tension, and protective muscle overactivation —
+          calibrated specifically to your current intensity level.
         </p>
       </div>
 
@@ -157,7 +158,7 @@ export function HomeScreen() {
         >
           Begin session
         </button>
-        <p className={styles.ctaSub}>Protocol calibrated to your intensity · approx. 4–6 min</p>
+        <p className={styles.ctaSub}>Calibrated to your current intensity level · approx. 4–6 min</p>
 
         <div className={styles.contextRow}>
           <button
