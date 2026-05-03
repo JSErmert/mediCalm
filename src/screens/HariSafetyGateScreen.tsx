@@ -37,7 +37,7 @@ type GateStep = 'step1' | 'step2' | 'result'
 const FLAG_OPTIONS: SafetyFlagClass[] = [
   'new_worsening_weakness',
   'coordination_change',
-  'major_numbness_sensation_change',
+  'numbness_extremities_or_saddle',
   'symptoms_severe_or_concerning',
   'not_sure',
 ]

@@ -21,30 +21,61 @@ import type { SafetyGateResult } from '../../types/hari'
 // ── Safety Flag Types ─────────────────────────────────────────────────────────
 
 export type SafetyFlagClass =
+  // Existing generic flags (retained)
   | 'new_worsening_weakness'
   | 'coordination_change'
-  | 'major_numbness_sensation_change'
   | 'symptoms_severe_or_concerning'
   | 'not_sure'
+  // PT-spec neurological red flags (cervical myelopathy / instability screen)
+  | 'numbness_extremities_or_saddle'
+  | 'dizziness_balance_loss'
+  | 'double_vision'
+  | 'speech_difficulty'
+  | 'swallowing_difficulty'
+  | 'drop_attacks'
+  // PT-spec cardiovascular red flags (active cardiac event screen)
+  | 'chest_pain_or_pressure'
+  | 'radiating_pain_jaw_arm'
+  | 'interscapular_pain'
+  | 'dyspnea_at_rest'
+  | 'irregular_heartbeat'
 
-// ── Decision Rules (C4 §decision_rules) ──────────────────────────────────────
+// ── Decision Rules (C4 §decision_rules + PT clinical refinement 2026-05-02) ──
 
 /**
- * Flags that result in STOP — do not proceed to session.
- * Authority: C4 §decision_rules
+ * Cardiovascular red flags — STOP with 911 escalation message.
+ * Authority: PT clinical refinement 2026-05-02
  */
-const STOP_FLAGS: SafetyFlagClass[] = [
+const CARDIO_FLAGS: SafetyFlagClass[] = [
+  'chest_pain_or_pressure',
+  'radiating_pain_jaw_arm',
+  'interscapular_pain',
+  'dyspnea_at_rest',
+  'irregular_heartbeat',
+]
+
+/**
+ * Neurological red flags — STOP with provider-contact message.
+ * Combines original C4 STOP flags with PT-spec specifics.
+ */
+const NEURO_STOP_FLAGS: SafetyFlagClass[] = [
   'new_worsening_weakness',
   'coordination_change',
   'symptoms_severe_or_concerning',
+  'numbness_extremities_or_saddle',
+  'dizziness_balance_loss',
+  'double_vision',
+  'speech_difficulty',
+  'swallowing_difficulty',
+  'drop_attacks',
 ]
 
 /**
  * Flags that result in HOLD — pause, encourage non-urgent awareness.
- * Authority: C4 §decision_rules
+ * `not_sure` retained from C4 §decision_rules; generic
+ * `major_numbness_sensation_change` retired (replaced by specific neuro items).
  */
 const HOLD_FLAGS: SafetyFlagClass[] = [
-  'major_numbness_sensation_change',
   'not_sure',
 ]
 
@@ -71,16 +102,27 @@ export function safetyStep1HasConcern(): boolean {
 export function classifySafetyFlags(
   flags: SafetyFlagClass[]
 ): SafetyGateResult {
-  // STOP takes priority over HOLD
-  const stopFlag = flags.find((f) => STOP_FLAGS.includes(f))
-  if (stopFlag) {
+  // CARDIO precedence — any cardio flag → 911 message immediately
+  const cardioFlag = flags.find((f) => CARDIO_FLAGS.includes(f))
+  if (cardioFlag) {
     return {
       outcome: 'STOP',
-      trigger: stopFlag,
-      message: stopMessage(stopFlag),
+      trigger: cardioFlag,
+      message: 'These symptoms may indicate a serious cardiac event. Call 911 or your local emergency services immediately.',
     }
   }
 
+  // NEURO STOP next
+  const neuroFlag = flags.find((f) => NEURO_STOP_FLAGS.includes(f))
+  if (neuroFlag) {
+    return {
+      outcome: 'STOP',
+      trigger: neuroFlag,
+      message: stopMessage(neuroFlag),
+    }
+  }
+
+  // HOLD last
   const holdFlag = flags.find((f) => HOLD_FLAGS.includes(f))
   if (holdFlag) {
     return {
@@ -117,8 +159,6 @@ function stopMessage(flag: SafetyFlagClass): string {
 
 function holdMessage(flag: SafetyFlagClass): string {
   switch (flag) {
-    case 'major_numbness_sensation_change':
-      return 'Strong or new sensation changes are worth keeping an eye on. A gentle session is possible if symptoms are stable, but consider checking in with a clinician if they worsen.'
     case 'not_sure':
       return 'When something feels off but you are not sure what, a cautious approach makes sense. A very soft, brief session may be appropriate — stop immediately if anything feels worse.'
     default:
@@ -129,11 +169,24 @@ function holdMessage(flag: SafetyFlagClass): string {
 // ── Label Helpers for UI ──────────────────────────────────────────────────────
 
 export const SAFETY_FLAG_LABELS: Record<SafetyFlagClass, string> = {
+  // Generic flags
   new_worsening_weakness: 'New or worsening weakness',
   coordination_change: 'Coordination trouble',
-  major_numbness_sensation_change: 'Major numbness or sensation change',
   symptoms_severe_or_concerning: 'Symptoms feel unusually severe or concerning',
   not_sure: 'Not sure',
+  // Neurological red flags
+  numbness_extremities_or_saddle: 'Numbness in arms, legs, hands, feet, or groin/saddle area',
+  dizziness_balance_loss: 'Dizziness or sudden loss of balance',
+  double_vision: 'Double vision',
+  speech_difficulty: 'Difficulty speaking or slurred speech',
+  swallowing_difficulty: 'Difficulty swallowing',
+  drop_attacks: 'Sudden drop attacks (legs give way without warning)',
+  // Cardiovascular red flags
+  chest_pain_or_pressure: 'Chest pain or pressure',
+  radiating_pain_jaw_arm: 'Pain radiating to jaw, neck, or arm',
+  interscapular_pain: 'Pain between the shoulder blades',
+  dyspnea_at_rest: 'Shortness of breath at rest',
+  irregular_heartbeat: 'Irregular or unusually rapid heartbeat',
 }
 
 export const STEP_1_SYMPTOMS = [
