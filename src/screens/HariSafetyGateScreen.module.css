@@ -285,3 +285,18 @@
   color: var(--color-text-primary);
   border-color: var(--color-border-active);
 }
+
+/* ── Grouped sections (PT clinical refinement 2026-05-02) ─────────────────── */
+
+.symptomSection {
+  margin-block: var(--space-2);
+}
+
+.sectionLabel {
+  font-size: var(--text-xs, 0.85rem);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary, rgba(255, 255, 255, 0.65));
+  margin-block-end: var(--space-2);
+}

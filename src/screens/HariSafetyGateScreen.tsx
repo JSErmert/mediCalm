@@ -25,7 +25,11 @@
 import { useState } from 'react'
 import type { SafetyGateResult } from '../types/hari'
 import type { SafetyFlagClass } from '../engine/hari/safetyGate'
-import { SAFETY_FLAG_LABELS, STEP_1_SYMPTOMS } from '../engine/hari/index'
+import {
+  SAFETY_FLAG_LABELS,
+  STEP_1_NEURO_SYMPTOMS,
+  STEP_1_CARDIO_SYMPTOMS,
+} from '../engine/hari/index'
 import { runSafetyGate, resolveHariSession } from '../engine/hari/index'
 import { buildHariSession } from '../engine/hari/sessionBridge'
 import { loadBodyContext } from '../storage/bodyContext'
@@ -34,13 +38,27 @@ import styles from './HariSafetyGateScreen.module.css'
 
 type GateStep = 'step1' | 'step2' | 'result'
 
-const FLAG_OPTIONS: SafetyFlagClass[] = [
+const NEURO_FLAG_OPTIONS: SafetyFlagClass[] = [
   'new_worsening_weakness',
   'coordination_change',
   'numbness_extremities_or_saddle',
+  'dizziness_balance_loss',
+  'double_vision',
+  'speech_difficulty',
+  'swallowing_difficulty',
+  'drop_attacks',
   'symptoms_severe_or_concerning',
-  'not_sure',
 ]
+
+const CARDIO_FLAG_OPTIONS: SafetyFlagClass[] = [
+  'chest_pain_or_pressure',
+  'radiating_pain_jaw_arm',
+  'interscapular_pain',
+  'dyspnea_at_rest',
+  'irregular_heartbeat',
+]
+
+const FALLBACK_FLAG_OPTIONS: SafetyFlagClass[] = ['not_sure']
 
 export function HariSafetyGateScreen() {
   const { state, dispatch } = useAppContext()
@@ -145,22 +163,47 @@ export function HariSafetyGateScreen() {
           >
             ← Back
           </button>
-          <h1 className={styles.heading}>Before we begin</h1>
+          <h1 className={styles.heading}>Before we begin — please review the following</h1>
         </header>
 
         <div className={styles.content}>
           <p className={styles.lead}>
-            Are any of these happening right now?
+            Stop and seek medical attention if you are currently experiencing any of the following.
           </p>
 
-          <div className={styles.symptomList} role="list" aria-label="Safety symptoms to check">
-            {STEP_1_SYMPTOMS.map((symptom) => (
-              <div key={symptom} className={styles.symptomItem} role="listitem">
-                <span className={styles.symptomDot} aria-hidden="true" />
-                <span>{symptom}</span>
-              </div>
-            ))}
-          </div>
+          <section
+            className={styles.symptomSection}
+            aria-labelledby="neuro-section-label"
+          >
+            <h2 id="neuro-section-label" className={styles.sectionLabel}>
+              Neurological symptoms
+            </h2>
+            <ul className={styles.symptomList}>
+              {STEP_1_NEURO_SYMPTOMS.map((symptom) => (
+                <li key={symptom} className={styles.symptomItem}>
+                  <span className={styles.symptomDot} aria-hidden="true" />
+                  <span>{symptom}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section
+            className={styles.symptomSection}
+            aria-labelledby="cardio-section-label"
+          >
+            <h2 id="cardio-section-label" className={styles.sectionLabel}>
+              Cardiovascular symptoms
+            </h2>
+            <ul className={styles.symptomList}>
+              {STEP_1_CARDIO_SYMPTOMS.map((symptom) => (
+                <li key={symptom} className={styles.symptomItem}>
+                  <span className={styles.symptomDot} aria-hidden="true" />
+                  <span>{symptom}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
         </div>
 
         <div className={styles.footer}>
@@ -201,23 +244,34 @@ export function HariSafetyGateScreen() {
         </header>
 
         <div className={styles.content}>
-          <p className={styles.lead}>
-            Select all that apply.
-          </p>
+          <p className={styles.lead}>Select all that apply.</p>
 
-          <div className={styles.flagGrid} role="group" aria-label="Safety symptom categories">
-            {FLAG_OPTIONS.map((flag) => (
-              <button
-                key={flag}
-                type="button"
-                className={`${styles.flagChip} ${selectedFlags.includes(flag) ? styles.flagChipSelected : ''}`}
-                aria-pressed={selectedFlags.includes(flag)}
-                onClick={() => toggleFlag(flag)}
-              >
-                {SAFETY_FLAG_LABELS[flag]}
-              </button>
-            ))}
-          </div>
+          {[
+            { label: 'Neurological', options: NEURO_FLAG_OPTIONS },
+            { label: 'Cardiovascular', options: CARDIO_FLAG_OPTIONS },
+            { label: 'Other', options: FALLBACK_FLAG_OPTIONS },
+          ].map((group) => (
+            <section
+              key={group.label}
+              className={styles.symptomSection}
+              aria-label={`${group.label} symptoms`}
+            >
+              <h2 className={styles.sectionLabel}>{group.label}</h2>
+              <div className={styles.flagGrid} role="group">
+                {group.options.map((flag) => (
+                  <button
+                    key={flag}
+                    type="button"
+                    className={`${styles.flagChip} ${selectedFlags.includes(flag) ? styles.flagChipSelected : ''}`}
+                    aria-pressed={selectedFlags.includes(flag)}
+                    onClick={() => toggleFlag(flag)}
+                  >
+                    {SAFETY_FLAG_LABELS[flag]}
+                  </button>
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
 
         <div className={styles.footer}>
