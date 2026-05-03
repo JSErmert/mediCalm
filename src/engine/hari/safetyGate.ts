@@ -108,7 +108,7 @@ export function classifySafetyFlags(
     return {
       outcome: 'STOP',
       trigger: cardioFlag,
-      message: 'These symptoms may indicate a serious cardiac event. Call 911 or your local emergency services immediately.',
+      message: cardioStopMessage(),
     }
   }
 
@@ -118,7 +118,7 @@ export function classifySafetyFlags(
     return {
       outcome: 'STOP',
       trigger: neuroFlag,
-      message: stopMessage(neuroFlag),
+      message: neuroStopMessage(neuroFlag),
     }
   }
 
@@ -144,17 +144,20 @@ export function safetyGateClear(): SafetyGateResult {
 
 // ── User-Facing Messages (non-diagnostic, calm, medically restrained) ─────────
 
-function stopMessage(flag: SafetyFlagClass): string {
-  switch (flag) {
-    case 'new_worsening_weakness':
-      return 'New or worsening weakness should be assessed by a clinician before starting a guided breathing session. Please seek professional advice first.'
-    case 'coordination_change':
-      return 'Coordination changes can be important to assess. Please check in with a clinician before starting a session today.'
-    case 'symptoms_severe_or_concerning':
-      return 'When symptoms feel unusually severe or concerning, a guided session is not the right first step. Please consider speaking with a clinician.'
-    default:
-      return 'These symptoms suggest it would be safer to check in with a clinician before starting a session today.'
-  }
+/**
+ * Cardio escalation message — uniform 911 text per PT spec 2026-05-02.
+ */
+function cardioStopMessage(): string {
+  return 'These symptoms may indicate a serious cardiac event. Call 911 or your local emergency services immediately.'
+}
+
+/**
+ * Neuro stop message — uniform provider-contact text per PT spec 2026-05-02.
+ * The original per-flag C4 messaging is retired in favor of one consistent
+ * neuro red-flag message. Specific symptom is preserved in `trigger`.
+ */
+function neuroStopMessage(_flag: SafetyFlagClass): string {
+  return 'These symptoms may indicate a serious neurological condition. Please discontinue use and contact a healthcare provider before proceeding.'
 }
 
 function holdMessage(flag: SafetyFlagClass): string {
