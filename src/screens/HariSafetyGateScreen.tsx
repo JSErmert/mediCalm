@@ -34,6 +34,7 @@ import { runSafetyGate, resolveHariSession } from '../engine/hari/index'
 import { buildHariSession } from '../engine/hari/sessionBridge'
 import { loadBodyContext } from '../storage/bodyContext'
 import { useAppContext } from '../context/AppContext'
+import { isDevOverride } from '../utils/devFlags'
 import styles from './HariSafetyGateScreen.module.css'
 
 type GateStep = 'step1' | 'step2' | 'result'
@@ -98,13 +99,7 @@ export function HariSafetyGateScreen() {
   // Step 2: Classify selected flags
   function handleStep2Confirm() {
     if (selectedFlags.length === 0) return
-    const result = runSafetyGate(selectedFlags)
-    if (result.outcome === 'CLEAR') {
-      proceedOrBlock(result)
-    } else {
-      setGateResult(result)
-      setGateStep('result')
-    }
+    proceedOrBlock(runSafetyGate(selectedFlags))
   }
 
   function handleGoHome() {
@@ -113,6 +108,14 @@ export function HariSafetyGateScreen() {
   }
 
   function proceedOrBlock(result: SafetyGateResult) {
+    // R&D dev override: when toggled on via HomeScreen R&D banner, all
+    // gate outcomes proceed. Solo-developer personal-testing path only.
+    // Never enabled in distributed builds.
+    if (result.outcome !== 'CLEAR' && isDevOverride()) {
+      console.warn('[mediCalm] R&D override bypassing safety gate:', result.trigger)
+      proceedWithHariEngine({ outcome: 'CLEAR' })
+      return
+    }
     if (result.outcome === 'CLEAR') {
       proceedWithHariEngine(result)
     } else {
