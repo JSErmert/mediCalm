@@ -143,12 +143,14 @@ export function HariSafetyGateScreen() {
       framing: hariResolution.session_framing,
     })
     dispatch({ type: 'SET_ACTIVE_SESSION', session })
-    // M6.6: if a stateInterpretationResult is present, route directly to guided_session
-    if (state.stateInterpretationResult) {
+    // R&D override: always route to session_setup so the developer can
+    // inspect the prescribed session before it runs.
+    // Default M6.6: if a stateInterpretationResult is present, skip
+    // session_setup and route directly to guided_session.
+    if (state.stateInterpretationResult && !isDevOverride()) {
       dispatch({ type: 'NAVIGATE', screen: 'guided_session' })
       return
     }
-    // Always navigate to session_setup — R&D screen is for M3 safety-stop flow only
     dispatch({ type: 'NAVIGATE', screen: 'session_setup' })
   }
 
