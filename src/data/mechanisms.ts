@@ -21,7 +21,7 @@ export const MECHANISMS: MechanismObject[] = [
   },
   {
     mechanism_id: 'MECH_RIB_RESTRICTION',
-    name: 'Rib Restriction',
+    name: 'Ribcage Compression',
     description: 'Reduced posterior-lateral rib expansion during inhalation, leading to compensatory upper-chest breathing and increased cervical and accessory muscle tension.',
     related_truth_ids: ['MECH_001', 'INT_002'],
     trigger_tags: ['sitting', 'exercise', 'overhead_movement'],

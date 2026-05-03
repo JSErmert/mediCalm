@@ -34,7 +34,7 @@ export const PROTOCOLS: ProtocolDefinition[] = [
     safe_use_cases: [
       'burning or nerve-like discomfort',
       'high sensitivity or reactive state',
-      'shallow or uncomfortable breathing',
+      'restricted or uncomfortable breathing',
       'diffuse or widespread flare',
     ],
     caution_flags: ['progressive neurologic changes', 'worsening coordination'],
