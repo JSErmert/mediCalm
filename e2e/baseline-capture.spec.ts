@@ -204,7 +204,7 @@ test.describe('HARI Safety Gate', () => {
 
   test('13 — safety gate step 1', async ({ page }) => {
     await navigateToGate(page)
-    await expect(page.locator('text=Are any of these')).toBeVisible()
+    await expect(page.locator('text=please review the following')).toBeVisible()
     await snap(page, '13_safety_gate_step1')
   })
 
