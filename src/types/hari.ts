@@ -101,6 +101,57 @@ export type BodyLocation =
   | 'not_sure'
 
 /**
+ * BodyMuscle — anatomical muscle subgroup beneath a BodyLocation region.
+ * Source path data: vulovix/body-muscles (Apache-2.0).
+ * Each muscle's parent region is encoded in MUSCLE_TO_REGION at
+ * src/components/BodyPicker/data/regions.ts.
+ */
+export type BodyMuscle =
+  // Front (40)
+  | 'head_front' | 'face_front'
+  | 'neck_left' | 'neck_right'
+  | 'shoulder_front_left' | 'shoulder_side_left'
+  | 'shoulder_front_right' | 'shoulder_side_right'
+  | 'biceps_left' | 'forearm_left' | 'elbow_left'
+  | 'biceps_right' | 'forearm_right' | 'elbow_right'
+  | 'chest_upper_left' | 'chest_lower_left'
+  | 'chest_upper_right' | 'chest_lower_right'
+  | 'abs_upper_left' | 'abs_lower_left'
+  | 'abs_upper_right' | 'abs_lower_right'
+  | 'serratus_anterior_left' | 'serratus_anterior_right'
+  | 'obliques_left' | 'obliques_right'
+  | 'hip_flexor_left' | 'hip_flexor_right'
+  | 'adductors_left' | 'adductors_right'
+  | 'quads_left' | 'quads_right'
+  | 'tibialis_anterior_left' | 'tibialis_anterior_right'
+  | 'knee_front_left' | 'knee_front_right'
+  | 'foot_front_left' | 'foot_front_right'
+  | 'hand_front_left' | 'hand_front_right'
+  // Back (49)
+  | 'head_back' | 'nape'
+  | 'traps_upper_left' | 'traps_mid_left' | 'traps_lower_left'
+  | 'traps_upper_right' | 'traps_mid_right' | 'traps_lower_right'
+  | 'lats_upper_left' | 'lats_mid_left' | 'lats_lower_left'
+  | 'lats_upper_right' | 'lats_mid_right' | 'lats_lower_right'
+  | 'deltoid_rear_left' | 'deltoid_rear_right'
+  | 'triceps_long_left' | 'triceps_lateral_left'
+  | 'triceps_long_right' | 'triceps_lateral_right'
+  | 'forearm_flexors_left' | 'forearm_extensors_left'
+  | 'forearm_flexors_right' | 'forearm_extensors_right'
+  | 'spine'
+  | 'lower_back_erectors_left' | 'lower_back_ql_left'
+  | 'lower_back_erectors_right' | 'lower_back_ql_right'
+  | 'gluteus_medius_left' | 'gluteus_maximus_left'
+  | 'gluteus_medius_right' | 'gluteus_maximus_right'
+  | 'hamstrings_medial_left' | 'hamstrings_lateral_left'
+  | 'hamstrings_medial_right' | 'hamstrings_lateral_right'
+  | 'calves_gastroc_medial_left' | 'calves_gastroc_lateral_left' | 'calves_soleus_left'
+  | 'calves_gastroc_medial_right' | 'calves_gastroc_lateral_right' | 'calves_soleus_right'
+  | 'knee_back_left' | 'knee_back_right'
+  | 'foot_back_left' | 'foot_back_right'
+  | 'hand_back_left' | 'hand_back_right'
+
+/**
  * PT Clinical Pass 2 — branched intent (replaces 7-state multi-select).
  * Authority: PT clinical refinement notes 2026-05-02 §3
  */
@@ -145,6 +196,13 @@ export interface HariSessionIntake {
   flare_sensitivity: FlareSensitivity
   /** Restored 2026-05-04 — multi-select anatomical regions. */
   location: BodyLocation[]
+  /**
+   * Muscle-level detail when user opens the body-picker drawer.
+   * Always rolls up to entries in `location[]` — every muscle's parent
+   * region is also present in location[]. Engine ignores this field today;
+   * captured for future M7+ adaptation.
+   */
+  location_muscles?: BodyMuscle[]
   current_context: CurrentContext
   session_length_preference: SessionLengthPreference
 

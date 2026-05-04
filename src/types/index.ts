@@ -239,6 +239,7 @@ export type {
   FlareSensitivity,
   SessionLengthPreference,
   BodyLocation,
+  BodyMuscle,
   BodyContext,
   BodyContextItem,
   BodyContextCategory,
