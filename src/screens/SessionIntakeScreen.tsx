@@ -1,53 +1,40 @@
 /**
- * SessionIntakeScreen — M4.2 MVP HARI 5-field pre-session intake.
- * Authority: M4.2 MVP contract, M4.0–4.5_v1.1_CLARIFICATIONS.md
+ * SessionIntakeScreen — PT Clinical Pass 2.
  *
- * Replaces PainInputScreen as the primary session entry point in M4.
- * Authority: v1.1 §C4 — "M4.2 MVP intake confirmed as full replacement for PainInputScreen"
+ * 4-field intake (down from 6). Branch-aware severity copy.
+ * Silent fields (session_intent, symptom_focus) populated via M5.2
+ * adaptiveIntakeDefaults; flare_sensitivity derived from irritability.
  *
- * 6 fields (5 required, 1 with default):
- *   1. Session Intent                           (required)
- *   2. Current Context / Posture                (required)
- *   3. Current Symptom Focus or Proactive Status (required)
- *   4. Baseline Intensity                       (slider, default 5 — always set)
- *   5. Current Flare Sensitivity                (required)
- *   6. Today's Session Length Preference        (required)
- *
- * Rules:
- *   - All 5 fields required, all have 'not_sure' or equivalent uncertain options
- *   - Uncertainty allowed — must never block session start
- *   - Compact, calm, low-friction — feels like a readiness check
- *   - Shows Body Context banner if available (M4.1 §17)
- *
- * On submit → HARI safety gate (HariSafetyGateScreen)
+ * Authority: docs/superpowers/specs/2026-05-04-pt-clinical-pass-2-intake-design.md
  */
 import { useEffect, useState } from 'react'
 import type {
   HariSessionIntake,
-  SessionIntent,
   CurrentContext,
-  SymptomFocus,
-  FlareSensitivity,
   SessionLengthPreference,
-  BodyContextSummary,
+  IrritabilityPattern,
+  IntakeBranch,
+  HariEmotionalState,
+  SessionIntent,
+  SymptomFocus,
 } from '../types/hari'
 import { useAppContext } from '../context/AppContext'
-import { loadBodyContext } from '../storage/bodyContext'
-import { buildBodyContextSummary } from '../engine/hari/bodyContextSummary'
 import { getEligibleHariHistory } from '../storage/sessionHistory'
 import { getOrComputePatternSummary } from '../engine/hari/patternReader'
 import { computeAdaptiveIntakeDefaults } from '../engine/hari/adaptiveIntakeDefaults'
 import { interpretStates } from '../engine/hari/stateInterpretation'
-import type { HariEmotionalState } from '../types/hari'
+import {
+  branchToEmotionalStates,
+  irritabilityToFlareSensitivity,
+} from '../engine/intakeTranslation'
 import styles from './SessionIntakeScreen.module.css'
 
 // ── Option Definitions ────────────────────────────────────────────────────────
 
-const SESSION_INTENT_OPTIONS: { value: SessionIntent; label: string }[] = [
-  { value: 'quick_reset', label: 'Quick reset' },
-  { value: 'deeper_regulation', label: 'Deeper regulation' },
-  { value: 'flare_sensitive_support', label: 'Flare-sensitive support' },
-  { value: 'cautious_test', label: 'Cautious test' },
+const IRRITABILITY_OPTIONS: { value: IrritabilityPattern; label: string }[] = [
+  { value: 'fast_onset_slow_resolution', label: 'Comes on quickly, goes away slowly' },
+  { value: 'slow_onset_fast_resolution', label: 'Comes on slowly, goes away quickly' },
+  { value: 'symmetric', label: 'Comes on and goes away about the same' },
 ]
 
 const CONTEXT_OPTIONS: { value: CurrentContext; label: string }[] = [
@@ -55,139 +42,103 @@ const CONTEXT_OPTIONS: { value: CurrentContext; label: string }[] = [
   { value: 'standing', label: 'Standing' },
   { value: 'driving', label: 'Driving / in vehicle' },
   { value: 'lying_down', label: 'Lying down' },
-  { value: 'after_strain', label: 'After strain / overuse' },
+  { value: 'after_strain', label: 'After strain or overuse' },
 ]
 
-const SYMPTOM_FOCUS_OPTIONS: { value: SymptomFocus; label: string }[] = [
-  { value: 'proactive', label: 'Mostly proactive / no major focus' },
-  { value: 'neck_upper', label: 'Neck / upper region' },
-  { value: 'rib_side_back', label: 'Rib / side / back' },
-  { value: 'jaw_facial', label: 'Jaw / facial tension' },
-  { value: 'spread_tension', label: 'More spread-out tension' },
-  { value: 'mixed', label: 'Mixed / not sure' },
-]
-
-const FLARE_SENSITIVITY_OPTIONS: { value: FlareSensitivity; label: string }[] = [
-  { value: 'low', label: 'Low' },
-  { value: 'moderate', label: 'Moderate' },
-  { value: 'high', label: 'High' },
-  { value: 'not_sure', label: 'Not sure' },
-]
-
-const SESSION_LENGTH_OPTIONS: { value: SessionLengthPreference; label: string }[] = [
-  { value: 'shorter', label: 'Shorter' },
+const LENGTH_OPTIONS: { value: SessionLengthPreference; label: string }[] = [
+  { value: 'short', label: 'Short' },
   { value: 'standard', label: 'Standard' },
   { value: 'longer', label: 'Longer' },
-  { value: 'not_sure', label: 'Not sure' },
 ]
+
+// Defaults for silent fields (PT pass 2)
+const DEFAULT_SESSION_INTENT: SessionIntent = 'quick_reset'
+const DEFAULT_SYMPTOM_FOCUS: SymptomFocus = 'spread_tension'
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function SessionIntakeScreen() {
   const { state, dispatch } = useAppContext()
+  const branch = state.pendingStateEntry as IntakeBranch | null
 
-  const [sessionIntent, setSessionIntent] = useState<SessionIntent | null>(null)
+  const [irritability, setIrritability] = useState<IrritabilityPattern | null>(null)
   const [currentContext, setCurrentContext] = useState<CurrentContext | null>(null)
-  const [symptomFocus, setSymptomFocus] = useState<SymptomFocus | null>(null)
   const [baselineIntensity, setBaselineIntensity] = useState(5)
-  const [flareSensitivity, setFlareSensitivity] = useState<FlareSensitivity | null>(null)
   const [sessionLength, setSessionLength] = useState<SessionLengthPreference | null>(null)
-  const [bodyContextSummary, setBodyContextSummary] = useState<BodyContextSummary | null>(null)
-  // M5.2 — tracks which fields still display a suggestion indicator (cleared on first user interaction)
-  const [suggestedFields, setSuggestedFields] = useState<ReadonlySet<string>>(new Set())
 
+  // Silent / derived fields (M5.2 adaptive defaults if available; fallback otherwise)
+  const [silentIntent, setSilentIntent] = useState<SessionIntent>(DEFAULT_SESSION_INTENT)
+  const [silentFocus, setSilentFocus] = useState<SymptomFocus>(DEFAULT_SYMPTOM_FOCUS)
+
+  // Guard: should not render without branch (return to state selection)
   useEffect(() => {
-    const ctx = loadBodyContext()
-    setBodyContextSummary(buildBodyContextSummary(ctx))
-  }, [])
+    if (!branch) {
+      dispatch({ type: 'NAVIGATE', screen: 'state_selection' })
+    }
+  }, [branch, dispatch])
 
-  // M5.2 — load adaptive defaults at mount; pre-populate eligible fields (M5.2 §11, §13)
+  // M5.2 — load adaptive defaults for silent fields only
   useEffect(() => {
     const history = getEligibleHariHistory()
     const recentFlare = history[0]?.hari_metadata?.intake?.flare_sensitivity
     const summary = getOrComputePatternSummary()
     const adaptiveDefaults = computeAdaptiveIntakeDefaults(summary, recentFlare ?? undefined)
-
-    const newSuggestedFields = new Set<string>()
-
     if (adaptiveDefaults.session_intent !== undefined) {
-      setSessionIntent(adaptiveDefaults.session_intent.value)
-      newSuggestedFields.add('session_intent')
+      setSilentIntent(adaptiveDefaults.session_intent.value)
     }
     if (adaptiveDefaults.symptom_focus !== undefined) {
-      setSymptomFocus(adaptiveDefaults.symptom_focus.value)
-      newSuggestedFields.add('symptom_focus')
-    }
-    if (adaptiveDefaults.flare_sensitivity !== undefined) {
-      setFlareSensitivity(adaptiveDefaults.flare_sensitivity.value)
-      newSuggestedFields.add('flare_sensitivity')
-    }
-    if (adaptiveDefaults.session_length_preference !== undefined) {
-      setSessionLength(adaptiveDefaults.session_length_preference.value)
-      newSuggestedFields.add('session_length_preference')
-    }
-
-    if (newSuggestedFields.size > 0) {
-      setSuggestedFields(newSuggestedFields)
+      setSilentFocus(adaptiveDefaults.symptom_focus.value)
     }
   }, [])
 
-  /** M5.2 §7.3 — user interaction clears the suggestion indicator for that field */
-  function clearSuggestion(field: string) {
-    setSuggestedFields((prev) => {
-      if (!prev.has(field)) return prev
-      const next = new Set(prev)
-      next.delete(field)
-      return next
-    })
-  }
-
-  const allSelected =
-    sessionIntent !== null &&
+  const allRequiredSet =
+    irritability !== null &&
     currentContext !== null &&
-    symptomFocus !== null &&
-    flareSensitivity !== null &&
     sessionLength !== null
 
+  const severityHeading =
+    branch === 'anxious_or_overwhelmed'
+      ? 'How intense is it right now?'
+      : 'How severe is your tightness or pain right now?'
+
+  const branchLabel =
+    branch === 'anxious_or_overwhelmed' ? 'Anxious or overwhelmed' : 'Tightness or pain'
+
   function handleBack() {
-    dispatch({ type: 'NAVIGATE', screen: 'home' })
+    dispatch({ type: 'NAVIGATE', screen: 'state_selection' })
   }
 
   function handleSubmit() {
-    if (!allSelected) return
+    if (!allRequiredSet || !branch) return
+
+    const flareSensitivity = irritabilityToFlareSensitivity(irritability)
 
     const intake: HariSessionIntake = {
-      session_intent: sessionIntent,
-      current_context: currentContext,
-      symptom_focus: symptomFocus,
+      branch,
+      irritability,
       baseline_intensity: baselineIntensity,
-      flare_sensitivity: flareSensitivity,
+      current_context: currentContext,
       session_length_preference: sessionLength,
+      // Silent / derived
+      session_intent: silentIntent,
+      symptom_focus: silentFocus,
+      flare_sensitivity: flareSensitivity,
     }
 
-    // M6.4: interpret pending state entry into breath/effort/bias parameters
-    if (state.pendingStateEntry && state.pendingStateEntry.length > 0) {
-      const interpretationResult = interpretStates({
-        states: state.pendingStateEntry as HariEmotionalState[],
-        intensity: baselineIntensity,
-        sensitivity: flareSensitivity,
-      })
-      dispatch({ type: 'SET_STATE_INTERPRETATION', result: interpretationResult })
-    }
+    // M6.4: interpret derived emotional states
+    const states: HariEmotionalState[] = branchToEmotionalStates(branch)
+    const interpretationResult = interpretStates({
+      states,
+      intensity: baselineIntensity,
+      sensitivity: flareSensitivity,
+    })
+    dispatch({ type: 'SET_STATE_INTERPRETATION', result: interpretationResult })
 
     dispatch({ type: 'SET_HARI_INTAKE', intake })
     dispatch({ type: 'NAVIGATE', screen: 'hari_safety_gate' })
   }
 
-  // Derive pre-session framing hint based on selections so far
-  const partialFraming =
-    flareSensitivity === 'high'
-      ? "High sensitivity detected \u2014 we'll start very gently."
-      : sessionIntent === 'quick_reset'
-      ? "Quick reset selected \u2014 we'll keep this brief and focused."
-      : sessionIntent === 'cautious_test'
-      ? "Cautious test \u2014 we'll check in early before continuing."
-      : null
+  if (!branch) return null
 
   return (
     <main className={styles.screen}>
@@ -196,43 +147,56 @@ export function SessionIntakeScreen() {
           className={styles.backButton}
           onClick={handleBack}
           type="button"
-          aria-label="Back to home"
+          aria-label={`Edit branch: ${branchLabel}`}
         >
-          ← Back
+          ← {branchLabel}
         </button>
-        <h1 className={styles.heading}>How are you today?</h1>
       </header>
-
-      {/* Body Context banner — compact, calm, non-overwhelming (M4.1 §17) */}
-      {bodyContextSummary?.has_context && bodyContextSummary.display_banner && (
-        <div className={styles.bodyContextBanner} aria-label="Saved Body Context summary">
-          <span className={styles.bannerLabel}>Body Context</span>
-          <span className={styles.bannerText}>
-            {bodyContextSummary.display_banner.replace('Using saved Body Context\n', '')}
-          </span>
-        </div>
-      )}
 
       <div className={styles.content}>
 
-        {/* 1. Session Intent */}
+        {/* 1. Severity (branch-aware) */}
         <div className={styles.fieldGroup}>
-          <span className={styles.fieldLabel}>What is this session for?</span>
-          {suggestedFields.has('session_intent') && (
-            <span className={styles.suggestionLabel}>Suggested based on your recent sessions</span>
-          )}
-          <div className={styles.chipGrid} role="group" aria-label="Session intent">
-            {SESSION_INTENT_OPTIONS.map(({ value, label }) => (
+          <span className={styles.fieldLabel}>{severityHeading}</span>
+          <div className={styles.intensitySlider}>
+            <div className={styles.intensityDisplay} aria-hidden="true">
+              <span className={styles.intensityValue}>{baselineIntensity}</span>
+              <span className={styles.intensityOutOf}>/10</span>
+            </div>
+            <input
+              type="range"
+              className={styles.intensityRange}
+              min={0}
+              max={10}
+              step={1}
+              value={baselineIntensity}
+              style={{ '--slider-fill': `${baselineIntensity * 10}%` } as React.CSSProperties}
+              aria-label="Severity"
+              aria-valuemin={0}
+              aria-valuemax={10}
+              aria-valuenow={baselineIntensity}
+              onChange={(e) => setBaselineIntensity(Number(e.target.value))}
+            />
+            <div className={styles.intensityLabels} aria-hidden="true">
+              <span>None</span>
+              <span>Intense</span>
+            </div>
+          </div>
+        </div>
+
+        <hr className={styles.divider} />
+
+        {/* 2. Irritability */}
+        <div className={styles.fieldGroup}>
+          <span className={styles.fieldLabel}>How would you describe it?</span>
+          <div className={styles.chipGrid} role="group" aria-label="Irritability pattern">
+            {IRRITABILITY_OPTIONS.map(({ value, label }) => (
               <button
                 key={value}
                 type="button"
-                className={[
-                  styles.chip,
-                  sessionIntent === value ? styles.chipSelected : '',
-                  sessionIntent === value && suggestedFields.has('session_intent') ? styles.chipSuggested : '',
-                ].filter(Boolean).join(' ')}
-                aria-pressed={sessionIntent === value}
-                onClick={() => { setSessionIntent(value); clearSuggestion('session_intent') }}
+                className={`${styles.chip} ${irritability === value ? styles.chipSelected : ''}`}
+                aria-pressed={irritability === value}
+                onClick={() => setIrritability(value)}
               >
                 {label}
               </button>
@@ -242,7 +206,7 @@ export function SessionIntakeScreen() {
 
         <hr className={styles.divider} />
 
-        {/* 2. Current Context / Posture */}
+        {/* 3. Position */}
         <div className={styles.fieldGroup}>
           <span className={styles.fieldLabel}>Where are you right now?</span>
           <div className={styles.chipGrid} role="group" aria-label="Current context">
@@ -262,109 +226,17 @@ export function SessionIntakeScreen() {
 
         <hr className={styles.divider} />
 
-        {/* 3. Symptom Focus */}
+        {/* 4. Length */}
         <div className={styles.fieldGroup}>
-          <span className={styles.fieldLabel}>What best describes today's focus?</span>
-          {suggestedFields.has('symptom_focus') && (
-            <span className={styles.suggestionLabel}>Suggested based on your recent sessions</span>
-          )}
-          <div className={styles.chipGrid} role="group" aria-label="Symptom focus">
-            {SYMPTOM_FOCUS_OPTIONS.map(({ value, label }) => (
-              <button
-                key={value}
-                type="button"
-                className={[
-                  styles.chip,
-                  symptomFocus === value ? styles.chipSelected : '',
-                  symptomFocus === value && suggestedFields.has('symptom_focus') ? styles.chipSuggested : '',
-                ].filter(Boolean).join(' ')}
-                aria-pressed={symptomFocus === value}
-                onClick={() => { setSymptomFocus(value); clearSuggestion('symptom_focus') }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <hr className={styles.divider} />
-
-        {/* 4. Baseline Intensity */}
-        <div className={styles.fieldGroup}>
-          <span className={styles.fieldLabel}>How intense does it feel right now?</span>
-          <div className={styles.intensitySlider}>
-            <div className={styles.intensityDisplay} aria-hidden="true">
-              <span className={styles.intensityValue}>{baselineIntensity}</span>
-              <span className={styles.intensityOutOf}>/10</span>
-            </div>
-            <input
-              type="range"
-              className={styles.intensityRange}
-              min={0}
-              max={10}
-              step={1}
-              value={baselineIntensity}
-              style={{ '--slider-fill': `${baselineIntensity * 10}%` } as React.CSSProperties}
-              aria-label="Baseline intensity"
-              aria-valuemin={0}
-              aria-valuemax={10}
-              aria-valuenow={baselineIntensity}
-              onChange={(e) => setBaselineIntensity(Number(e.target.value))}
-            />
-            <div className={styles.intensityLabels} aria-hidden="true">
-              <span>None</span>
-              <span>Intense</span>
-            </div>
-          </div>
-        </div>
-
-        <hr className={styles.divider} />
-
-        {/* 5. Flare Sensitivity */}
-        <div className={styles.fieldGroup}>
-          <span className={styles.fieldLabel}>How sensitive does your body feel right now?</span>
-          {suggestedFields.has('flare_sensitivity') && (
-            <span className={styles.suggestionLabel}>Suggested based on your recent sessions</span>
-          )}
-          <div className={styles.chipGrid} role="group" aria-label="Flare sensitivity">
-            {FLARE_SENSITIVITY_OPTIONS.map(({ value, label }) => (
-              <button
-                key={value}
-                type="button"
-                className={[
-                  styles.chip,
-                  flareSensitivity === value ? styles.chipSelected : '',
-                  flareSensitivity === value && suggestedFields.has('flare_sensitivity') ? styles.chipSuggested : '',
-                ].filter(Boolean).join(' ')}
-                aria-pressed={flareSensitivity === value}
-                onClick={() => { setFlareSensitivity(value); clearSuggestion('flare_sensitivity') }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <hr className={styles.divider} />
-
-        {/* 6. Session Length Preference */}
-        <div className={styles.fieldGroup}>
-          <span className={styles.fieldLabel}>What length feels right today?</span>
-          {suggestedFields.has('session_length_preference') && (
-            <span className={styles.suggestionLabel}>Suggested based on your recent sessions</span>
-          )}
+          <span className={styles.fieldLabel}>How long feels right today?</span>
           <div className={styles.chipGrid} role="group" aria-label="Session length preference">
-            {SESSION_LENGTH_OPTIONS.map(({ value, label }) => (
+            {LENGTH_OPTIONS.map(({ value, label }) => (
               <button
                 key={value}
                 type="button"
-                className={[
-                  styles.chip,
-                  sessionLength === value ? styles.chipSelected : '',
-                  sessionLength === value && suggestedFields.has('session_length_preference') ? styles.chipSuggested : '',
-                ].filter(Boolean).join(' ')}
+                className={`${styles.chip} ${sessionLength === value ? styles.chipSelected : ''}`}
                 aria-pressed={sessionLength === value}
-                onClick={() => { setSessionLength(value); clearSuggestion('session_length_preference') }}
+                onClick={() => setSessionLength(value)}
               >
                 {label}
               </button>
@@ -375,15 +247,12 @@ export function SessionIntakeScreen() {
       </div>
 
       <footer className={styles.footer}>
-        {partialFraming && (
-          <p className={styles.framingNote}>{partialFraming}</p>
-        )}
         <button
           className={styles.actionButton}
           type="button"
           onClick={handleSubmit}
-          disabled={!allSelected}
-          aria-disabled={!allSelected}
+          disabled={!allRequiredSet}
+          aria-disabled={!allRequiredSet}
         >
           Continue
         </button>
