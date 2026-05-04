@@ -62,6 +62,23 @@
     text-transform: uppercase;
     margin-top: 14px;
   }
+  .page-note {
+    max-width: 780px;
+    margin: 24px auto 0;
+    padding: 14px 22px;
+    background: rgba(204, 153, 51, 0.06);
+    border: 1px solid rgba(204, 153, 51, 0.25);
+    border-left: 3px solid #cc9933;
+    border-radius: 8px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.6;
+    text-align: left;
+  }
+  .page-note strong {
+    color: #e0b870;
+    font-weight: 600;
+  }
 
   /* ── Section header ─────────────────────────────────────────────────── */
   .section {
@@ -678,6 +695,14 @@
   <h1 class="page-title">PT Clinical Pass 2 — Visual Spec</h1>
   <p class="page-subtitle">Intake simplification + Irritability pattern</p>
   <p class="page-authority">Authority · PT clinical refinement notes 2026-05-02 · Brainstorm 2026-05-04</p>
+  <div class="page-note">
+    <strong>Implementation note — the orb is sacred.</strong><br>
+    The breathing orb shown in Frame 1 is a static layout placeholder. Production retains the existing Deep Current
+    breathing orb unchanged: concentric hydrostatic rings, longshore current drift, depth-ring ping cascade, pressure
+    field gradient, and all timing curves. This mockup specifies <em>where things go and what they say</em>; production
+    polish (button transitions, focus rings, reduced-motion handling, spacing tokens, etc.) follows the existing CSS
+    module vocabulary already established in the app.
+  </div>
 </div>
 
 <!-- ════════════════════════════════════════════════════════════════════════
