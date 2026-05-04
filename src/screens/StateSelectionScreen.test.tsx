@@ -1,4 +1,3 @@
-// src/screens/StateSelectionScreen.test.tsx
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -14,38 +13,29 @@ function renderWithProvider() {
   )
 }
 
-describe('StateSelectionScreen', () => {
+describe('StateSelectionScreen — PT Clinical Pass 2', () => {
   beforeEach(() => {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.clear()
-    }
+    if (typeof localStorage !== 'undefined') localStorage.clear()
   })
 
-  it('renders the heading', () => {
+  it('renders the PT-spec heading', () => {
     renderWithProvider()
     expect(
-      screen.getByRole('heading', { name: /what are you feeling right now/i })
+      screen.getByRole('heading', { name: /why are you using the app today/i })
     ).toBeInTheDocument()
   })
 
-  it('renders the wordmark', () => {
+  it('renders both branch options', () => {
     renderWithProvider()
-    expect(screen.getByText('mediCalm')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /tightness or pain/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /anxious or overwhelmed/i })).toBeInTheDocument()
   })
 
-  it('renders all 5 primary chips', () => {
+  it('does not render any of the retired multi-select chips', () => {
     renderWithProvider()
-    expect(screen.getByRole('button', { name: /^pain$/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^anxious$/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^exhausted$/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^tight$/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^heavy$/i })).toBeInTheDocument()
-  })
-
-  it('does not expose subcategory chips to assistive tech when collapsed', () => {
-    renderWithProvider()
-    expect(screen.queryByRole('button', { name: /^angry$/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /^overwhelmed$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^heavy$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^exhausted$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^tight$/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /^sad$/i })).not.toBeInTheDocument()
   })
 
@@ -54,107 +44,83 @@ describe('StateSelectionScreen', () => {
     expect(screen.queryByRole('button', { name: /^continue$/i })).not.toBeInTheDocument()
   })
 
-  it('Continue button appears after selecting a primary chip', async () => {
+  it('Continue button appears after selecting a branch', async () => {
     renderWithProvider()
-    await userEvent.click(screen.getByRole('button', { name: /^pain$/i }))
+    await userEvent.click(screen.getByRole('button', { name: /tightness or pain/i }))
     expect(screen.getByRole('button', { name: /^continue$/i })).toBeInTheDocument()
   })
 
-  it('Continue button disappears if selection is cleared by deselecting', async () => {
+  it('selecting one branch deselects the other (single-select)', async () => {
     renderWithProvider()
-    const pain = screen.getByRole('button', { name: /^pain$/i })
-    await userEvent.click(pain)
-    await userEvent.click(pain)
-    expect(screen.queryByRole('button', { name: /^continue$/i })).not.toBeInTheDocument()
+    const tightness = screen.getByRole('button', { name: /tightness or pain/i })
+    const anxious = screen.getByRole('button', { name: /anxious or overwhelmed/i })
+    await userEvent.click(tightness)
+    expect(tightness).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.click(anxious)
+    expect(anxious).toHaveAttribute('aria-pressed', 'true')
+    expect(tightness).toHaveAttribute('aria-pressed', 'false')
   })
 
-  it('tapping Heavy reveals subcategory chips via aria-hidden removal', async () => {
-    renderWithProvider()
-    await userEvent.click(screen.getByRole('button', { name: /^heavy$/i }))
-    expect(screen.getByRole('button', { name: /^angry$/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^overwhelmed$/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^sad$/i })).toBeInTheDocument()
-  })
-
-  it('tapping Heavy twice collapses subcategories again', async () => {
-    renderWithProvider()
-    const heavy = screen.getByRole('button', { name: /^heavy$/i })
-    await userEvent.click(heavy)
-    await userEvent.click(heavy)
-    expect(screen.queryByRole('button', { name: /^angry$/i })).not.toBeInTheDocument()
-  })
-
-  it('collapsing Heavy clears selected subcategories', async () => {
-    renderWithProvider()
-    const heavy = screen.getByRole('button', { name: /^heavy$/i })
-    await userEvent.click(heavy)
-    await userEvent.click(screen.getByRole('button', { name: /^angry$/i }))
-    // Angry selected → Continue visible
-    expect(screen.getByRole('button', { name: /^continue$/i })).toBeInTheDocument()
-    // Collapse Heavy
-    await userEvent.click(heavy)
-    // Continue gone because no selection remains
-    expect(screen.queryByRole('button', { name: /^continue$/i })).not.toBeInTheDocument()
-  })
-
-  it('Continue without Sad navigates to session_intake', async () => {
+  it('Continue with tightness_or_pain dispatches branch and routes to session_intake', async () => {
     let capturedScreen = ''
-    function ScreenCapture() {
+    let capturedEntry: unknown = 'INITIAL'
+    function Capture() {
       const { state } = useAppContext()
       capturedScreen = state.activeScreen
-      return null
-    }
-    render(
-      <AppProvider>
-        <ScreenCapture />
-        <StateSelectionScreen />
-      </AppProvider>
-    )
-    await userEvent.click(screen.getByRole('button', { name: /^pain$/i }))
-    await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
-    await waitFor(() => expect(capturedScreen).toBe('session_intake'))
-  })
-
-  it('Continue with Sad navigates to sad_safety', async () => {
-    let capturedScreen = ''
-    function ScreenCapture() {
-      const { state } = useAppContext()
-      capturedScreen = state.activeScreen
-      return null
-    }
-    render(
-      <AppProvider>
-        <ScreenCapture />
-        <StateSelectionScreen />
-      </AppProvider>
-    )
-    const heavy = screen.getByRole('button', { name: /^heavy$/i })
-    await userEvent.click(heavy)
-    await userEvent.click(screen.getByRole('button', { name: /^sad$/i }))
-    await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
-    await waitFor(() => expect(capturedScreen).toBe('sad_safety'))
-  })
-
-  it('Continue dispatches SET_STATE_ENTRY with selected states', async () => {
-    let capturedEntry: string[] | null = null
-    function StateCapture() {
-      const { state } = useAppContext()
       capturedEntry = state.pendingStateEntry
       return null
     }
     render(
       <AppProvider>
-        <StateCapture />
+        <Capture />
         <StateSelectionScreen />
       </AppProvider>
     )
-    await userEvent.click(screen.getByRole('button', { name: /^pain$/i }))
-    await userEvent.click(screen.getByRole('button', { name: /^exhausted$/i }))
+    await userEvent.click(screen.getByRole('button', { name: /tightness or pain/i }))
     await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
     await waitFor(() => {
-      expect(capturedEntry).not.toBeNull()
-      expect(capturedEntry).toContain('pain')
-      expect(capturedEntry).toContain('exhausted')
+      expect(capturedScreen).toBe('session_intake')
+      expect(capturedEntry).toBe('tightness_or_pain')
     })
+  })
+
+  it('Continue with anxious_or_overwhelmed dispatches branch and routes to session_intake', async () => {
+    let capturedScreen = ''
+    let capturedEntry: unknown = 'INITIAL'
+    function Capture() {
+      const { state } = useAppContext()
+      capturedScreen = state.activeScreen
+      capturedEntry = state.pendingStateEntry
+      return null
+    }
+    render(
+      <AppProvider>
+        <Capture />
+        <StateSelectionScreen />
+      </AppProvider>
+    )
+    await userEvent.click(screen.getByRole('button', { name: /anxious or overwhelmed/i }))
+    await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
+    await waitFor(() => {
+      expect(capturedScreen).toBe('session_intake')
+      expect(capturedEntry).toBe('anxious_or_overwhelmed')
+    })
+  })
+
+  it('Back button navigates to home', async () => {
+    let capturedScreen = ''
+    function Capture() {
+      const { state } = useAppContext()
+      capturedScreen = state.activeScreen
+      return null
+    }
+    render(
+      <AppProvider>
+        <Capture />
+        <StateSelectionScreen />
+      </AppProvider>
+    )
+    await userEvent.click(screen.getByRole('button', { name: /back/i }))
+    await waitFor(() => expect(capturedScreen).toBe('home'))
   })
 })
