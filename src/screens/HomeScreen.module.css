@@ -465,3 +465,36 @@
     transform: scale(1.0);
   }
 }
+
+/* ── Crisis support affordance (PT Clinical Pass 2) ──────────────────────── */
+.crisisSupport {
+  width: 100%;
+  padding: var(--space-5) var(--screen-padding) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.crisisDivider {
+  width: 60%;
+  height: 1px;
+  background: var(--color-border-subtle);
+  opacity: 0.5;
+}
+
+.crisisLink {
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+  min-height: var(--touch-min);
+  transition: color var(--transition-quick);
+}
+
+.crisisLink:hover {
+  color: var(--color-text-secondary);
+}

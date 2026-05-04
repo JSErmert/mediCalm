@@ -225,6 +225,19 @@ export function HomeScreen() {
         )}
       </section>
 
+      {/* ── Crisis support affordance (PT Clinical Pass 2) ──────────── */}
+      <div className={styles.crisisSupport}>
+        <div className={styles.crisisDivider} aria-hidden="true" />
+        <button
+          type="button"
+          className={styles.crisisLink}
+          onClick={() => dispatch({ type: 'NAVIGATE', screen: 'sad_safety' })}
+          aria-label="Need crisis support? Open SAD safety check"
+        >
+          Need crisis support?
+        </button>
+      </div>
+
       {caseFileEntry && (
         <SessionCaseFile
           entry={caseFileEntry}

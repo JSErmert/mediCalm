@@ -81,4 +81,26 @@ describe('HomeScreen', () => {
     expect(screen.queryByText(/rib restriction/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/shallow breathing/i)).not.toBeInTheDocument()
   })
+
+  it('renders the crisis support affordance', () => {
+    renderWithProvider()
+    expect(screen.getByRole('button', { name: /need crisis support/i })).toBeInTheDocument()
+  })
+
+  it('crisis support affordance navigates to sad_safety', async () => {
+    let capturedScreen = ''
+    function Capture() {
+      const { state } = useAppContext()
+      capturedScreen = state.activeScreen
+      return null
+    }
+    render(
+      <AppProvider>
+        <Capture />
+        <HomeScreen />
+      </AppProvider>
+    )
+    await userEvent.click(screen.getByRole('button', { name: /need crisis support/i }))
+    await waitFor(() => expect(capturedScreen).toBe('sad_safety'))
+  })
 })
