@@ -25,3 +25,38 @@ void _exhaustive
 export function musclesForRegion(region: BodyLocation): MusclePathDef[] {
   return MUSCLE_PATHS.filter(m => m.region === region)
 }
+
+/**
+ * Human-readable labels for every BodyLocation. Used in aria-label for
+ * screen-reader pronunciation (avoids "shoulder underscore left") and as
+ * chip text in the picker UI.
+ */
+export const REGION_LABEL: Record<BodyLocation, string> = {
+  head_temples: 'Head / temples',
+  jaw_tmj_facial: 'Jaw / TMJ / facial',
+  neck: 'Neck',
+  shoulder_left: 'Left shoulder',
+  shoulder_right: 'Right shoulder',
+  upper_back: 'Upper back',
+  mid_back: 'Mid back',
+  chest_sternum: 'Chest / sternum',
+  rib_side: 'Rib / side',
+  elbow_forearm_left: 'Left elbow / forearm',
+  elbow_forearm_right: 'Right elbow / forearm',
+  wrist_hand_left: 'Left wrist / hand',
+  wrist_hand_right: 'Right wrist / hand',
+  lower_back: 'Lower back',
+  hip_pelvis: 'Hip / pelvis',
+  glute: 'Glute',
+  thigh_left: 'Left thigh',
+  thigh_right: 'Right thigh',
+  knee_left: 'Left knee',
+  knee_right: 'Right knee',
+  calf_shin_left: 'Left calf / shin',
+  calf_shin_right: 'Right calf / shin',
+  ankle_foot_left: 'Left ankle / foot',
+  ankle_foot_right: 'Right ankle / foot',
+  spread_multiple: 'Spread / multiple',
+  whole_body: 'Whole body',
+  not_sure: 'Not sure',
+}

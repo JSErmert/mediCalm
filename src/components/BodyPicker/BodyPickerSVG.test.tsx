@@ -1,8 +1,7 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
-import { BodyPickerSVG } from './BodyPickerSVG'
 import userEvent from '@testing-library/user-event'
-import { vi } from 'vitest'
+import { BodyPickerSVG } from './BodyPickerSVG'
 
 describe('BodyPickerSVG', () => {
   it('front view renders 40 muscle paths', () => {
@@ -46,6 +45,26 @@ describe('BodyPickerSVG', () => {
     )
     const shoulderGroup = container.querySelector('g[data-region="shoulder_left"]')
     expect(shoulderGroup?.className.baseVal).toMatch(/selected/)
+  })
+
+  it('aria-label uses human-readable region labels (no underscores)', () => {
+    const front = render(
+      <BodyPickerSVG side="front" selectedRegions={[]} selectedMuscles={[]} onRegionTap={() => {}} onRegionHover={() => {}} />
+    )
+    expect(front.container.querySelector('g[data-region="shoulder_left"]')?.getAttribute('aria-label'))
+      .toBe('Body region: Left shoulder')
+    front.container.querySelectorAll('g[data-region]').forEach(g => {
+      expect(g.getAttribute('aria-label')).not.toMatch(/_/)
+    })
+
+    const back = render(
+      <BodyPickerSVG side="back" selectedRegions={[]} selectedMuscles={[]} onRegionTap={() => {}} onRegionHover={() => {}} />
+    )
+    expect(back.container.querySelector('g[data-region="lower_back"]')?.getAttribute('aria-label'))
+      .toBe('Body region: Lower back')
+    back.container.querySelectorAll('g[data-region]').forEach(g => {
+      expect(g.getAttribute('aria-label')).not.toMatch(/_/)
+    })
   })
 })
 

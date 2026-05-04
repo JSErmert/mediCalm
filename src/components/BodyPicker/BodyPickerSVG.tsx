@@ -1,6 +1,6 @@
 import type { BodyLocation, BodyMuscle } from '../../types/hari'
 import { MUSCLE_PATHS } from './data/muscles'
-import { MUSCLE_TO_REGION } from './data/regions'
+import { MUSCLE_TO_REGION, REGION_LABEL } from './data/regions'
 import styles from './BodyPickerSVG.module.css'
 
 interface BodyPickerSVGProps {
@@ -43,7 +43,7 @@ export function BodyPickerSVG({
             data-region={region}
             role="button"
             tabIndex={0}
-            aria-label={`Body region: ${region}`}
+            aria-label={`Body region: ${REGION_LABEL[region]}`}
             className={`${styles.region}${isSelected ? ' ' + styles.selected : ''}`}
             onClick={() => onRegionTap(region)}
             onKeyDown={(e) => {
