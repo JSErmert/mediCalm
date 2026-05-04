@@ -40,7 +40,7 @@ describe('SADSafetyScreen', () => {
     expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument()
   })
 
-  it('"No, continue" navigates to session_intake', async () => {
+  it('"No, continue" navigates to home', async () => {
     let capturedScreen = ''
     function ScreenCapture() {
       const { state } = useAppContext()
@@ -54,7 +54,7 @@ describe('SADSafetyScreen', () => {
       </AppProvider>
     )
     await userEvent.click(screen.getByRole('button', { name: /no, continue/i }))
-    await waitFor(() => expect(capturedScreen).toBe('session_intake'))
+    await waitFor(() => expect(capturedScreen).toBe('home'))
   })
 
   it('"Yes" dispatches CLEAR_STATE_ENTRY and navigates to support_resources', async () => {
@@ -79,7 +79,7 @@ describe('SADSafetyScreen', () => {
     })
   })
 
-  it('Back button navigates to state_selection', async () => {
+  it('Back button navigates to home', async () => {
     let capturedScreen = ''
     function ScreenCapture() {
       const { state } = useAppContext()
@@ -93,6 +93,6 @@ describe('SADSafetyScreen', () => {
       </AppProvider>
     )
     await userEvent.click(screen.getByRole('button', { name: /back/i }))
-    await waitFor(() => expect(capturedScreen).toBe('state_selection'))
+    await waitFor(() => expect(capturedScreen).toBe('home'))
   })
 })

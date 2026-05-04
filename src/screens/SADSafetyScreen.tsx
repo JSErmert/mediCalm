@@ -2,10 +2,11 @@
  * SADSafetyScreen — M6.1.1 SAD Safety Gate
  *
  * Appears when Sad is in state_entry. Brief boundary check only.
- * No, continue → session_intake (preserve state).
+ * PT Clinical Pass 2: entry point is HomeScreen, not mid-intake.
+ * No, continue → home (preserve state, return to affordance).
  * Yes → CLEAR_STATE_ENTRY → support_resources.
- * Back → state_selection (preserve selections).
- * Authority: M6.1.1 SAD Safety Screen spec (v2.1)
+ * Back → home (return to affordance).
+ * Authority: M6.1.1 SAD Safety Screen spec (v2.2)
  */
 import { useAppContext } from '../context/AppContext'
 import styles from './SADSafetyScreen.module.css'
@@ -14,7 +15,8 @@ export function SADSafetyScreen() {
   const { dispatch } = useAppContext()
 
   function handleNo() {
-    dispatch({ type: 'NAVIGATE', screen: 'session_intake' })
+    // PT Pass 2: SAD safety detached from intake flow; "No" returns home
+    dispatch({ type: 'NAVIGATE', screen: 'home' })
   }
 
   function handleYes() {
@@ -23,12 +25,13 @@ export function SADSafetyScreen() {
   }
 
   function handleBack() {
-    dispatch({ type: 'NAVIGATE', screen: 'state_selection' })
+    // PT Pass 2: entry point is HomeScreen, not state_selection
+    dispatch({ type: 'NAVIGATE', screen: 'home' })
   }
 
   return (
     <main className={styles.screen} aria-label="SAD safety check">
-      <button type="button" className={styles.back} onClick={handleBack} aria-label="Back to state selection">
+      <button type="button" className={styles.back} onClick={handleBack} aria-label="Back to home">
         ← Back
       </button>
 
