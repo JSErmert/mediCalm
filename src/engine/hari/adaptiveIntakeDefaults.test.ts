@@ -159,7 +159,7 @@ describe('computeAdaptiveIntakeDefaults — per-field independence', () => {
       session_intent_tendency: makePattern<SessionIntent>('quick_reset', 'active', {
         dimension: 'session_intent_tendency',
       }),
-      session_length_tendency: makePattern<SessionLengthPreference>('longer', 'high_confidence', {
+      session_length_tendency: makePattern<SessionLengthPreference>('long', 'high_confidence', {
         dimension: 'session_length_tendency',
       }),
     })

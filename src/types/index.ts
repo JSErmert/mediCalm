@@ -238,6 +238,7 @@ export type {
   SymptomFocus,
   FlareSensitivity,
   SessionLengthPreference,
+  BodyLocation,
   BodyContext,
   BodyContextItem,
   BodyContextCategory,

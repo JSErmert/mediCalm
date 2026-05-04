@@ -56,9 +56,49 @@ export type FlareSensitivity = 'low' | 'moderate' | 'high' | 'not_sure'
 
 /**
  * Session Length Preference — what kind of session feels right today.
- * Authority: M4.2 MVP §8
+ * Authority: M4.2 MVP §8; PT clinical pass 2 refinement (label rewrite, 'longer' → 'long').
  */
-export type SessionLengthPreference = 'short' | 'standard' | 'longer'
+export type SessionLengthPreference = 'short' | 'standard' | 'long'
+
+/**
+ * BodyLocation — anatomical regions surfaced as a multi-select Location field
+ * in the intake. Includes left/right paired regions plus three fallbacks.
+ * Authority: PT clinical pass 2 refinement (Location field restored + expanded).
+ */
+export type BodyLocation =
+  // Head / face / neck
+  | 'head_temples'
+  | 'jaw_tmj_facial'
+  | 'neck'
+  // Upper torso / back
+  | 'shoulder_left'
+  | 'shoulder_right'
+  | 'upper_back'
+  | 'mid_back'
+  | 'chest_sternum'
+  | 'rib_side'
+  // Arms
+  | 'elbow_forearm_left'
+  | 'elbow_forearm_right'
+  | 'wrist_hand_left'
+  | 'wrist_hand_right'
+  // Lower back / pelvis
+  | 'lower_back'
+  | 'hip_pelvis'
+  | 'glute'
+  // Legs
+  | 'thigh_left'
+  | 'thigh_right'
+  | 'knee_left'
+  | 'knee_right'
+  | 'calf_shin_left'
+  | 'calf_shin_right'
+  | 'ankle_foot_left'
+  | 'ankle_foot_right'
+  // Fallbacks
+  | 'spread_multiple'
+  | 'whole_body'
+  | 'not_sure'
 
 /**
  * PT Clinical Pass 2 — branched intent (replaces 7-state multi-select).
@@ -82,14 +122,18 @@ export type IrritabilityPattern =
  * HariSessionIntake — pre-session state.
  * Truth class B: Active Session State.
  *
- * PT Clinical Pass 2: gains `branch` and `irritability` as user-visible
- * fields. `session_intent`, `symptom_focus`, and `flare_sensitivity` are
- * retained but become silent defaults (derived or set from M5.2 adaptive
- * defaults; flare_sensitivity is derived from irritability via
- * intakeTranslation.irritabilityToFlareSensitivity()).
+ * PT Clinical Pass 2 base: gains `branch` and `irritability` as user-visible
+ * fields. `session_intent` and `symptom_focus` are retained as silent
+ * defaults populated from M5.2 adaptive defaults.
+ *
+ * PT Clinical Pass 2 refinement (2026-05-04): Sensitivity is restored as
+ * an explicit user-visible field (overrides any derived value), and a new
+ * multi-select Location field captures anatomical regions of focus.
+ * `irritabilityToFlareSensitivity()` remains available as a fallback for
+ * legacy records but is no longer called by the live intake flow.
  *
  * Authority: M4.2 MVP §3 §15; M4.5.2 baseline intensity patch;
- *            PT clinical refinement notes 2026-05-02
+ *            PT clinical refinement notes 2026-05-02 / 2026-05-04
  */
 export interface HariSessionIntake {
   // PT-aligned visible fields (PT pass 2)
@@ -97,13 +141,16 @@ export interface HariSessionIntake {
   irritability: IrritabilityPattern
   /** Pre-session baseline intensity 0–10 (integer). Branch-aware copy in UI. */
   baseline_intensity: number
+  /** Restored 2026-05-04 — explicit user input. Overrides any derived value. */
+  flare_sensitivity: FlareSensitivity
+  /** Restored 2026-05-04 — multi-select anatomical regions. */
+  location: BodyLocation[]
   current_context: CurrentContext
   session_length_preference: SessionLengthPreference
 
   // Silent / derived fields — engine compatibility
   session_intent: SessionIntent
   symptom_focus: SymptomFocus
-  flare_sensitivity: FlareSensitivity
 }
 
 // ── M4.1 — Persistent Body Context ───────────────────────────────────────────

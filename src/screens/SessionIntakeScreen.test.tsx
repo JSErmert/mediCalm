@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AppProvider } from '../context/AppProvider'
 import { SessionIntakeScreen } from './SessionIntakeScreen'
@@ -23,7 +23,7 @@ function renderWithBranch(branch: IntakeBranch) {
   )
 }
 
-describe('SessionIntakeScreen — PT Clinical Pass 2', () => {
+describe('SessionIntakeScreen — PT Clinical Pass 2 (refined 2026-05-04)', () => {
   beforeEach(() => localStorage.clear())
 
   it('renders branch-aware severity copy for tightness_or_pain', async () => {
@@ -54,6 +54,56 @@ describe('SessionIntakeScreen — PT Clinical Pass 2', () => {
     expect(screen.getByRole('button', { name: /comes on and goes away about the same/i })).toBeInTheDocument()
   })
 
+  it('renders the sensitivity prompt and 4 options', async () => {
+    renderWithBranch('tightness_or_pain')
+    await waitFor(() => {
+      expect(screen.getByText(/how sensitive does your body feel right now/i)).toBeInTheDocument()
+    })
+    // Scope to the sensitivity chip group — Location group also contains a "Not sure" chip.
+    const sensitivityGroup = screen.getByRole('group', { name: /flare sensitivity/i })
+    expect(within(sensitivityGroup).getByRole('button', { name: /^low$/i })).toBeInTheDocument()
+    expect(within(sensitivityGroup).getByRole('button', { name: /^moderate$/i })).toBeInTheDocument()
+    expect(within(sensitivityGroup).getByRole('button', { name: /^high$/i })).toBeInTheDocument()
+    expect(within(sensitivityGroup).getByRole('button', { name: /^not sure$/i })).toBeInTheDocument()
+  })
+
+  it('renders the location prompt with multi-select chips and group labels', async () => {
+    renderWithBranch('tightness_or_pain')
+    await waitFor(() => {
+      expect(screen.getByText(/where in your body is it focused/i)).toBeInTheDocument()
+    })
+    // Group labels
+    expect(screen.getByText(/^head & neck$/i)).toBeInTheDocument()
+    expect(screen.getByText(/^upper torso & back$/i)).toBeInTheDocument()
+    expect(screen.getByText(/^arms$/i)).toBeInTheDocument()
+    expect(screen.getByText(/^lower back & pelvis$/i)).toBeInTheDocument()
+    expect(screen.getByText(/^legs$/i)).toBeInTheDocument()
+    expect(screen.getByText(/^general$/i)).toBeInTheDocument()
+    // A few representative regions
+    expect(screen.getByRole('button', { name: /^neck$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /jaw \/ tmj \/ facial/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /shoulder \(L\)/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^lower back$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^whole body$/i })).toBeInTheDocument()
+  })
+
+  it('allows selecting multiple location chips', async () => {
+    renderWithBranch('tightness_or_pain')
+    await waitFor(() => {
+      expect(screen.getByText(/where in your body is it focused/i)).toBeInTheDocument()
+    })
+    const neck = screen.getByRole('button', { name: /^neck$/i })
+    const lowerBack = screen.getByRole('button', { name: /^lower back$/i })
+    await userEvent.click(neck)
+    await userEvent.click(lowerBack)
+    expect(neck).toHaveAttribute('aria-pressed', 'true')
+    expect(lowerBack).toHaveAttribute('aria-pressed', 'true')
+    // Toggle one off
+    await userEvent.click(neck)
+    expect(neck).toHaveAttribute('aria-pressed', 'false')
+    expect(lowerBack).toHaveAttribute('aria-pressed', 'true')
+  })
+
   it('renders all 5 position options', async () => {
     renderWithBranch('tightness_or_pain')
     await waitFor(() => {
@@ -66,14 +116,16 @@ describe('SessionIntakeScreen — PT Clinical Pass 2', () => {
     expect(screen.getByRole('button', { name: /after strain or overuse/i })).toBeInTheDocument()
   })
 
-  it('renders 3 length options matching PT spec', async () => {
+  it('renders length prompt with new label and 3 options (Short/Standard/Long)', async () => {
     renderWithBranch('tightness_or_pain')
     await waitFor(() => {
-      expect(screen.getByText(/how long feels right today/i)).toBeInTheDocument()
+      expect(screen.getByText(/what session length feels right today/i)).toBeInTheDocument()
     })
     expect(screen.getByRole('button', { name: /^short$/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /^standard$/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^longer$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^long$/i })).toBeInTheDocument()
+    // Old wording must be gone
+    expect(screen.queryByText(/how long feels right today/i)).not.toBeInTheDocument()
   })
 
   it('does not render retired field labels', async () => {
@@ -82,10 +134,9 @@ describe('SessionIntakeScreen — PT Clinical Pass 2', () => {
       expect(screen.queryByText(/what is this session for/i)).not.toBeInTheDocument()
     })
     expect(screen.queryByText(/what best describes today's focus/i)).not.toBeInTheDocument()
-    expect(screen.queryByText(/how sensitive does your body feel/i)).not.toBeInTheDocument()
   })
 
-  it('Continue button is disabled until irritability, position, and length are set', async () => {
+  it('Continue is disabled until all required fields are set', async () => {
     renderWithBranch('tightness_or_pain')
     let continueBtn: HTMLElement
     await waitFor(() => {
@@ -94,13 +145,17 @@ describe('SessionIntakeScreen — PT Clinical Pass 2', () => {
     })
     await userEvent.click(screen.getByRole('button', { name: /comes on quickly, goes away slowly/i }))
     expect(continueBtn!).toBeDisabled()
+    await userEvent.click(screen.getByRole('button', { name: /^moderate$/i })) // sensitivity
+    expect(continueBtn!).toBeDisabled()
+    await userEvent.click(screen.getByRole('button', { name: /^lower back$/i })) // location
+    expect(continueBtn!).toBeDisabled()
     await userEvent.click(screen.getByRole('button', { name: /^sitting$/i }))
     expect(continueBtn!).toBeDisabled()
     await userEvent.click(screen.getByRole('button', { name: /^standard$/i }))
     expect(continueBtn!).toBeEnabled()
   })
 
-  it('Continue dispatches HARI intake with branch + irritability and navigates to safety gate', async () => {
+  it('Continue dispatches HARI intake with explicit sensitivity, location[], and new length literal', async () => {
     let capturedIntake: any = null
     let capturedScreen = ''
     function Capture() {
@@ -120,18 +175,25 @@ describe('SessionIntakeScreen — PT Clinical Pass 2', () => {
       expect(screen.getByRole('button', { name: /comes on quickly, goes away slowly/i })).toBeInTheDocument()
     })
     await userEvent.click(screen.getByRole('button', { name: /comes on quickly, goes away slowly/i }))
+    // Pick sensitivity that does NOT match irritability's old derivation (fast→high) so we
+    // can prove the explicit field overrides the previously-derived value.
+    await userEvent.click(screen.getByRole('button', { name: /^low$/i }))
+    await userEvent.click(screen.getByRole('button', { name: /^lower back$/i }))
+    await userEvent.click(screen.getByRole('button', { name: /^neck$/i }))
     await userEvent.click(screen.getByRole('button', { name: /^sitting$/i }))
-    await userEvent.click(screen.getByRole('button', { name: /^standard$/i }))
+    await userEvent.click(screen.getByRole('button', { name: /^long$/i }))
     await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
     await waitFor(() => {
       expect(capturedScreen).toBe('hari_safety_gate')
       expect(capturedIntake).toMatchObject({
         branch: 'tightness_or_pain',
         irritability: 'fast_onset_slow_resolution',
+        flare_sensitivity: 'low',          // explicit user input — NOT 'high' derived from irritability
         current_context: 'sitting',
-        session_length_preference: 'standard',
-        flare_sensitivity: 'high',  // derived via translation
+        session_length_preference: 'long',
       })
+      expect(capturedIntake.location).toEqual(expect.arrayContaining(['lower_back', 'neck']))
+      expect(capturedIntake.location.length).toBe(2)
     })
   })
 

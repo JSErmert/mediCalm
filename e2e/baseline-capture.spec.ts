@@ -1,8 +1,10 @@
 /**
- * Baseline Visual Capture — PT Clinical Pass 2
+ * Baseline Visual Capture — PT Clinical Pass 2 (refined 2026-05-04)
  *
  * Purpose: Document every reachable screen and meaningful UI state
- * after PT pass 2 (intake simplification + irritability pattern).
+ * after PT pass 2 (intake simplification + irritability pattern) plus
+ * the 2026-05-04 refinement: Sensitivity restored, multi-select Location
+ * field added, length question relabelled with Short/Standard/Long.
  *
  * Run:   npm run capture
  * Output: snapshots/ folder with timestamped PNG files
@@ -150,8 +152,11 @@ test.describe('Session Intake Screen', () => {
   })
 
   test('12 — intake screen filled', async ({ page }) => {
-    // Fill 3 required radio fields (severity has default 5)
+    // Fill 5 required fields (severity has default 5):
+    //   irritability · sensitivity · location (≥1) · position · length
     await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
+    await page.getByRole('button', { name: /^moderate$/i }).click()       // sensitivity
+    await page.getByRole('button', { name: /^lower back$/i }).click()     // location
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     await snap(page, '12_intake_filled')
@@ -170,8 +175,10 @@ test.describe('HARI Safety Gate', () => {
     await page.getByLabel('Start a new guided session').click()
     await page.getByRole('button', { name: /tightness or pain/i }).click()
     await page.getByRole('button', { name: /^continue$/i }).click()
-    // Fill 4-field intake (PT Pass 2)
+    // Fill 6-field intake (PT pass 2 refined 2026-05-04)
     await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
+    await page.getByRole('button', { name: /^moderate$/i }).click()
+    await page.getByRole('button', { name: /^lower back$/i }).click()
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     // Submit
@@ -207,8 +214,10 @@ test.describe('Session Setup Screen', () => {
     await page.getByLabel('Start a new guided session').click()
     await page.getByRole('button', { name: /tightness or pain/i }).click()
     await page.getByRole('button', { name: /^continue$/i }).click()
-    // Fill 4-field intake
+    // Fill 6-field intake
     await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
+    await page.getByRole('button', { name: /^moderate$/i }).click()
+    await page.getByRole('button', { name: /^lower back$/i }).click()
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     await page.locator('button:has-text("Continue")').last().click()
@@ -232,8 +241,10 @@ test.describe('Guided Session Screen', () => {
     await page.getByLabel('Start a new guided session').click()
     await page.getByRole('button', { name: /tightness or pain/i }).click()
     await page.getByRole('button', { name: /^continue$/i }).click()
-    // Fill 4-field intake (PT Pass 2)
+    // Fill 6-field intake (PT pass 2 refined 2026-05-04)
     await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
+    await page.getByRole('button', { name: /^moderate$/i }).click()
+    await page.getByRole('button', { name: /^lower back$/i }).click()
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     await page.locator('button:has-text("Continue")').last().click()
@@ -355,8 +366,10 @@ test.describe('Golden Path — Full Flow', () => {
     await page.getByRole('button', { name: /^continue$/i }).click()
     await snap(page, 'golden_04_intake')
 
-    // Fill 4-field intake (PT Pass 2)
+    // Fill 6-field intake (PT pass 2 refined 2026-05-04)
     await page.getByRole('button', { name: /comes on slowly, goes away quickly/i }).click()
+    await page.getByRole('button', { name: /^moderate$/i }).click()
+    await page.getByRole('button', { name: /^lower back$/i }).click()
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     await snap(page, 'golden_05_intake_filled')

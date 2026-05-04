@@ -168,7 +168,7 @@ function estimateSessionTolerance(
 
   // Session length preference modifies tolerance estimate
   if (intake.session_length_preference === 'short') invertedFlare = Math.max(0, invertedFlare - 1)
-  else if (intake.session_length_preference === 'longer') invertedFlare = Math.min(2, invertedFlare + 1)
+  else if (intake.session_length_preference === 'long') invertedFlare = Math.min(2, invertedFlare + 1)
 
   // Quick reset intent = lower tolerance expectation (short is fine)
   if (intake.session_intent === 'quick_reset') {

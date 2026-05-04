@@ -135,7 +135,7 @@ function selectRoundCount(
   }
 
   if (
-    intake.session_length_preference === 'longer' &&
+    intake.session_length_preference === 'long' &&
     state.flare_sensitivity_estimate === 'low'
   ) {
     return 'extended'
