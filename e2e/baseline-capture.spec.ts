@@ -1,10 +1,10 @@
 /**
- * Baseline Visual Capture — Pre-M7 Snapshot
+ * Baseline Visual Capture — PT Clinical Pass 2
  *
  * Purpose: Document every reachable screen and meaningful UI state
- * before M7–M10 work begins. Not a test suite — a visual record.
+ * after PT pass 2 (intake simplification + irritability pattern).
  *
- * Run:   npx playwright test e2e/baseline-capture.spec.ts
+ * Run:   npm run capture
  * Output: snapshots/ folder with timestamped PNG files
  *
  * Re-run after milestone work to detect unintended visual drift.
@@ -31,7 +31,6 @@ async function snap(page: Page, name: string) {
 
 test.describe('Home Screen', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear localStorage so we get a clean state each time
     await page.goto('/')
     await page.evaluate(() => localStorage.clear())
     await page.goto('/')
@@ -43,8 +42,6 @@ test.describe('Home Screen', () => {
   })
 
   test('02 — home with session history', async ({ page }) => {
-    // Seed a fake history entry matching HistoryEntry interface exactly
-    // Key: PREFIX(medicaLm_) + session_history
     await page.evaluate(() => {
       const entry = {
         session_id: 'baseline_test_001',
@@ -78,7 +75,7 @@ test.describe('Home Screen', () => {
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. STATE SELECTION SCREEN
+// 2. STATE SELECTION SCREEN — branched intent (PT Pass 2)
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe('State Selection Screen', () => {
@@ -90,38 +87,25 @@ test.describe('State Selection Screen', () => {
   })
 
   test('04 — state selection empty', async ({ page }) => {
-    await expect(page.locator('text=What are you feeling right now?')).toBeVisible()
+    await expect(page.locator('text=Why are you using the app today?')).toBeVisible()
     await snap(page, '04_state_selection_empty')
   })
 
-  test('05 — state selection single (Pain)', async ({ page }) => {
-    await page.getByRole('button', { name: 'Pain' }).click()
-    await snap(page, '05_state_selection_pain')
+  test('05 — state selection tightness branch selected', async ({ page }) => {
+    await page.getByRole('button', { name: /tightness or pain/i }).click()
+    await snap(page, '05_state_selection_tightness')
   })
 
-  test('06 — state selection multi (Pain + Anxious + Tight)', async ({ page }) => {
-    await page.getByRole('button', { name: 'Pain' }).click()
-    await page.getByRole('button', { name: 'Anxious' }).click()
-    await page.getByRole('button', { name: 'Tight' }).click()
-    await snap(page, '06_state_selection_multi')
+  test('06 — state selection anxious branch selected', async ({ page }) => {
+    await page.getByRole('button', { name: /anxious or overwhelmed/i }).click()
+    await snap(page, '06_state_selection_anxious')
   })
 
-  test('07 — state selection Heavy expanded', async ({ page }) => {
-    await page.getByLabel('Heavy').click()
-    await snap(page, '07_state_selection_heavy_expanded')
-  })
-
-  test('08 — state selection Heavy sub-states selected', async ({ page }) => {
-    await page.getByLabel('Heavy').click()
-    await page.waitForTimeout(300)
-    await page.getByRole('button', { name: 'Angry' }).click()
-    await page.getByRole('button', { name: 'Overwhelmed' }).click()
-    await snap(page, '08_state_selection_heavy_sub_selected')
-  })
+  // Tests 07 and 08 retired in PT Pass 2 (Heavy expandable + sub-states no longer exist).
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. SAD SAFETY PATH
+// 3. SAD SAFETY PATH — reached via HomeScreen "Need crisis support?" affordance (PT Pass 2)
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe('SAD Safety Path', () => {
@@ -129,29 +113,24 @@ test.describe('SAD Safety Path', () => {
     await page.goto('/')
     await page.evaluate(() => localStorage.clear())
     await page.goto('/')
-    await page.getByLabel('Start a new guided session').click()
-    // Expand Heavy, select Sad
-    await page.getByLabel('Heavy').click()
-    await page.waitForTimeout(300)
-    await page.getByRole('button', { name: 'Sad' }).click()
+    // PT Pass 2: enter SAD safety via HomeScreen affordance, not multi-select
+    await page.getByRole('button', { name: /need crisis support/i }).click()
   })
 
   test('09 — SAD safety screen', async ({ page }) => {
-    await page.getByRole('button', { name: 'Continue' }).click()
     await expect(page.locator('text=Before we continue')).toBeVisible()
     await snap(page, '09_sad_safety_screen')
   })
 
   test('10 — support resources (escalation exit)', async ({ page }) => {
-    await page.getByRole('button', { name: 'Continue' }).click()
-    await page.getByRole('button', { name: 'Yes' }).click()
+    await page.getByRole('button', { name: /^yes$/i }).click()
     await expect(page.locator('text=Pause here for a moment')).toBeVisible()
     await snap(page, '10_support_resources')
   })
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. SESSION INTAKE SCREEN
+// 4. SESSION INTAKE SCREEN — 4-field branched intake (PT Pass 2)
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe('Session Intake Screen', () => {
@@ -160,22 +139,21 @@ test.describe('Session Intake Screen', () => {
     await page.evaluate(() => localStorage.clear())
     await page.goto('/')
     await page.getByLabel('Start a new guided session').click()
-    await page.getByRole('button', { name: 'Pain' }).click()
-    await page.getByRole('button', { name: 'Continue' }).click()
+    await page.getByRole('button', { name: /tightness or pain/i }).click()
+    await page.getByRole('button', { name: /^continue$/i }).click()
   })
 
   test('11 — intake screen initial', async ({ page }) => {
-    await expect(page.locator('text=How are you today?')).toBeVisible()
+    // Branch breadcrumb at top + branch-aware severity heading
+    await expect(page.locator('text=How severe is your tightness or pain right now?')).toBeVisible()
     await snap(page, '11_intake_initial')
   })
 
   test('12 — intake screen filled', async ({ page }) => {
-    // Fill all 5 required fields + intensity slider
-    await page.getByRole('button', { name: 'Quick reset' }).click()
-    await page.getByRole('button', { name: 'Sitting' }).click()
-    await page.getByRole('button', { name: 'Neck / upper region' }).click()
-    await page.getByRole('button', { name: 'Moderate' }).click()
-    await page.getByRole('button', { name: 'Standard' }).last().click()
+    // Fill 3 required radio fields (severity has default 5)
+    await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
+    await page.getByRole('button', { name: /^sitting$/i }).click()
+    await page.getByRole('button', { name: /^standard$/i }).click()
     await snap(page, '12_intake_filled')
   })
 })
@@ -190,14 +168,12 @@ test.describe('HARI Safety Gate', () => {
     await page.evaluate(() => localStorage.clear())
     await page.goto('/')
     await page.getByLabel('Start a new guided session').click()
-    await page.getByRole('button', { name: 'Pain' }).click()
-    await page.getByRole('button', { name: 'Continue' }).click()
-    // Fill intake
-    await page.getByRole('button', { name: 'Quick reset' }).click()
-    await page.getByRole('button', { name: 'Sitting' }).click()
-    await page.getByRole('button', { name: 'Neck / upper region' }).click()
-    await page.getByRole('button', { name: 'Moderate' }).click()
-    await page.getByRole('button', { name: 'Standard' }).last().click()
+    await page.getByRole('button', { name: /tightness or pain/i }).click()
+    await page.getByRole('button', { name: /^continue$/i }).click()
+    // Fill 4-field intake (PT Pass 2)
+    await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
+    await page.getByRole('button', { name: /^sitting$/i }).click()
+    await page.getByRole('button', { name: /^standard$/i }).click()
     // Submit
     await page.locator('button:has-text("Continue")').last().click()
   }
@@ -210,47 +186,34 @@ test.describe('HARI Safety Gate', () => {
 
   test('14 — safety gate step 2 (yes path)', async ({ page }) => {
     await navigateToGate(page)
-    // Click Yes to advance to step 2
     await page.getByRole('button', { name: /Yes, at least one/i }).click()
     await snap(page, '14_safety_gate_step2')
   })
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. SESSION SETUP SCREEN
+// 6. SESSION SETUP SCREEN — captured via R&D override (PT Pass 1 wired override
+//    to route through session_setup even when stateInterpretationResult is set)
 // ─────────────────────────────────────────────────────────────────────────────
-// NOTE: In M6 flow (with state entry), the safety gate routes directly to
-// guided_session, skipping session_setup (HariSafetyGateScreen.tsx L126-129).
-// Session setup is only reachable in legacy (non-state) flow.
-// We capture it by seeding state without pendingStateEntry.
 
 test.describe('Session Setup Screen', () => {
-  test('15 — session setup (legacy flow — no state entry)', async ({ page }) => {
+  test('15 — session setup (via R&D override)', async ({ page }) => {
     await page.goto('/')
-    await page.evaluate(() => localStorage.clear())
-    await page.goto('/')
-    // Use legacy flow: navigate directly to session_intake without state selection
-    // by dispatching from the app context. We simulate by going to intake without state.
-    await page.getByLabel('Start a new guided session').click()
-    await page.getByRole('button', { name: 'Pain' }).click()
-    await page.getByRole('button', { name: 'Continue' }).click()
-    // Fill intake
-    await page.getByRole('button', { name: 'Quick reset' }).click()
-    await page.getByRole('button', { name: 'Sitting' }).click()
-    await page.getByRole('button', { name: 'Neck / upper region' }).click()
-    await page.getByRole('button', { name: 'Moderate' }).click()
-    await page.getByRole('button', { name: 'Standard' }).last().click()
-    // Clear pendingStateEntry before submitting so HARI gate takes legacy path
     await page.evaluate(() => {
-      // Remove the state entry so the safety gate doesn't detect M6 flow
-      const event = new CustomEvent('__test_clear_state_entry__')
-      window.dispatchEvent(event)
+      localStorage.clear()
+      localStorage.setItem('dev_override', 'true')
     })
-    // Submit intake → safety gate
+    await page.goto('/')
+    await page.getByLabel('Start a new guided session').click()
+    await page.getByRole('button', { name: /tightness or pain/i }).click()
+    await page.getByRole('button', { name: /^continue$/i }).click()
+    // Fill 4-field intake
+    await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
+    await page.getByRole('button', { name: /^sitting$/i }).click()
+    await page.getByRole('button', { name: /^standard$/i }).click()
     await page.locator('button:has-text("Continue")').last().click()
-    // Pass safety gate (No) — without stateInterpretation, routes to session_setup
+    // Pass safety gate (No, none of these) — override routes to session_setup
     await page.getByRole('button', { name: /No, none of these/i }).click()
-    // Should arrive at session setup
     await page.waitForTimeout(1000)
     await snap(page, '15_session_setup_or_guided')
   })
@@ -267,32 +230,26 @@ test.describe('Guided Session Screen', () => {
     await page.evaluate(() => localStorage.clear())
     await page.goto('/')
     await page.getByLabel('Start a new guided session').click()
-    await page.getByRole('button', { name: 'Pain' }).click()
-    await page.getByRole('button', { name: 'Continue' }).click()
-    // Fill intake
-    await page.getByRole('button', { name: 'Quick reset' }).click()
-    await page.getByRole('button', { name: 'Sitting' }).click()
-    await page.getByRole('button', { name: 'Neck / upper region' }).click()
-    await page.getByRole('button', { name: 'Moderate' }).click()
-    await page.getByRole('button', { name: 'Standard' }).last().click()
-    // Submit → safety gate
+    await page.getByRole('button', { name: /tightness or pain/i }).click()
+    await page.getByRole('button', { name: /^continue$/i }).click()
+    // Fill 4-field intake (PT Pass 2)
+    await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
+    await page.getByRole('button', { name: /^sitting$/i }).click()
+    await page.getByRole('button', { name: /^standard$/i }).click()
     await page.locator('button:has-text("Continue")').last().click()
     // Safety gate "No" → M6 flow goes directly to guided_session
     await page.getByRole('button', { name: /No, none of these/i }).click()
-    // Wait for guided session to render
     await page.waitForTimeout(1500)
   }
 
   test('16 — guided session breathing phase', async ({ page }) => {
     await navigateToSession(page)
-    // Wait for orb to appear and first breath cycle to start
     await page.waitForTimeout(2000)
     await snap(page, '16_guided_session_breathing')
   })
 
   test('17 — guided session stop confirmation overlay', async ({ page }) => {
     await navigateToSession(page)
-    // Must wait >20s for stop confirm to appear (under 20s → direct home navigation)
     await page.waitForTimeout(22000)
     const stopBtn = page.getByRole('button', { name: 'Stop session', exact: true })
     if (await stopBtn.isVisible()) {
@@ -320,7 +277,6 @@ test.describe('Body Context Screen', () => {
 
   test('19 — body context with entries', async ({ page }) => {
     await page.goto('/')
-    // Seed body context with sample data
     await page.evaluate(() => {
       const ctx = {
         items: [
@@ -362,28 +318,20 @@ test.describe('Body Context Screen', () => {
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 9. SAFETY STOP SCREEN (direct injection — not reachable via M6 flow)
+// 9. SAFETY STOP SCREEN (placeholder — not reachable via M6 flow)
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe('Safety Stop Screen', () => {
   test('20 — safety stop', async ({ page }) => {
     await page.goto('/')
     await page.evaluate(() => localStorage.clear())
-    // Inject state to force safety_stop screen
-    await page.evaluate(() => {
-      // This screen is driven by AppContext state machine —
-      // we need to dispatch NAVIGATE from inside React.
-      // Instead, we'll capture it if reachable, or skip gracefully.
-    })
     await page.goto('/')
-    // Try to reach via devFlags + high-severity input if possible
-    // For now, capture a placeholder note
     await snap(page, '20_safety_stop_placeholder_home')
   })
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 10. FULL FLOW — end-to-end golden path screenshot sequence
+// 10. FULL FLOW — end-to-end golden path screenshot sequence (PT Pass 2)
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe('Golden Path — Full Flow', () => {
@@ -399,21 +347,18 @@ test.describe('Golden Path — Full Flow', () => {
     await page.getByLabel('Start a new guided session').click()
     await snap(page, 'golden_02_state_selection')
 
-    // Select Pain + Anxious
-    await page.getByRole('button', { name: 'Pain' }).click()
-    await page.getByRole('button', { name: 'Anxious' }).click()
+    // Select tightness branch
+    await page.getByRole('button', { name: /tightness or pain/i }).click()
     await snap(page, 'golden_03_states_selected')
 
     // Continue → Intake
-    await page.getByRole('button', { name: 'Continue' }).click()
+    await page.getByRole('button', { name: /^continue$/i }).click()
     await snap(page, 'golden_04_intake')
 
-    // Fill intake
-    await page.getByRole('button', { name: 'Deeper regulation' }).click()
-    await page.getByRole('button', { name: 'Sitting' }).click()
-    await page.getByRole('button', { name: 'Rib / side / back' }).click()
-    await page.getByRole('button', { name: 'Low' }).click()
-    await page.getByRole('button', { name: 'Standard' }).last().click()
+    // Fill 4-field intake (PT Pass 2)
+    await page.getByRole('button', { name: /comes on slowly, goes away quickly/i }).click()
+    await page.getByRole('button', { name: /^sitting$/i }).click()
+    await page.getByRole('button', { name: /^standard$/i }).click()
     await snap(page, 'golden_05_intake_filled')
 
     // Submit → Safety Gate
