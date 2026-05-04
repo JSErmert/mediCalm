@@ -1,0 +1,33 @@
+.body {
+  width: 100%;
+  max-width: 175px;
+  height: 380px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.region {
+  cursor: pointer;
+}
+
+.region path {
+  fill: rgba(255, 255, 255, 0.02);
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 0.18;
+  stroke-linejoin: round;
+  transition: fill var(--transition-quick),
+              stroke var(--transition-quick),
+              stroke-width var(--transition-quick);
+}
+
+.region:hover path {
+  fill: rgba(26, 138, 138, 0.20);
+  stroke: rgba(74, 210, 210, 0.70);
+  stroke-width: 0.22;
+}
+
+.region.selected path {
+  fill: rgba(26, 138, 138, 0.55);
+  stroke: rgba(74, 210, 210, 0.95);
+  stroke-width: 0.25;
+}
