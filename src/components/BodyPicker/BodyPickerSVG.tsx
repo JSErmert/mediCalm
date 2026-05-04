@@ -41,8 +41,17 @@ export function BodyPickerSVG({
           <g
             key={region}
             data-region={region}
+            role="button"
+            tabIndex={0}
+            aria-label={`Body region: ${region}`}
             className={`${styles.region}${isSelected ? ' ' + styles.selected : ''}`}
             onClick={() => onRegionTap(region)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onRegionTap(region)
+              }
+            }}
             onMouseEnter={() => onRegionHover(region)}
             onMouseLeave={() => onRegionHover(null)}
           >
