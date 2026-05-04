@@ -99,7 +99,7 @@ export type BodyMuscle =
   | 'knee_front_left' | 'knee_front_right'
   | 'foot_front_left' | 'foot_front_right'
   | 'hand_front_left' | 'hand_front_right'
-  // Back (47 muscles)
+  // Back (49 muscles)
   | 'head_back'
   | 'nape'
   | 'traps_upper_left' | 'traps_mid_left' | 'traps_lower_left'
@@ -342,7 +342,7 @@ Single implementation plan, ten tasks (rough). Each is a TDD cycle (write failin
 
 ## Acceptance Criteria
 
-- [ ] All 87 muscle paths render correctly on both front and back views
+- [ ] All 89 muscle paths render correctly on both front and back views
 - [ ] Hovering any muscle highlights all muscles in its parent region
 - [ ] Tapping a region with multiple muscles opens the drawer
 - [ ] Tapping a region with one muscle auto-tags the region (no drawer)

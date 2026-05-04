@@ -21,7 +21,7 @@
 | `src/components/BodyPicker/BodyPickerSVG.module.css` | SVG / region / muscle stroke styles |
 | `src/components/BodyPicker/MuscleDrawer.tsx` | Bottom-sheet for muscle subgroups |
 | `src/components/BodyPicker/MuscleDrawer.module.css` | Drawer slide/transform styles |
-| `src/components/BodyPicker/data/muscles.ts` | 87 muscle path entries (vendored from vulovix) |
+| `src/components/BodyPicker/data/muscles.ts` | 89 muscle path entries (vendored from vulovix) |
 | `src/components/BodyPicker/data/regions.ts` | `MUSCLE_TO_REGION` map + `MUSCLES_FOR_REGION` helper |
 | `src/components/BodyPicker/data/types.ts` | Internal `MusclePathDef` type |
 | `src/components/BodyPicker/data/LICENSE-body-muscles` | Apache-2.0 license text (verbatim) |
@@ -55,10 +55,10 @@ import { describe, it, expect } from 'vitest'
 import { MUSCLE_PATHS } from './muscles'
 
 describe('MUSCLE_PATHS — vendored from vulovix/body-muscles', () => {
-  it('contains 87 entries (40 front + 47 back)', () => {
-    expect(MUSCLE_PATHS.length).toBe(87)
+  it('contains 89 entries (40 front + 49 back)', () => {
+    expect(MUSCLE_PATHS.length).toBe(89)
     expect(MUSCLE_PATHS.filter(m => m.view === 'front').length).toBe(40)
-    expect(MUSCLE_PATHS.filter(m => m.view === 'back').length).toBe(47)
+    expect(MUSCLE_PATHS.filter(m => m.view === 'back').length).toBe(49)
   })
 
   it('every entry has a non-empty path string', () => {
@@ -147,7 +147,7 @@ export const MUSCLE_PATHS: MusclePathDef[] = [
   { id: 'face_front', name: 'Face', view: 'front', region: 'jaw_tmj_facial',
     path: 'm 19.748825,6.7034949 0.0203,-2.20747 -3.96689,-2.7637 -3.74099,2.23559 -0.006,2.63528 -0.60741,0.0403 0.27408,1.82447 0.97635,0.33932 0.44244,2.1802901 1.82222,2.06556 2.03518,-0.0607 1.79223,-1.94408 0.35957,-2.2406601 0.97616,-0.33932 0.25159,-1.78416 z' },
   // ... continue for all remaining 38 front entries from mockup ...
-  // Back (47)
+  // Back (49)
   { id: 'head_back', name: 'Head (Back)', view: 'back', region: 'head_temples',
     path: 'm 48.157455,6.3585449 0.44208,-0.14964 0.16111,0.16427 1.48163,4.0475101 2.32401,1.45118 2.39971,-1.52387 0.97577,-3.6896901 0.52752,-0.55908 0.23367,0.0981 0.24198,-3.34467 -2.03129,-2.31103004 -2.84509,-0.51629 -2.20422,0.52915 -1.93631,2.63077004 z' },
   // ... continue for all remaining 46 back entries from mockup ...
@@ -174,7 +174,7 @@ Expected: PASS, all 4 cases green.
 
 ```bash
 git add src/components/BodyPicker/data/
-git commit -m "feat(body-picker): vendor 87 muscle paths from vulovix/body-muscles (Apache-2.0)"
+git commit -m "feat(body-picker): vendor 89 muscle paths from vulovix/body-muscles (Apache-2.0)"
 ```
 
 ---
@@ -268,7 +268,7 @@ export type BodyMuscle =
   | 'knee_front_left' | 'knee_front_right'
   | 'foot_front_left' | 'foot_front_right'
   | 'hand_front_left' | 'hand_front_right'
-  // Back (47)
+  // Back (49)
   | 'head_back' | 'nape'
   | 'traps_upper_left' | 'traps_mid_left' | 'traps_lower_left'
   | 'traps_upper_right' | 'traps_mid_right' | 'traps_lower_right'
@@ -387,12 +387,12 @@ describe('BodyPickerSVG', () => {
     expect(paths.length).toBe(40)
   })
 
-  it('back view renders 47 muscle paths', () => {
+  it('back view renders 49 muscle paths', () => {
     const { container } = render(
       <BodyPickerSVG side="back" selectedRegions={[]} selectedMuscles={[]} onRegionTap={() => {}} onRegionHover={() => {}} />
     )
     const paths = container.querySelectorAll('path')
-    expect(paths.length).toBe(47)
+    expect(paths.length).toBe(49)
   })
 
   it('paths are grouped under <g class="region"> per BodyLocation', () => {
@@ -1862,4 +1862,4 @@ Each task is its own commit per the build order. After all 10 commits:
 
 - Branch state: 10 new commits ahead of `origin/m5-6-architecture-pass`
 - Push when ready: `git push origin m5-6-architecture-pass`
-- The combined diff replaces a 23-button chip grid with an interactive anatomical SVG picker, adds 87 muscle paths under the body picker module, and changes one field in `SessionIntakeScreen` — every other intake field is untouched.
+- The combined diff replaces a 23-button chip grid with an interactive anatomical SVG picker, adds 89 muscle paths under the body picker module, and changes one field in `SessionIntakeScreen` — every other intake field is untouched.
