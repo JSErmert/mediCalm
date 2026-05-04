@@ -58,7 +58,25 @@ export type FlareSensitivity = 'low' | 'moderate' | 'high' | 'not_sure'
  * Session Length Preference — what kind of session feels right today.
  * Authority: M4.2 MVP §8
  */
-export type SessionLengthPreference = 'shorter' | 'standard' | 'longer' | 'not_sure'
+export type SessionLengthPreference = 'short' | 'standard' | 'longer'
+
+/**
+ * PT Clinical Pass 2 — branched intent (replaces 7-state multi-select).
+ * Authority: PT clinical refinement notes 2026-05-02 §3
+ */
+export type IntakeBranch =
+  | 'tightness_or_pain'
+  | 'anxious_or_overwhelmed'
+
+/**
+ * PT Clinical Pass 2 — irritability pattern (Maitland classification).
+ * Replaces the visible flare_sensitivity question.
+ * Authority: PT clinical refinement notes 2026-05-02 §3
+ */
+export type IrritabilityPattern =
+  | 'fast_onset_slow_resolution'  // comes quickly, leaves slowly → high
+  | 'slow_onset_fast_resolution'  // comes slowly, leaves quickly → low
+  | 'symmetric'                   // about the same → moderate
 
 /**
  * HariSessionIntake — 6-field pre-session state (M4.5.2 adds baseline_intensity).
