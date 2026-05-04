@@ -79,18 +79,31 @@ export type IrritabilityPattern =
   | 'symmetric'                   // about the same → moderate
 
 /**
- * HariSessionIntake — 6-field pre-session state (M4.5.2 adds baseline_intensity).
+ * HariSessionIntake — pre-session state.
  * Truth class B: Active Session State.
- * Authority: M4.2 MVP §3, §15; M4.5.2 baseline intensity patch
+ *
+ * PT Clinical Pass 2: gains `branch` and `irritability` as user-visible
+ * fields. `session_intent`, `symptom_focus`, and `flare_sensitivity` are
+ * retained but become silent defaults (derived or set from M5.2 adaptive
+ * defaults; flare_sensitivity is derived from irritability via
+ * intakeTranslation.irritabilityToFlareSensitivity()).
+ *
+ * Authority: M4.2 MVP §3 §15; M4.5.2 baseline intensity patch;
+ *            PT clinical refinement notes 2026-05-02
  */
 export interface HariSessionIntake {
-  session_intent: SessionIntent
-  current_context: CurrentContext
-  symptom_focus: SymptomFocus
-  /** Pre-session baseline intensity 0–10 (integer). Supports before/after comparison. */
+  // PT-aligned visible fields (PT pass 2)
+  branch: IntakeBranch
+  irritability: IrritabilityPattern
+  /** Pre-session baseline intensity 0–10 (integer). Branch-aware copy in UI. */
   baseline_intensity: number
-  flare_sensitivity: FlareSensitivity
+  current_context: CurrentContext
   session_length_preference: SessionLengthPreference
+
+  // Silent / derived fields — engine compatibility
+  session_intent: SessionIntent
+  symptom_focus: SymptomFocus
+  flare_sensitivity: FlareSensitivity
 }
 
 // ── M4.1 — Persistent Body Context ───────────────────────────────────────────
@@ -506,7 +519,18 @@ export interface PersistedReassessmentResult {
  *   - Excluded sessions must not influence future logic (M4.7 §7)
  */
 export interface PersistedHariMetadata {
-  intake: HariSessionIntake
+  /**
+   * Pre-PT-Pass-2 history records lack `branch` and `irritability`.
+   * Read consumers (e.g., adaptiveIntakeDefaults) must tolerate missing fields.
+   */
+  intake: Partial<HariSessionIntake> & {
+    baseline_intensity: number
+    session_intent: SessionIntent
+    current_context: CurrentContext
+    symptom_focus: SymptomFocus
+    flare_sensitivity: FlareSensitivity
+    session_length_preference: SessionLengthPreference
+  }
   /** Outcome of the pre-session safety gate */
   safety_result: SafetyGateOutcome
   state_estimate: StateEstimate

@@ -577,15 +577,14 @@ export function computePatternSummary(): PatternSummary {
 
     // ── Dimension 4: session_length_tendency ──────────────────────────────────
     const lengthLabels: Record<string, string> = {
-      shorter:  'Shorter sessions preferred most often',
+      short:    'Shorter sessions preferred most often',
       standard: 'Standard-length sessions preferred most often',
       longer:   'Longer sessions preferred most often',
-      not_sure: 'Session length preference tends to be uncertain',
     }
     const session_length_tendency = computeIntakeDimension(
       'session_length_tendency', sessions, now,
       (s) => s.hari_metadata.intake.session_length_preference,
-      (v) => v === 'not_sure',
+      () => false,
       null,
       false,
       (state, dominant) => intakeSummary(state, lengthLabels[dominant] ?? dominant)

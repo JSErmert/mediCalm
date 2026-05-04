@@ -132,7 +132,7 @@ describe('computeSessionInsights — maximum 3 insights (M5.4 §11D)', () => {
     const summary = makeSummaryWith({
       flare_sensitivity_tendency: makePattern<FlareSensitivity>('moderate', 'active', 'flare_sensitivity_tendency', 'Summary 1'),
       symptom_focus_tendency: makePattern('neck_upper', 'active', 'symptom_focus_tendency', 'Summary 2'),
-      session_length_tendency: makePattern<SessionLengthPreference>('shorter', 'active', 'session_length_tendency', 'Summary 3'),
+      session_length_tendency: makePattern<SessionLengthPreference>('short', 'active', 'session_length_tendency', 'Summary 3'),
       session_intent_tendency: makePattern<SessionIntent>('quick_reset', 'active', 'session_intent_tendency', 'Summary 4'),
     })
     const result = computeSessionInsights(summary)
@@ -155,7 +155,7 @@ describe('computeSessionInsights — sort priority', () => {
 
   it('places high_confidence before active', () => {
     const summary = makeSummaryWith({
-      session_length_tendency: makePattern<SessionLengthPreference>('shorter', 'active', 'session_length_tendency', 'Active insight'),
+      session_length_tendency: makePattern<SessionLengthPreference>('short', 'active', 'session_length_tendency', 'Active insight'),
       flare_sensitivity_tendency: makePattern<FlareSensitivity>('moderate', 'high_confidence', 'flare_sensitivity_tendency', 'High confidence insight'),
     })
     const result = computeSessionInsights(summary)
@@ -235,7 +235,7 @@ describe('computeSessionInsights — insight content', () => {
 
   it('carries the correct dimension and state', () => {
     const summary = makeSummaryWith({
-      session_length_tendency: makePattern<SessionLengthPreference>('shorter', 'active', 'session_length_tendency', 'Shorter sessions preferred most often'),
+      session_length_tendency: makePattern<SessionLengthPreference>('short', 'active', 'session_length_tendency', 'Shorter sessions preferred most often'),
     })
     const result = computeSessionInsights(summary)
     expect(result[0].dimension).toBe('session_length_tendency')

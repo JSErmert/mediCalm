@@ -124,7 +124,7 @@ describe('computeAdaptiveIntakeDefaults — eligibility gate (M5.2 §4)', () => 
 
   it('does not apply suggestion when pattern state is candidate', () => {
     const summary = makeSummaryWith({
-      session_length_tendency: makePattern<SessionLengthPreference>('shorter', 'candidate', {
+      session_length_tendency: makePattern<SessionLengthPreference>('short', 'candidate', {
         dimension: 'session_length_tendency',
       }),
     })

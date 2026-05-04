@@ -167,7 +167,7 @@ function estimateSessionTolerance(
   let invertedFlare = 2 - flareSensitivity
 
   // Session length preference modifies tolerance estimate
-  if (intake.session_length_preference === 'shorter') invertedFlare = Math.max(0, invertedFlare - 1)
+  if (intake.session_length_preference === 'short') invertedFlare = Math.max(0, invertedFlare - 1)
   else if (intake.session_length_preference === 'longer') invertedFlare = Math.min(2, invertedFlare + 1)
 
   // Quick reset intent = lower tolerance expectation (short is fine)

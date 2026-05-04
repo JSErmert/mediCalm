@@ -192,7 +192,7 @@ function tryPreferenceToleranceLink(
 ): LinkCandidate | null {
   // Only surface when preference and tolerance are in notable alignment or tension
   const wantsShort =
-    intake.session_length_preference === 'shorter' ||
+    intake.session_length_preference === 'short' ||
     intake.session_intent === 'quick_reset'
   const toleranceLimited = state.session_tolerance !== 'elevated'
 
