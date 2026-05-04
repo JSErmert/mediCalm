@@ -143,14 +143,11 @@ export function HariSafetyGateScreen() {
       framing: hariResolution.session_framing,
     })
     dispatch({ type: 'SET_ACTIVE_SESSION', session })
-    // R&D override: always route to session_setup so the developer can
-    // inspect the prescribed session before it runs.
-    // Default M6.6: if a stateInterpretationResult is present, skip
-    // session_setup and route directly to guided_session.
-    if (state.stateInterpretationResult && !isDevOverride()) {
-      dispatch({ type: 'NAVIGATE', screen: 'guided_session' })
-      return
-    }
+    // Always route through session_setup so the user sees the protocol
+    // name, focus, position, and length before the session begins.
+    // PT pass 2 simplification (2026-05-04) makes this preview MORE
+    // valuable, not less — the M6.6 stateInterpretationResult shortcut
+    // that previously bypassed it has been removed.
     dispatch({ type: 'NAVIGATE', screen: 'session_setup' })
   }
 

@@ -199,17 +199,14 @@ test.describe('HARI Safety Gate', () => {
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. SESSION SETUP SCREEN — captured via R&D override (PT Pass 1 wired override
-//    to route through session_setup even when stateInterpretationResult is set)
+// 6. SESSION SETUP SCREEN — reachable on the normal CLEAR path (M6.6 shortcut
+//    removed 2026-05-04; SessionSetupScreen always shown before guided_session)
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe('Session Setup Screen', () => {
-  test('15 — session setup (via R&D override)', async ({ page }) => {
+  test('15 — session setup (normal path)', async ({ page }) => {
     await page.goto('/')
-    await page.evaluate(() => {
-      localStorage.clear()
-      localStorage.setItem('dev_override', 'true')
-    })
+    await page.evaluate(() => localStorage.clear())
     await page.goto('/')
     await page.getByLabel('Start a new guided session').click()
     await page.getByRole('button', { name: /tightness or pain/i }).click()
@@ -221,10 +218,10 @@ test.describe('Session Setup Screen', () => {
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     await page.locator('button:has-text("Continue")').last().click()
-    // Pass safety gate (No, none of these) — override routes to session_setup
+    // Pass safety gate (No, none of these) → session_setup preview
     await page.getByRole('button', { name: /No, none of these/i }).click()
-    await page.waitForTimeout(1000)
-    await snap(page, '15_session_setup_or_guided')
+    await expect(page.locator('text=Ready to begin')).toBeVisible({ timeout: 3000 })
+    await snap(page, '15_session_setup')
   })
 })
 
@@ -233,7 +230,7 @@ test.describe('Session Setup Screen', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe('Guided Session Screen', () => {
-  // M6 flow: safety gate CLEAR routes directly to guided_session (no session_setup)
+  // CLEAR path: safety gate "No" → session_setup preview → Begin → guided_session
   async function navigateToSession(page: Page) {
     await page.goto('/')
     await page.evaluate(() => localStorage.clear())
@@ -248,8 +245,11 @@ test.describe('Guided Session Screen', () => {
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     await page.locator('button:has-text("Continue")').last().click()
-    // Safety gate "No" → M6 flow goes directly to guided_session
+    // Safety gate "No" → session_setup preview
     await page.getByRole('button', { name: /No, none of these/i }).click()
+    await expect(page.locator('text=Ready to begin')).toBeVisible({ timeout: 3000 })
+    // Begin → guided_session
+    await page.getByRole('button', { name: /begin guided session/i }).click()
     await page.waitForTimeout(1500)
   }
 
@@ -378,9 +378,14 @@ test.describe('Golden Path — Full Flow', () => {
     await page.locator('button:has-text("Continue")').last().click()
     await snap(page, 'golden_06_safety_gate')
 
-    // No → M6 flow routes directly to guided_session (skips session_setup)
+    // No → session_setup preview (M6.6 shortcut removed 2026-05-04)
     await page.getByRole('button', { name: /No, none of these/i }).click()
+    await expect(page.locator('text=Ready to begin')).toBeVisible({ timeout: 3000 })
+    await snap(page, 'golden_07_session_setup')
+
+    // Begin → guided_session
+    await page.getByRole('button', { name: /begin guided session/i }).click()
     await page.waitForTimeout(2000)
-    await snap(page, 'golden_07_guided_session')
+    await snap(page, 'golden_08_guided_session')
   })
 })
