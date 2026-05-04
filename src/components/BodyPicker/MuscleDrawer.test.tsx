@@ -20,6 +20,26 @@ describe('MuscleDrawer', () => {
     expect(drawer.className).toMatch(/open/)
   })
 
+  it('aria-hidden tracks open state and dialog has aria-labelledby pointing at the region heading', () => {
+    const closed = render(
+      <MuscleDrawer region={null} selectedMuscles={[]} onToggleMuscle={() => {}} onClose={() => {}} />
+    )
+    const closedDrawer = closed.container.querySelector('[data-testid="muscle-drawer"]')!
+    expect(closedDrawer.getAttribute('aria-hidden')).toBe('true')
+
+    const open = render(
+      <MuscleDrawer region="shoulder_left" selectedMuscles={[]} onToggleMuscle={() => {}} onClose={() => {}} />
+    )
+    const openDrawer = open.container.querySelector('[data-testid="muscle-drawer"]')!
+    expect(openDrawer.getAttribute('aria-hidden')).toBe('false')
+    expect(openDrawer.getAttribute('role')).toBe('dialog')
+    const labelledBy = openDrawer.getAttribute('aria-labelledby')
+    expect(labelledBy).toBe('muscle-drawer-title')
+    const heading = open.container.querySelector(`#${labelledBy}`)
+    expect(heading?.textContent).toBe('Left shoulder')
+    expect(heading?.tagName).toBe('H2')
+  })
+
   it('renders one chip per muscle in that region', () => {
     render(
       <MuscleDrawer region="shoulder_left" selectedMuscles={[]} onToggleMuscle={() => {}} onClose={() => {}} />

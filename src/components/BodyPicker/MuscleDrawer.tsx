@@ -19,11 +19,15 @@ export function MuscleDrawer({ region, selectedMuscles, onToggleMuscle, onClose 
       data-testid="muscle-drawer"
       className={`${styles.drawer}${isOpen ? ' ' + styles.open : ''}`}
       aria-hidden={!isOpen}
+      role="dialog"
+      aria-labelledby="muscle-drawer-title"
     >
       <header className={styles.header}>
         <div>
           <div className={styles.label}>Muscle group</div>
-          <div className={styles.region}>{region ? REGION_LABEL[region] : '—'}</div>
+          <h2 id="muscle-drawer-title" className={styles.region}>
+            {region ? REGION_LABEL[region] : '—'}
+          </h2>
           <div className={styles.hint}>Tap one or more, or close to keep just the region.</div>
         </div>
         <button
@@ -32,7 +36,7 @@ export function MuscleDrawer({ region, selectedMuscles, onToggleMuscle, onClose 
           onClick={onClose}
           aria-label="Close drawer"
         >
-          ✕
+          <span aria-hidden="true">✕</span>
         </button>
       </header>
 
