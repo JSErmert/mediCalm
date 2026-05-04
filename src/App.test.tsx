@@ -1,23 +1,21 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 
-// Helper: navigate through StateSelectionScreen by selecting Pain then Continue.
-// M6.1: Real implementation — chip multi-select, Continue appears after ≥1 selection.
+// Helper: navigate through StateSelectionScreen by selecting Tightness or pain then Continue.
+// PT Pass 2: Single branch selection replaces multi-select.
 async function navigatePastStateSelection() {
   await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
-  await userEvent.click(screen.getByRole('button', { name: /^pain$/i }))
+  await userEvent.click(screen.getByRole('button', { name: /tightness or pain/i }))
   await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
 }
 
-// Helper: fill all 5 HARI intake fields and submit.
-// Navigates from session_intake → hari_safety_gate.
+// Helper: fill all 4 HARI intake fields and submit.
+// PT Pass 2: down from 5 fields. Navigates from session_intake → hari_safety_gate.
 async function fillHariIntakeAndSubmit() {
-  await userEvent.click(screen.getByRole('button', { name: /quick reset/i }))
+  await userEvent.click(screen.getByRole('button', { name: /comes on slowly, goes away quickly/i }))
   await userEvent.click(screen.getByRole('button', { name: /^sitting$/i }))
-  await userEvent.click(screen.getByRole('button', { name: /neck \/ upper region/i }))
-  await userEvent.click(screen.getByRole('button', { name: /^low$/i }))
   await userEvent.click(screen.getByRole('button', { name: /^standard$/i }))
   await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
 }
@@ -38,13 +36,25 @@ describe('App root', () => {
     expect(screen.getByRole('main', { name: /state selection/i })).toBeInTheDocument()
   })
 
-  it('reaches SessionSetupScreen after completing HARI intake with safe input', async () => {
+  it('walks the new branched intake flow from state_selection through hari_safety_gate', async () => {
     render(<App />)
-    await navigatePastStateSelection()
-    await fillHariIntakeAndSubmit()
-    // Safety gate: no concerns → CLEAR → session_setup
-    await userEvent.click(screen.getByRole('button', { name: /no, none of these/i }))
-    expect(screen.getByRole('main', { name: /session setup/i })).toBeInTheDocument()
+
+    // Start at home
+    await userEvent.click(screen.getByRole('button', { name: /start a new guided session/i }))
+    await waitFor(() => expect(screen.getByRole('main', { name: /state selection/i })).toBeInTheDocument())
+
+    // Pick branch on StateSelectionScreen
+    await userEvent.click(screen.getByRole('button', { name: /tightness or pain/i }))
+    await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
+    // SessionIntakeScreen has "Irritability pattern" chip group
+    await waitFor(() => expect(screen.getByRole('group', { name: /irritability pattern/i })).toBeInTheDocument())
+
+    // Fill the 4 required fields on SessionIntakeScreen
+    await userEvent.click(screen.getByRole('button', { name: /comes on slowly, goes away quickly/i }))
+    await userEvent.click(screen.getByRole('button', { name: /^sitting$/i }))
+    await userEvent.click(screen.getByRole('button', { name: /^standard$/i }))
+    await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
+    await waitFor(() => expect(screen.getByRole('heading', { name: /before we begin/i })).toBeInTheDocument())
   })
 
   it('routes to safety stop when coordination_change is selected', async () => {
