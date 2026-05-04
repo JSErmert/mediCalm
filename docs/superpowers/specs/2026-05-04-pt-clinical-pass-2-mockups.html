@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PT Clinical Pass 2 — Mockups · mediCalm</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-page:        #0b0f12;
+    --bg-device:      #040e12;
+    --bg-base:        radial-gradient(ellipse 80% 60% at 50% 46%, #0a2e38 0%, #061c24 38%, #030f16 68%, #020a10 100%);
+    --text-primary:   rgba(255,255,255,0.88);
+    --text-secondary: rgba(255,255,255,0.55);
+    --text-tertiary:  rgba(255,255,255,0.35);
+    --text-muted:     rgba(255,255,255,0.22);
+    --accent:         #1a8a8a;
+    --accent-deep:    #0f6060;
+    --accent-glow:    rgba(26,138,138,0.18);
+    --border-subtle:  rgba(255,255,255,0.08);
+    --border-active:  rgba(255,255,255,0.18);
+    --bg-card:        rgba(255,255,255,0.04);
+    --bg-card-hover:  rgba(255,255,255,0.06);
+    --accent-subtle:  rgba(26,138,138,0.14);
+    --accent-border:  rgba(26,138,138,0.45);
+    --orb-center:     #2196a8;
+    --orb-mid:        #155e6e;
+    --orb-edge:       #0d3d4a;
+  }
+
+  body {
+    font-family: -apple-system, 'SF Pro Text', 'Inter', 'Helvetica Neue', sans-serif;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 32px 16px 80px;
+  }
+
+  /* ── Page header ────────────────────────────────────────────────────── */
+  .page-header {
+    max-width: 1400px;
+    margin: 0 auto 32px;
+    text-align: center;
+  }
+  .page-title {
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .page-subtitle {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.04em;
+  }
+  .page-authority {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 14px;
+  }
+
+  /* ── Section header ─────────────────────────────────────────────────── */
+  .section {
+    max-width: 1400px;
+    margin: 0 auto 60px;
+  }
+  .section-header {
+    margin-bottom: 28px;
+    text-align: center;
+  }
+  .section-label {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text-primary);
+  }
+  .section-note {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  /* ── Frame grid ─────────────────────────────────────────────────────── */
+  .frames {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 36px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .frame-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .frame-caption {
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    max-width: 380px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .frame-caption .branch-label {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ── Device frame (iPhone-ish) ──────────────────────────────────────── */
+  .device {
+    width: 390px;
+    height: 844px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 44px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06);
+    background: var(--bg-device);
+  }
+  .device::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--bg-base);
+    z-index: 0;
+  }
+  .device-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    color: var(--text-primary);
+  }
+
+  /* ── Status bar (decorative) ────────────────────────────────────────── */
+  .status-bar {
+    height: 47px;
+    padding: 16px 28px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  /* ── HomeScreen mockup ──────────────────────────────────────────────── */
+  .hs-wordmark {
+    text-align: center;
+    padding: 8px 0 0;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+  .hs-hero {
+    text-align: center;
+    padding: 26px 28px 0;
+  }
+  .hs-headline {
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.026em;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+  }
+  .hs-sub {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    line-height: 1.65;
+  }
+  .hs-orb-zone {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 0 14px;
+    min-height: 200px;
+  }
+  .hs-orb {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 45%,
+      var(--orb-center) 0%,
+      var(--orb-mid) 45%,
+      var(--orb-edge) 100%);
+    box-shadow: 0 0 60px var(--accent-glow), 0 0 0 1px rgba(26,138,138,0.2);
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .hs-orb::before {
+    content: '';
+    position: absolute;
+    inset: -30px;
+    border-radius: 50%;
+    border: 1px solid rgba(26,138,138,0.12);
+  }
+  .hs-orb::after {
+    content: '';
+    position: absolute;
+    inset: -60px;
+    border-radius: 50%;
+    border: 1px solid rgba(26,138,138,0.06);
+  }
+  .hs-orb-label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+  .hs-cta {
+    padding: 0 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .hs-begin {
+    width: 100%;
+    height: 52px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 26px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+  }
+  .hs-cta-sub {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 12px;
+  }
+  .hs-context-row {
+    padding: 22px 28px 0;
+    display: flex;
+    gap: 10px;
+  }
+  .hs-context-card {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .hs-context-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .hs-context-sub {
+    font-size: 9px;
+    color: var(--text-tertiary);
+  }
+  .hs-context-hint {
+    font-size: 8px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .hs-history {
+    padding: 28px 28px 0;
+  }
+  .hs-empty {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    padding: 16px 0;
+  }
+  /* PT pass 2 — crisis support affordance */
+  .hs-crisis {
+    padding: 24px 28px 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .hs-crisis-divider {
+    width: 60%;
+    height: 1px;
+    background: var(--border-subtle);
+    opacity: 0.5;
+  }
+  .hs-crisis-link {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 6px 12px;
+  }
+  .annotation {
+    position: absolute;
+    pointer-events: none;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    z-index: 10;
+  }
+  .annotation::before {
+    content: '◀';
+    margin-right: 4px;
+  }
+  .annotation.right::before { content: ''; }
+  .annotation.right::after {
+    content: '▶';
+    margin-left: 4px;
+  }
+
+  /* ── StateSelectionScreen mockup ────────────────────────────────────── */
+  .ss-back {
+    padding: 16px 24px 0;
+  }
+  .ss-back-btn {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 8px 0;
+  }
+  .ss-wordmark {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+  }
+  .ss-heading {
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    text-align: center;
+    padding: 28px 36px 0;
+  }
+  .ss-branch-grid {
+    padding: 36px 28px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .ss-branch-btn {
+    width: 100%;
+    min-height: 64px;
+    padding: 18px 22px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+  }
+  .ss-branch-btn.selected {
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+  .ss-continue {
+    margin: 32px 28px 36px;
+    height: 52px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 26px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* ── SessionIntakeScreen mockup ─────────────────────────────────────── */
+  .si-header {
+    padding: 16px 24px 0;
+  }
+  .si-breadcrumb {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 0;
+  }
+  .si-content {
+    padding: 22px 28px 24px;
+    flex: 1;
+  }
+  .si-field {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .si-field + .si-field {
+    margin-top: 28px;
+  }
+  .si-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 26px 0;
+    border: none;
+    opacity: 0.6;
+  }
+  .si-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.45;
+  }
+  .si-slider-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .si-slider-display {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    color: var(--text-primary);
+  }
+  .si-slider-value {
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1;
+  }
+  .si-slider-out {
+    font-size: 14px;
+    color: var(--text-tertiary);
+  }
+  .si-slider-track {
+    height: 6px;
+    background: var(--border-subtle);
+    border-radius: 3px;
+    position: relative;
+  }
+  .si-slider-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: var(--accent);
+    border-radius: 3px;
+  }
+  .si-slider-thumb {
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  .si-slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .si-chip-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .si-chip-grid.two-col {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .si-chip-grid.two-col .si-chip {
+    flex: 1 1 calc(50% - 4px);
+  }
+  .si-chip-grid.three-col {
+    flex-direction: row;
+  }
+  .si-chip-grid.three-col .si-chip {
+    flex: 1;
+  }
+  .si-chip {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .si-chip-grid.three-col .si-chip {
+    text-align: center;
+  }
+  .si-chip.selected {
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+  .si-footer {
+    padding: 0 28px 36px;
+    flex-shrink: 0;
+  }
+  .si-continue {
+    width: 100%;
+    height: 52px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 26px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .si-continue:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* ── Flow diagram ───────────────────────────────────────────────────── */
+  .flow-section {
+    max-width: 1080px;
+    margin: 60px auto 80px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 40px;
+  }
+  .flow-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+  }
+  .flow-col h3 {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  .flow-node {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-size: 13px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .flow-node.removed {
+    text-decoration: line-through;
+    opacity: 0.45;
+    color: #cc6666;
+    border-color: rgba(204,102,102,0.3);
+  }
+  .flow-node.new {
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+  .flow-node.unchanged {
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.02);
+  }
+  .flow-arrow {
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    margin: 4px 0;
+  }
+  .flow-branch {
+    display: flex;
+    gap: 12px;
+  }
+  .flow-branch .flow-node {
+    flex: 1;
+    margin-bottom: 0;
+  }
+  .flow-aside {
+    margin-left: 20px;
+    padding-left: 20px;
+    border-left: 2px solid var(--accent);
+    margin-top: -4px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    line-height: 1.5;
+  }
+
+  /* ── Translation layer panel ────────────────────────────────────────── */
+  .translation-panel {
+    max-width: 1080px;
+    margin: 0 auto 60px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 40px;
+  }
+  .tp-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 30px;
+    align-items: center;
+  }
+  .tp-col h3 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 14px;
+  }
+  .tp-arrow {
+    font-size: 28px;
+    color: var(--accent);
+    text-align: center;
+    line-height: 1;
+  }
+  .tp-row {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .tp-row.input { color: var(--text-primary); }
+  .tp-row.output { color: var(--accent); }
+
+  @media (max-width: 900px) {
+    .frames { gap: 20px; }
+    .device { transform: scale(0.85); transform-origin: top center; }
+    .flow-grid { grid-template-columns: 1fr; gap: 30px; }
+    .tp-grid { grid-template-columns: 1fr; gap: 16px; }
+    .tp-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1 class="page-title">PT Clinical Pass 2 — Visual Spec</h1>
+  <p class="page-subtitle">Intake simplification + Irritability pattern</p>
+  <p class="page-authority">Authority · PT clinical refinement notes 2026-05-02 · Brainstorm 2026-05-04</p>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SCREEN MOCKUPS
+     ════════════════════════════════════════════════════════════════════════ -->
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-label">Screens</div>
+    <h2 class="section-title">Two-screen branched intake</h2>
+    <p class="section-note">
+      Replaces the current 7-state multi-select + 6-field intake with PT-aligned 2 screens of 4 user-visible inputs.
+      Crisis support detached from intake; surfaced as a quiet HomeScreen affordance.
+    </p>
+  </div>
+
+  <div class="frames">
+
+    <!-- ── FRAME 1: HomeScreen with crisis affordance ──────────────────── -->
+    <div class="frame-wrap">
+      <div class="device">
+        <div class="device-content">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-icons">●●●</div>
+          </div>
+          <div class="hs-wordmark">mediCalm</div>
+          <div class="hs-hero">
+            <h1 class="hs-headline">Just Breathe.</h1>
+            <p class="hs-sub">
+              Structured breathing protocol addressing ribcage compression
+              (limited rib expansion), deviated breathing mechanics, neck,
+              shoulder, and jaw tension, and protective muscle overactivation
+              — calibrated specifically to your current intensity level.
+            </p>
+          </div>
+          <div class="hs-orb-zone">
+            <div class="hs-orb"></div>
+            <div class="hs-orb-label">ready</div>
+          </div>
+          <div class="hs-cta">
+            <button class="hs-begin">Begin session</button>
+            <p class="hs-cta-sub">Calibrated to your current intensity level · approx. 4–6 min</p>
+          </div>
+          <div class="hs-context-row">
+            <div class="hs-context-card">
+              <span class="hs-context-label">Your State</span>
+              <span class="hs-context-sub">Body notes &amp; context</span>
+              <span class="hs-context-hint">Input relevant information about your current state</span>
+            </div>
+            <div class="hs-context-card">
+              <span class="hs-context-label">Your Patterns</span>
+              <span class="hs-context-sub">Recent insights</span>
+              <span class="hs-context-hint">Begin a session to start building patterns</span>
+            </div>
+          </div>
+          <div class="hs-history">
+            <p class="hs-empty">No sessions yet. Start your first session above.</p>
+          </div>
+          <!-- NEW: PT pass 2 crisis affordance -->
+          <div class="hs-crisis">
+            <div class="hs-crisis-divider"></div>
+            <button class="hs-crisis-link">Need crisis support?</button>
+          </div>
+        </div>
+      </div>
+      <p class="frame-caption">
+        Frame 1 · Home + crisis affordance<br>
+        <span style="color: var(--accent)">NEW: muted "Need crisis support?" link below history</span>
+      </p>
+    </div>
+
+    <!-- ── FRAME 2: StateSelectionScreen branched ──────────────────────── -->
+    <div class="frame-wrap">
+      <div class="device">
+        <div class="device-content">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-icons">●●●</div>
+          </div>
+          <div class="ss-back">
+            <button class="ss-back-btn">← Back</button>
+          </div>
+          <div class="ss-wordmark">mediCalm</div>
+          <h1 class="ss-heading">Why are you using the app today?</h1>
+          <div class="ss-branch-grid">
+            <button class="ss-branch-btn selected">Tightness or pain</button>
+            <button class="ss-branch-btn">Anxious or overwhelmed</button>
+          </div>
+          <button class="ss-continue">Continue</button>
+        </div>
+      </div>
+      <p class="frame-caption">
+        Frame 2 · Branched intent (replaces 7-state multi-select)<br>
+        Single-select; Continue gated on selection
+      </p>
+    </div>
+
+    <!-- ── FRAME 3: SessionIntakeScreen — pain branch ──────────────────── -->
+    <div class="frame-wrap">
+      <div class="device">
+        <div class="device-content">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-icons">●●●</div>
+          </div>
+          <div class="si-header">
+            <button class="si-breadcrumb">← Tightness or pain</button>
+          </div>
+          <div class="si-content">
+
+            <div class="si-field">
+              <span class="si-label">How severe is your tightness or pain right now?</span>
+              <div class="si-slider-wrap">
+                <div class="si-slider-display">
+                  <span class="si-slider-value">7</span>
+                  <span class="si-slider-out">/10</span>
+                </div>
+                <div class="si-slider-track">
+                  <div class="si-slider-fill" style="width: 70%"></div>
+                  <div class="si-slider-thumb" style="left: 70%"></div>
+                </div>
+                <div class="si-slider-labels">
+                  <span>None</span>
+                  <span>Intense</span>
+                </div>
+              </div>
+            </div>
+
+            <hr class="si-divider" />
+
+            <div class="si-field">
+              <span class="si-label">How would you describe it?</span>
+              <div class="si-chip-grid">
+                <button class="si-chip selected">Comes on quickly, goes away slowly</button>
+                <button class="si-chip">Comes on slowly, goes away quickly</button>
+                <button class="si-chip">Comes on and goes away about the same</button>
+              </div>
+            </div>
+
+            <hr class="si-divider" />
+
+            <div class="si-field">
+              <span class="si-label">Where are you right now?</span>
+              <div class="si-chip-grid two-col">
+                <button class="si-chip selected">Sitting</button>
+                <button class="si-chip">Standing</button>
+                <button class="si-chip" style="flex-basis: 100%">Driving / in vehicle</button>
+                <button class="si-chip" style="flex-basis: 100%">Lying down</button>
+                <button class="si-chip" style="flex-basis: 100%">After strain or overuse</button>
+              </div>
+            </div>
+
+            <hr class="si-divider" />
+
+            <div class="si-field">
+              <span class="si-label">How long feels right today?</span>
+              <div class="si-chip-grid three-col">
+                <button class="si-chip">Short</button>
+                <button class="si-chip selected">Standard</button>
+                <button class="si-chip">Longer</button>
+              </div>
+            </div>
+
+          </div>
+          <div class="si-footer">
+            <button class="si-continue">Continue</button>
+          </div>
+        </div>
+      </div>
+      <p class="frame-caption">
+        Frame 3 · Intake — <span class="branch-label">Tightness or pain</span> branch<br>
+        4 fields total; severity copy is branch-aware
+      </p>
+    </div>
+
+    <!-- ── FRAME 4: SessionIntakeScreen — anxious branch ───────────────── -->
+    <div class="frame-wrap">
+      <div class="device">
+        <div class="device-content">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-icons">●●●</div>
+          </div>
+          <div class="si-header">
+            <button class="si-breadcrumb">← Anxious or overwhelmed</button>
+          </div>
+          <div class="si-content">
+
+            <div class="si-field">
+              <span class="si-label">How intense is it right now?</span>
+              <div class="si-slider-wrap">
+                <div class="si-slider-display">
+                  <span class="si-slider-value">5</span>
+                  <span class="si-slider-out">/10</span>
+                </div>
+                <div class="si-slider-track">
+                  <div class="si-slider-fill" style="width: 50%"></div>
+                  <div class="si-slider-thumb" style="left: 50%"></div>
+                </div>
+                <div class="si-slider-labels">
+                  <span>None</span>
+                  <span>Intense</span>
+                </div>
+              </div>
+            </div>
+
+            <hr class="si-divider" />
+
+            <div class="si-field">
+              <span class="si-label">How would you describe it?</span>
+              <div class="si-chip-grid">
+                <button class="si-chip">Comes on quickly, goes away slowly</button>
+                <button class="si-chip">Comes on slowly, goes away quickly</button>
+                <button class="si-chip">Comes on and goes away about the same</button>
+              </div>
+            </div>
+
+            <hr class="si-divider" />
+
+            <div class="si-field">
+              <span class="si-label">Where are you right now?</span>
+              <div class="si-chip-grid two-col">
+                <button class="si-chip">Sitting</button>
+                <button class="si-chip">Standing</button>
+                <button class="si-chip" style="flex-basis: 100%">Driving / in vehicle</button>
+                <button class="si-chip" style="flex-basis: 100%">Lying down</button>
+                <button class="si-chip" style="flex-basis: 100%">After strain or overuse</button>
+              </div>
+            </div>
+
+            <hr class="si-divider" />
+
+            <div class="si-field">
+              <span class="si-label">How long feels right today?</span>
+              <div class="si-chip-grid three-col">
+                <button class="si-chip">Short</button>
+                <button class="si-chip">Standard</button>
+                <button class="si-chip">Longer</button>
+              </div>
+            </div>
+
+          </div>
+          <div class="si-footer">
+            <button class="si-continue" disabled>Continue</button>
+          </div>
+        </div>
+      </div>
+      <p class="frame-caption">
+        Frame 4 · Intake — <span class="branch-label">Anxious or overwhelmed</span> branch<br>
+        Same fields, different severity prompt; Continue disabled until all selected
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     FLOW DIAGRAM — BEFORE / AFTER
+     ════════════════════════════════════════════════════════════════════════ -->
+
+<div class="flow-section">
+  <div class="section-header">
+    <div class="section-label">Flow comparison</div>
+    <h2 class="section-title">Before vs after</h2>
+  </div>
+
+  <div class="flow-grid">
+
+    <div class="flow-col">
+      <h3>Before (M6.1 + M4.2)</h3>
+
+      <div class="flow-node unchanged">HomeScreen</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-node removed">StateSelectionScreen<br><span style="font-size:10px">7-state multi-select + Heavy expand</span></div>
+      <div class="flow-arrow">↓ if Sad selected</div>
+      <div class="flow-node">SADSafetyScreen</div>
+      <div class="flow-arrow">↓ "no" only</div>
+      <div class="flow-node removed">SessionIntakeScreen<br><span style="font-size:10px">6 fields: intent · context · focus · intensity · sensitivity · length</span></div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-node unchanged">HariSafetyGateScreen</div>
+      <div class="flow-arrow">↓ CLEAR</div>
+      <div class="flow-node unchanged">SessionSetup → GuidedSession</div>
+    </div>
+
+    <div class="flow-col">
+      <h3>After (PT Pass 2)</h3>
+
+      <div class="flow-node unchanged">HomeScreen</div>
+      <div class="flow-aside">+ NEW quiet "Need crisis support?" link → SADSafetyScreen → SupportResources or home</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-node new">StateSelectionScreen<br><span style="font-size:10px">2-option branched intent question</span></div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-node new">SessionIntakeScreen<br><span style="font-size:10px">4 fields: severity · irritability · position · length</span></div>
+      <div class="flow-aside">silent: session_intent ('quick_reset'), symptom_focus (M5.2 default), flare_sensitivity (derived from irritability)</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-node unchanged">HariSafetyGateScreen</div>
+      <div class="flow-arrow">↓ CLEAR</div>
+      <div class="flow-node unchanged">SessionSetup → GuidedSession</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     TRANSLATION LAYER
+     ════════════════════════════════════════════════════════════════════════ -->
+
+<div class="translation-panel">
+  <div class="section-header">
+    <div class="section-label">Translation layer</div>
+    <h2 class="section-title">User input → HARI engine input</h2>
+    <p class="section-note">
+      Pure-function module (<code style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;font-size:11px">src/engine/intakeTranslation.ts</code>)
+      maps the 2 user-visible PT fields to the engine types M6.4 already consumes.
+      M6 engine investment preserved; only the front door changes.
+    </p>
+  </div>
+
+  <div class="tp-grid">
+    <div class="tp-col">
+      <h3>User-visible (PT)</h3>
+      <div class="tp-row input">branch: 'tightness_or_pain'</div>
+      <div class="tp-row input">branch: 'anxious_or_overwhelmed'</div>
+      <div class="tp-row input" style="margin-top: 12px">irritability: 'fast_onset_slow_resolution'</div>
+      <div class="tp-row input">irritability: 'slow_onset_fast_resolution'</div>
+      <div class="tp-row input">irritability: 'symmetric'</div>
+    </div>
+    <div class="tp-arrow">→</div>
+    <div class="tp-col">
+      <h3>HARI engine (M6.4)</h3>
+      <div class="tp-row output">states: ['pain']</div>
+      <div class="tp-row output">states: ['anxious']</div>
+      <div class="tp-row output" style="margin-top: 12px">flare_sensitivity: 'high'</div>
+      <div class="tp-row output">flare_sensitivity: 'low'</div>
+      <div class="tp-row output">flare_sensitivity: 'moderate'</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

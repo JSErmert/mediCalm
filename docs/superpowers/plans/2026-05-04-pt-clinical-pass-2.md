@@ -8,7 +8,57 @@
 
 **Tech Stack:** React 18 + TypeScript + Vite, Vitest + @testing-library/react, CSS Modules, Playwright (for baseline regen).
 
-**Authority:** Spec at `docs/superpowers/specs/2026-05-04-pt-clinical-pass-2-intake-design.md` — read it before starting if you are not the brainstorm participant.
+**Authority:** Spec at [`../specs/2026-05-04-pt-clinical-pass-2-intake-design.md`](../specs/2026-05-04-pt-clinical-pass-2-intake-design.md). Visual mockups at [`../specs/2026-05-04-pt-clinical-pass-2-mockups.html`](../specs/2026-05-04-pt-clinical-pass-2-mockups.html) — open in browser for full-fidelity device frames showing every screen this plan builds.
+
+---
+
+## Visual reference
+
+> **Open the [mockup file](../specs/2026-05-04-pt-clinical-pass-2-mockups.html) before starting.** It shows all four screen states in the actual Deep Current dark theme, side by side, plus the before/after flow diagram and the translation layer panel. Implementing without seeing them is harder than it needs to be.
+
+The mockup contains four labeled device frames:
+
+| Frame | Screen | Built in task |
+|---|---|---|
+| 1 | HomeScreen with "Need crisis support?" affordance | Task 7 |
+| 2 | StateSelectionScreen (branched intent) | Task 5 |
+| 3 | SessionIntakeScreen — pain branch | Task 6 |
+| 4 | SessionIntakeScreen — anxious branch (same component, different copy) | Task 6 |
+
+## Task dependency graph
+
+```mermaid
+flowchart TD
+    T1[T1: New types]
+    T2[T2: TDD intakeTranslation]
+    T3[T3: HariSessionIntake interface]
+    T4[T4: AppContext migration]
+    T5[T5: Rebuild StateSelectionScreen]
+    T6[T6: Rebuild SessionIntakeScreen]
+    T7[T7: HomeScreen crisis affordance]
+    T8[T8: SADSafetyScreen routing fix]
+    T9[T9: App.test integration rewrite]
+    T10[T10: Playwright snapshot regen]
+
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T5 --> T9
+    T6 --> T9
+    T6 --> T7
+    T7 --> T8
+    T9 --> T10
+    T8 --> T10
+
+    classDef tdd fill:#1a8a8a22,stroke:#1a8a8a,color:#1a8a8a
+    classDef mech fill:#ffffff10,stroke:#ffffff40,color:#ffffffcc
+    class T2,T5,T6,T7,T8 tdd
+    class T1,T3,T4,T9,T10 mech
+```
+
+**Teal = TDD** (test-first). **Gray = mechanical** (TypeScript is the test).
 
 ---
 
@@ -480,6 +530,8 @@ EOF
 
 ## Task 5: Rebuild `StateSelectionScreen`
 
+> **Visual reference:** Frame 2 in [`../specs/2026-05-04-pt-clinical-pass-2-mockups.html`](../specs/2026-05-04-pt-clinical-pass-2-mockups.html). Match the layout: centered heading, two stacked branch buttons with rounded corners, single-select aria-pressed behavior, Continue button below.
+
 **Files:**
 - Replace: `src/screens/StateSelectionScreen.tsx`
 - Replace: `src/screens/StateSelectionScreen.test.tsx`
@@ -795,6 +847,8 @@ EOF
 ---
 
 ## Task 6: Rebuild `SessionIntakeScreen`
+
+> **Visual reference:** Frames 3 and 4 in [`../specs/2026-05-04-pt-clinical-pass-2-mockups.html`](../specs/2026-05-04-pt-clinical-pass-2-mockups.html). Frame 3 = pain branch (severity reads "How severe is your tightness or pain right now?"), Frame 4 = anxious branch (severity reads "How intense is it right now?"). Same component, branch-aware copy. Note the breadcrumb back-link at top showing the active branch.
 
 **Files:**
 - Replace: `src/screens/SessionIntakeScreen.tsx`
@@ -1255,6 +1309,8 @@ EOF
 ---
 
 ## Task 7: HomeScreen crisis-support affordance
+
+> **Visual reference:** Frame 1 in [`../specs/2026-05-04-pt-clinical-pass-2-mockups.html`](../specs/2026-05-04-pt-clinical-pass-2-mockups.html) — the new affordance lives at the bottom of the scroll, below the past-sessions section, separated by a quiet divider line. Muted text-link styling (color: var(--text-tertiary)), not button-prominent. Critical: do not let it compete visually with the Begin session CTA.
 
 **Files:**
 - Modify: `src/screens/HomeScreen.tsx`
