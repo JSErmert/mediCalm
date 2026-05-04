@@ -13,7 +13,7 @@ function TestConsumer() {
         {state.pendingPainInput ? state.pendingPainInput.pain_level : 'none'}
       </span>
       <span data-testid="state-entry">
-        {state.pendingStateEntry ? state.pendingStateEntry.join(',') : 'none'}
+        {state.pendingStateEntry ?? 'none'}
       </span>
       <button onClick={() => dispatch({ type: 'NAVIGATE', screen: 'pain_input' })}>
         go-input
@@ -39,7 +39,7 @@ function TestConsumer() {
       </button>
       <button
         onClick={() =>
-          dispatch({ type: 'SET_STATE_ENTRY', entry: ['sad', 'anxious'] })
+          dispatch({ type: 'SET_STATE_ENTRY', entry: 'anxious_or_overwhelmed' })
         }
       >
         set-state-entry
@@ -88,10 +88,10 @@ describe('AppContext', () => {
     expect(screen.getByTestId('state-entry').textContent).toBe('none')
   })
 
-  it('SET_STATE_ENTRY stores selected states', async () => {
+  it('SET_STATE_ENTRY stores selected branch', async () => {
     render(<AppProvider><TestConsumer /></AppProvider>)
     await userEvent.click(screen.getByText('set-state-entry'))
-    expect(screen.getByTestId('state-entry').textContent).toBe('sad,anxious')
+    expect(screen.getByTestId('state-entry').textContent).toBe('anxious_or_overwhelmed')
   })
 
   it('CLEAR_STATE_ENTRY resets pendingStateEntry to null', async () => {

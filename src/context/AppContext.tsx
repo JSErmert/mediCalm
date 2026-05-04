@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
-import type { AppSettings, PainInputState, RuntimeSession, SafetyAssessment, EntryState } from '../types'
-import type { HariSessionIntake, InterventionPackage, StateInterpretationResult, BreathPrescription } from '../types/hari'
+import type { AppSettings, PainInputState, RuntimeSession, SafetyAssessment } from '../types'
+import type { HariSessionIntake, InterventionPackage, StateInterpretationResult, BreathPrescription, IntakeBranch } from '../types/hari'
 
 /**
  * AppScreen — all screens the app can display.
@@ -39,12 +39,11 @@ export interface AppState {
   /** M4.5: Pre-session framing text for the session setup screen */
   sessionFraming: string | null
   /**
-   * M6.2: Selected entry states from StateSelectionScreen.
-   * Preserved across HomeScreen → StateSelectionScreen → SADSafetyScreen → Intake.
+   * PT Clinical Pass 2: Selected intake branch from StateSelectionScreen.
+   * Single value (not array) — branched intent replaces multi-state selection.
    * Cleared on session save, escalation exit, or home reset.
-   * Authority: M6.2 § AppContext Additions
    */
-  pendingStateEntry: EntryState[] | null
+  pendingStateEntry: IntakeBranch | null
   /**
    * M6.4: Output of interpretStates — computed in SessionIntakeScreen on submit.
    * Feeds breath pattern, effort level, and session bias into session configuration.
@@ -70,7 +69,7 @@ export type AppAction =
   | { type: 'SET_HARI_INTAKE'; intake: HariSessionIntake }
   | { type: 'CLEAR_HARI_INTAKE' }
   | { type: 'SET_INTERVENTION_PACKAGE'; pkg: InterventionPackage; framing: string }
-  | { type: 'SET_STATE_ENTRY'; entry: EntryState[] }              // M6.2
+  | { type: 'SET_STATE_ENTRY'; entry: IntakeBranch }              // PT pass 2
   | { type: 'CLEAR_STATE_ENTRY' }                                 // M6.2
   | { type: 'SET_STATE_INTERPRETATION'; result: StateInterpretationResult } // M6.4
   | { type: 'SET_BREATH_PRESCRIPTION'; prescription: BreathPrescription }  // M6.8.3
