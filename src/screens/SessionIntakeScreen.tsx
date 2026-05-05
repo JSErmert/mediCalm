@@ -29,6 +29,7 @@ import type {
   SymptomFocus,
   FlareSensitivity,
   BodyLocation,
+  BodyMuscle,
 } from '../types/hari'
 import { useAppContext } from '../context/AppContext'
 import { getEligibleHariHistory } from '../storage/sessionHistory'
@@ -36,6 +37,7 @@ import { getOrComputePatternSummary } from '../engine/hari/patternReader'
 import { computeAdaptiveIntakeDefaults } from '../engine/hari/adaptiveIntakeDefaults'
 import { interpretStates } from '../engine/hari/stateInterpretation'
 import { branchToEmotionalStates } from '../engine/intakeTranslation'
+import { BodyPicker, type FallbackId } from '../components/BodyPicker'
 import styles from './SessionIntakeScreen.module.css'
 
 // ── Option Definitions ────────────────────────────────────────────────────────
@@ -51,66 +53,6 @@ const SENSITIVITY_OPTIONS: { value: FlareSensitivity; label: string }[] = [
   { value: 'moderate', label: 'Moderate' },
   { value: 'high', label: 'High' },
   { value: 'not_sure', label: 'Not sure' },
-]
-
-const LOCATION_GROUPS: { label: string; options: { value: BodyLocation; label: string }[] }[] = [
-  {
-    label: 'Head & neck',
-    options: [
-      { value: 'head_temples', label: 'Head / temples' },
-      { value: 'jaw_tmj_facial', label: 'Jaw / TMJ / facial' },
-      { value: 'neck', label: 'Neck' },
-    ],
-  },
-  {
-    label: 'Upper torso & back',
-    options: [
-      { value: 'shoulder_left', label: 'Shoulder (L)' },
-      { value: 'shoulder_right', label: 'Shoulder (R)' },
-      { value: 'upper_back', label: 'Upper back' },
-      { value: 'mid_back', label: 'Mid back' },
-      { value: 'chest_sternum', label: 'Chest / sternum' },
-      { value: 'rib_side', label: 'Rib / side' },
-    ],
-  },
-  {
-    label: 'Arms',
-    options: [
-      { value: 'elbow_forearm_left', label: 'Elbow / forearm (L)' },
-      { value: 'elbow_forearm_right', label: 'Elbow / forearm (R)' },
-      { value: 'wrist_hand_left', label: 'Wrist / hand (L)' },
-      { value: 'wrist_hand_right', label: 'Wrist / hand (R)' },
-    ],
-  },
-  {
-    label: 'Lower back & pelvis',
-    options: [
-      { value: 'lower_back', label: 'Lower back' },
-      { value: 'hip_pelvis', label: 'Hip / pelvis' },
-      { value: 'glute', label: 'Glute' },
-    ],
-  },
-  {
-    label: 'Legs',
-    options: [
-      { value: 'thigh_left', label: 'Thigh (L)' },
-      { value: 'thigh_right', label: 'Thigh (R)' },
-      { value: 'knee_left', label: 'Knee (L)' },
-      { value: 'knee_right', label: 'Knee (R)' },
-      { value: 'calf_shin_left', label: 'Calf / shin (L)' },
-      { value: 'calf_shin_right', label: 'Calf / shin (R)' },
-      { value: 'ankle_foot_left', label: 'Ankle / foot (L)' },
-      { value: 'ankle_foot_right', label: 'Ankle / foot (R)' },
-    ],
-  },
-  {
-    label: 'General',
-    options: [
-      { value: 'spread_multiple', label: 'Spread / multiple' },
-      { value: 'whole_body', label: 'Whole body' },
-      { value: 'not_sure', label: 'Not sure' },
-    ],
-  },
 ]
 
 const CONTEXT_OPTIONS: { value: CurrentContext; label: string }[] = [
@@ -139,7 +81,9 @@ export function SessionIntakeScreen() {
 
   const [irritability, setIrritability] = useState<IrritabilityPattern | null>(null)
   const [sensitivity, setSensitivity] = useState<FlareSensitivity | null>(null)
-  const [locations, setLocations] = useState<BodyLocation[]>([])
+  const [locationRegions, setLocationRegions] = useState<BodyLocation[]>([])
+  const [locationMuscles, setLocationMuscles] = useState<BodyMuscle[]>([])
+  const [locationFallback, setLocationFallback] = useState<FallbackId | null>(null)
   const [currentContext, setCurrentContext] = useState<CurrentContext | null>(null)
   const [baselineIntensity, setBaselineIntensity] = useState(5)
   const [sessionLength, setSessionLength] = useState<SessionLengthPreference | null>(null)
@@ -169,16 +113,13 @@ export function SessionIntakeScreen() {
     }
   }, [])
 
-  function toggleLocation(loc: BodyLocation) {
-    setLocations((prev) =>
-      prev.includes(loc) ? prev.filter((l) => l !== loc) : [...prev, loc]
-    )
-  }
+  const hasLocation =
+    locationRegions.length > 0 || locationMuscles.length > 0 || locationFallback !== null
 
   const allRequiredSet =
     irritability !== null &&
     sensitivity !== null &&
-    locations.length > 0 &&
+    hasLocation &&
     currentContext !== null &&
     sessionLength !== null
 
@@ -202,7 +143,8 @@ export function SessionIntakeScreen() {
       irritability,
       baseline_intensity: baselineIntensity,
       flare_sensitivity: sensitivity,
-      location: locations,
+      location: locationFallback ? [locationFallback] : locationRegions,
+      location_muscles: locationMuscles.length > 0 ? locationMuscles : undefined,
       current_context: currentContext,
       session_length_preference: sessionLength,
       // Silent / derived
@@ -311,27 +253,19 @@ export function SessionIntakeScreen() {
 
         <hr className={styles.divider} />
 
-        {/* 4. Location (multi-select, restored 2026-05-04) */}
+        {/* 4. Location — visual body picker (replaces chip grid 2026-05-04) */}
         <div className={styles.fieldGroup}>
           <span className={styles.fieldLabel}>Where in your body is it focused?</span>
-          {LOCATION_GROUPS.map((group) => (
-            <div key={group.label} className={styles.locationGroup}>
-              <span className={styles.locationGroupLabel}>{group.label}</span>
-              <div className={styles.chipGrid} role="group" aria-label={`Location: ${group.label}`}>
-                {group.options.map(({ value, label }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={`${styles.chip} ${locations.includes(value) ? styles.chipSelected : ''}`}
-                    aria-pressed={locations.includes(value)}
-                    onClick={() => toggleLocation(value)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
+          <BodyPicker
+            selectedRegions={locationRegions}
+            selectedMuscles={locationMuscles}
+            fallback={locationFallback}
+            onChange={(next) => {
+              setLocationRegions(next.regions)
+              setLocationMuscles(next.muscles)
+              setLocationFallback(next.fallback)
+            }}
+          />
         </div>
 
         <hr className={styles.divider} />

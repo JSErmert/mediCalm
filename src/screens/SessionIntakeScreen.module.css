@@ -222,22 +222,6 @@
   color: var(--color-text-tertiary);
 }
 
-/* ── Location (grouped multi-select) ─────────────────────────────────────── */
-
-.locationGroup {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-}
-
-.locationGroupLabel {
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
 /* ── Divider ─────────────────────────────────────────────────────────────── */
 
 .divider {
