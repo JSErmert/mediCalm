@@ -153,13 +153,22 @@ test.describe('Session Intake Screen', () => {
 
   test('12 — intake screen filled', async ({ page }) => {
     // Fill 5 required fields (severity has default 5):
-    //   irritability · sensitivity · location (≥1) · position · length
+    //   irritability · sensitivity · body picker (≥1 region) · position · length
     await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
     await page.getByRole('button', { name: /^moderate$/i }).click()       // sensitivity
-    await page.getByRole('button', { name: /^lower back$/i }).click()     // location
+    await page.locator('g[data-region="ankle_foot_left"]').first().click()     // location (body picker, auto-tag)
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     await snap(page, '12_intake_filled')
+  })
+
+  test('12b — intake with muscle drawer open', async ({ page }) => {
+    // Capture the muscle subgroup picker (drawer) state for shoulder_left
+    await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
+    await page.getByRole('button', { name: /^moderate$/i }).click()
+    await page.locator('g[data-region="shoulder_left"]').first().click()
+    await expect(page.getByText(/muscle group/i)).toBeVisible({ timeout: 3000 })
+    await snap(page, '12b_intake_muscle_drawer')
   })
 })
 
@@ -178,7 +187,7 @@ test.describe('HARI Safety Gate', () => {
     // Fill 6-field intake (PT pass 2 refined 2026-05-04)
     await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
     await page.getByRole('button', { name: /^moderate$/i }).click()
-    await page.getByRole('button', { name: /^lower back$/i }).click()
+    await page.locator('g[data-region="ankle_foot_left"]').first().click()
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     // Submit
@@ -214,7 +223,7 @@ test.describe('Session Setup Screen', () => {
     // Fill 6-field intake
     await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
     await page.getByRole('button', { name: /^moderate$/i }).click()
-    await page.getByRole('button', { name: /^lower back$/i }).click()
+    await page.locator('g[data-region="ankle_foot_left"]').first().click()
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     await page.locator('button:has-text("Continue")').last().click()
@@ -241,7 +250,7 @@ test.describe('Guided Session Screen', () => {
     // Fill 6-field intake (PT pass 2 refined 2026-05-04)
     await page.getByRole('button', { name: /comes on quickly, goes away slowly/i }).click()
     await page.getByRole('button', { name: /^moderate$/i }).click()
-    await page.getByRole('button', { name: /^lower back$/i }).click()
+    await page.locator('g[data-region="ankle_foot_left"]').first().click()
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     await page.locator('button:has-text("Continue")').last().click()
@@ -369,7 +378,7 @@ test.describe('Golden Path — Full Flow', () => {
     // Fill 6-field intake (PT pass 2 refined 2026-05-04)
     await page.getByRole('button', { name: /comes on slowly, goes away quickly/i }).click()
     await page.getByRole('button', { name: /^moderate$/i }).click()
-    await page.getByRole('button', { name: /^lower back$/i }).click()
+    await page.locator('g[data-region="ankle_foot_left"]').first().click()
     await page.getByRole('button', { name: /^sitting$/i }).click()
     await page.getByRole('button', { name: /^standard$/i }).click()
     await snap(page, 'golden_05_intake_filled')

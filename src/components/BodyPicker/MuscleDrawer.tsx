@@ -4,14 +4,21 @@ import styles from './MuscleDrawer.module.css'
 
 interface MuscleDrawerProps {
   region: BodyLocation | null
+  /** Which body view the region was tapped on; when set, the drawer shows
+   *  only muscles whose view matches this side. Regions like `neck` and
+   *  `head_temples` span both views, so without this filter the front-side
+   *  drawer would surface back-side options (e.g. "Nape" when tapping the
+   *  front of the neck). */
+  side?: 'front' | 'back'
   selectedMuscles: BodyMuscle[]
   onToggleMuscle: (muscle: BodyMuscle) => void
   onClose: () => void
 }
 
-export function MuscleDrawer({ region, selectedMuscles, onToggleMuscle, onClose }: MuscleDrawerProps) {
+export function MuscleDrawer({ region, side, selectedMuscles, onToggleMuscle, onClose }: MuscleDrawerProps) {
   const isOpen = region !== null
-  const muscles = region ? musclesForRegion(region) : []
+  const allRegionMuscles = region ? musclesForRegion(region) : []
+  const muscles = side ? allRegionMuscles.filter(m => m.view === side) : allRegionMuscles
   const selectedSet = new Set(selectedMuscles)
 
   return (

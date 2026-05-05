@@ -1,2 +1,2 @@
 export { BodyPicker } from './BodyPicker'
-export type { BodyPickerSelection, FallbackId } from './BodyPicker'
+export type { BodyPickerSelection } from './BodyPicker'

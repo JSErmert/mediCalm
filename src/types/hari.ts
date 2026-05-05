@@ -101,6 +101,25 @@ export type BodyLocation =
   | 'not_sure'
 
 /**
+ * LocationPattern — derived clinical descriptor of pain distribution,
+ * inferred from selected regions via anatomical chain definitions.
+ * See `src/engine/hari/locationPatterns.ts` and the design spec at
+ * docs/superpowers/specs/2026-05-04-location-pattern-inference-design.md.
+ *
+ * - `single`: 1 anatomical region picked
+ * - `connected`: 2+ regions all within one anatomical chain
+ * - `multifocal`: 2+ regions across different chains, but bounded
+ * - `widespread`: 4+ regions spanning 3+ chains (suggests central sensitization)
+ * - `diffuse_unspecified`: user explicitly tapped "I can't pinpoint it"
+ */
+export type LocationPattern =
+  | 'single'
+  | 'connected'
+  | 'multifocal'
+  | 'widespread'
+  | 'diffuse_unspecified'
+
+/**
  * BodyMuscle — anatomical muscle subgroup beneath a BodyLocation region.
  * Source path data: vulovix/body-muscles (Apache-2.0).
  * Each muscle's parent region is encoded in MUSCLE_TO_REGION at
@@ -203,6 +222,14 @@ export interface HariSessionIntake {
    * captured for future M7+ adaptation.
    */
   location_muscles?: BodyMuscle[]
+  /**
+   * Inferred clinical pain-distribution descriptor (2026-05-04).
+   * Derived from `location[]` at intake submit via inferLocationPattern();
+   * set to `'diffuse_unspecified'` when the user taps the "I can't pinpoint
+   * it" escape hatch. Captured for HARI history + future M7+ pattern
+   * recognition; engine ignores this field today.
+   */
+  location_pattern?: LocationPattern
   current_context: CurrentContext
   session_length_preference: SessionLengthPreference
 

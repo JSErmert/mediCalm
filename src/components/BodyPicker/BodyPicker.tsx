@@ -4,28 +4,23 @@ import { BodyPickerSVG } from './BodyPickerSVG'
 import { MuscleDrawer } from './MuscleDrawer'
 import { MUSCLE_PATHS } from './data/muscles'
 import { MUSCLE_TO_REGION, musclesForRegion, REGION_LABEL } from './data/regions'
+import { inferLocationPattern } from '../../engine/hari/locationPatterns'
 import styles from './BodyPicker.module.css'
-
-export type FallbackId = 'spread_multiple' | 'whole_body' | 'not_sure'
 
 export interface BodyPickerSelection {
   regions: BodyLocation[]
   muscles: BodyMuscle[]
-  fallback: FallbackId | null
+  /** True when the user has tapped the "I can't pinpoint it" escape hatch.
+   *  Mutually exclusive with regions/muscles — picking either clears this. */
+  diffuseUnspecified: boolean
 }
 
 interface BodyPickerProps {
   selectedRegions: BodyLocation[]
   selectedMuscles: BodyMuscle[]
-  fallback: FallbackId | null
+  diffuseUnspecified: boolean
   onChange: (next: BodyPickerSelection) => void
 }
-
-const FALLBACK_OPTIONS: { id: FallbackId; label: string }[] = [
-  { id: 'spread_multiple', label: 'Spread / multiple' },
-  { id: 'whole_body', label: 'Whole body' },
-  { id: 'not_sure', label: 'Not sure' },
-]
 
 const MUSCLE_LABELS: Record<string, string> = Object.fromEntries(
   MUSCLE_PATHS.map(m => [m.id, m.name])
@@ -37,21 +32,29 @@ const MUSCLE_LABELS: Record<string, string> = Object.fromEntries(
 // muscle sub-selection, so they should behave as atomic selections.
 const SINGLE_REGION_THRESHOLD = 2
 
+const PATTERN_LABEL: Record<'single' | 'connected' | 'multifocal' | 'widespread', string> = {
+  single: 'Single region',
+  connected: 'Connected',
+  multifocal: 'Multifocal',
+  widespread: 'Widespread',
+}
+
 export function BodyPicker({
-  selectedRegions, selectedMuscles, fallback, onChange,
+  selectedRegions, selectedMuscles, diffuseUnspecified, onChange,
 }: BodyPickerProps) {
   const [drawerRegion, setDrawerRegion] = useState<BodyLocation | null>(null)
+  const [drawerSide, setDrawerSide] = useState<'front' | 'back' | null>(null)
 
   function emit(next: BodyPickerSelection) {
     onChange(next)
   }
 
-  function handleRegionTap(region: BodyLocation) {
-    if (fallback) {
-      // Clear active fallback before any region/muscle selection — they are
-      // mutually exclusive. This must run BEFORE the drawer opens so that
-      // closing the drawer without a muscle pick still leaves no fallback.
-      emit({ regions: selectedRegions, muscles: selectedMuscles, fallback: null })
+  function handleRegionTap(region: BodyLocation, side: 'front' | 'back') {
+    if (diffuseUnspecified) {
+      // Clear active escape hatch before any region/muscle selection — they
+      // are mutually exclusive. Must run BEFORE the drawer opens so closing
+      // the drawer without a muscle pick still leaves diffuseUnspecified off.
+      emit({ regions: selectedRegions, muscles: selectedMuscles, diffuseUnspecified: false })
     }
     const muscles = musclesForRegion(region)
     if (muscles.length <= SINGLE_REGION_THRESHOLD) {
@@ -63,39 +66,46 @@ export function BodyPicker({
       const nextMuscles = wasSelected
         ? selectedMuscles.filter(m => MUSCLE_TO_REGION[m] !== region)
         : selectedMuscles
-      emit({ regions: next, muscles: nextMuscles, fallback: null })
+      emit({ regions: next, muscles: nextMuscles, diffuseUnspecified: false })
       return
     }
     setDrawerRegion(region)
+    setDrawerSide(side)
   }
 
   function handleToggleMuscle(muscle: BodyMuscle) {
-    const region = MUSCLE_TO_REGION[muscle]
+    // Picking a muscle records ONLY the muscle. The parent region is not
+    // added to selectedRegions so the chip area stays uncluttered. The SVG
+    // still highlights the parent region via muscleParents in BodyPickerSVG,
+    // and SessionIntakeScreen rolls muscles up to their parent regions at
+    // submit time so the HARI engine still sees a populated location[].
     const isSelected = selectedMuscles.includes(muscle)
     const nextMuscles = isSelected
       ? selectedMuscles.filter(m => m !== muscle)
       : [...selectedMuscles, muscle]
-    const nextRegions = !isSelected && !selectedRegions.includes(region)
-      ? [...selectedRegions, region]
-      : selectedRegions
-    emit({ regions: nextRegions, muscles: nextMuscles, fallback: null })
+    emit({ regions: selectedRegions, muscles: nextMuscles, diffuseUnspecified: false })
   }
 
   function handleDrawerClose() {
     if (drawerRegion) {
       const anyForRegion = selectedMuscles.some(m => MUSCLE_TO_REGION[m] === drawerRegion)
       if (!anyForRegion && !selectedRegions.includes(drawerRegion)) {
-        emit({ regions: [...selectedRegions, drawerRegion], muscles: selectedMuscles, fallback: null })
+        emit({
+          regions: [...selectedRegions, drawerRegion],
+          muscles: selectedMuscles,
+          diffuseUnspecified: false,
+        })
       }
     }
     setDrawerRegion(null)
+    setDrawerSide(null)
   }
 
-  function handleFallback(id: FallbackId) {
-    if (fallback === id) {
-      emit({ regions: selectedRegions, muscles: selectedMuscles, fallback: null })
+  function handleEscapeHatch() {
+    if (diffuseUnspecified) {
+      emit({ regions: selectedRegions, muscles: selectedMuscles, diffuseUnspecified: false })
     } else {
-      emit({ regions: [], muscles: [], fallback: id })
+      emit({ regions: [], muscles: [], diffuseUnspecified: true })
     }
   }
 
@@ -103,7 +113,7 @@ export function BodyPicker({
     emit({
       regions: selectedRegions.filter(r => r !== region),
       muscles: selectedMuscles.filter(m => MUSCLE_TO_REGION[m] !== region),
-      fallback,
+      diffuseUnspecified,
     })
   }
 
@@ -111,7 +121,7 @@ export function BodyPicker({
     emit({
       regions: selectedRegions,
       muscles: selectedMuscles.filter(m => m !== muscle),
-      fallback,
+      diffuseUnspecified,
     })
   }
 
@@ -119,7 +129,14 @@ export function BodyPicker({
     return MUSCLE_LABELS[muscle] ?? muscle
   }
 
-  const totalSelected = selectedRegions.length + selectedMuscles.length + (fallback ? 1 : 0)
+  // Pattern inference — display only; the parent screen recomputes at submit.
+  // Roll muscles up to their parent regions so the inference matches what the
+  // engine eventually sees.
+  const muscleParentRegions = selectedMuscles.map(m => MUSCLE_TO_REGION[m])
+  const inferenceRegions = Array.from(new Set([...selectedRegions, ...muscleParentRegions]))
+  const inferred = inferLocationPattern(inferenceRegions)
+  const showPatternBadge = inferenceRegions.length >= 2 && !diffuseUnspecified
+  const totalSelected = selectedRegions.length + selectedMuscles.length
 
   return (
     <div className={styles.picker}>
@@ -130,7 +147,7 @@ export function BodyPicker({
             side="front"
             selectedRegions={selectedRegions}
             selectedMuscles={selectedMuscles}
-            onRegionTap={handleRegionTap}
+            onRegionTap={(r) => handleRegionTap(r, 'front')}
             onRegionHover={() => {}}
           />
         </div>
@@ -140,24 +157,41 @@ export function BodyPicker({
             side="back"
             selectedRegions={selectedRegions}
             selectedMuscles={selectedMuscles}
-            onRegionTap={handleRegionTap}
+            onRegionTap={(r) => handleRegionTap(r, 'back')}
             onRegionHover={() => {}}
           />
         </div>
-
-        <MuscleDrawer
-          region={drawerRegion}
-          selectedMuscles={selectedMuscles}
-          onToggleMuscle={handleToggleMuscle}
-          onClose={handleDrawerClose}
-        />
       </div>
+
+      <MuscleDrawer
+        region={drawerRegion}
+        side={drawerSide ?? undefined}
+        selectedMuscles={selectedMuscles}
+        onToggleMuscle={handleToggleMuscle}
+        onClose={handleDrawerClose}
+      />
+
+      {showPatternBadge && (
+        <div
+          className={styles.patternBadge}
+          data-testid="pattern-badge"
+          aria-live="polite"
+        >
+          <span className={styles.patternLabel}>Pattern</span>
+          <span className={styles.patternValue}>
+            {PATTERN_LABEL[inferred as 'single' | 'connected' | 'multifocal' | 'widespread']}
+          </span>
+        </div>
+      )}
 
       <div className={styles.selectedCard}>
         <span className={styles.selectedLabel}>Selected</span>
         <div className={styles.chipRow}>
-          {totalSelected === 0 && (
+          {totalSelected === 0 && !diffuseUnspecified && (
             <span className={styles.empty}>None yet — tap a region above</span>
+          )}
+          {diffuseUnspecified && (
+            <span className={styles.empty}>Diffuse — no specific region</span>
           )}
           {selectedRegions.map(r => (
             <button
@@ -182,30 +216,17 @@ export function BodyPicker({
               <span className={styles.chipX} aria-hidden="true">✕</span>
             </button>
           ))}
-          {fallback && (
-            <button
-              type="button"
-              className={styles.chip}
-              onClick={() => emit({ regions: [], muscles: [], fallback: null })}
-            >
-              {REGION_LABEL[fallback]}<span className={styles.chipX} aria-hidden="true">✕</span>
-            </button>
-          )}
         </div>
       </div>
 
-      <div className={styles.fallbackRow}>
-        {FALLBACK_OPTIONS.map(opt => (
-          <button
-            key={opt.id}
-            type="button"
-            className={`${styles.fallback}${fallback === opt.id ? ' ' + styles.fallbackActive : ''}`}
-            onClick={() => handleFallback(opt.id)}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+      <button
+        type="button"
+        className={`${styles.escapeHatch}${diffuseUnspecified ? ' ' + styles.escapeHatchActive : ''}`}
+        onClick={handleEscapeHatch}
+        aria-pressed={diffuseUnspecified}
+      >
+        I can't pinpoint where it is
+      </button>
     </div>
   )
 }

@@ -37,7 +37,9 @@ import { getOrComputePatternSummary } from '../engine/hari/patternReader'
 import { computeAdaptiveIntakeDefaults } from '../engine/hari/adaptiveIntakeDefaults'
 import { interpretStates } from '../engine/hari/stateInterpretation'
 import { branchToEmotionalStates } from '../engine/intakeTranslation'
-import { BodyPicker, type FallbackId } from '../components/BodyPicker'
+import { BodyPicker } from '../components/BodyPicker'
+import { MUSCLE_TO_REGION } from '../components/BodyPicker/data/regions'
+import { inferLocationPattern } from '../engine/hari/locationPatterns'
 import styles from './SessionIntakeScreen.module.css'
 
 // ── Option Definitions ────────────────────────────────────────────────────────
@@ -83,7 +85,7 @@ export function SessionIntakeScreen() {
   const [sensitivity, setSensitivity] = useState<FlareSensitivity | null>(null)
   const [locationRegions, setLocationRegions] = useState<BodyLocation[]>([])
   const [locationMuscles, setLocationMuscles] = useState<BodyMuscle[]>([])
-  const [locationFallback, setLocationFallback] = useState<FallbackId | null>(null)
+  const [diffuseUnspecified, setDiffuseUnspecified] = useState(false)
   const [currentContext, setCurrentContext] = useState<CurrentContext | null>(null)
   const [baselineIntensity, setBaselineIntensity] = useState(5)
   const [sessionLength, setSessionLength] = useState<SessionLengthPreference | null>(null)
@@ -113,13 +115,14 @@ export function SessionIntakeScreen() {
     }
   }, [])
 
+  const locationRequired = branch === 'tightness_or_pain'
   const hasLocation =
-    locationRegions.length > 0 || locationMuscles.length > 0 || locationFallback !== null
+    locationRegions.length > 0 || locationMuscles.length > 0 || diffuseUnspecified
 
   const allRequiredSet =
     irritability !== null &&
     sensitivity !== null &&
-    hasLocation &&
+    (!locationRequired || hasLocation) &&
     currentContext !== null &&
     sessionLength !== null
 
@@ -138,13 +141,26 @@ export function SessionIntakeScreen() {
   function handleSubmit() {
     if (!allRequiredSet || !branch) return
 
+    // Roll muscles up to their parent regions so the HARI engine sees the
+    // expected region-level location[] regardless of whether the user picked
+    // a region (drawer-close-empty path) or a muscle subgroup (drawer-pick path).
+    const muscleParentRegions = locationMuscles.map((m) => MUSCLE_TO_REGION[m])
+    const rolledLocations = Array.from(new Set([...locationRegions, ...muscleParentRegions]))
+
+    // Inferred clinical descriptor — set explicitly to 'diffuse_unspecified'
+    // when the user tapped the escape hatch, otherwise derived from regions.
+    const locationPattern = diffuseUnspecified
+      ? 'diffuse_unspecified'
+      : inferLocationPattern(rolledLocations)
+
     const intake: HariSessionIntake = {
       branch,
       irritability,
       baseline_intensity: baselineIntensity,
       flare_sensitivity: sensitivity,
-      location: locationFallback ? [locationFallback] : locationRegions,
+      location: diffuseUnspecified ? [] : rolledLocations,
       location_muscles: locationMuscles.length > 0 ? locationMuscles : undefined,
+      location_pattern: locationPattern,
       current_context: currentContext,
       session_length_preference: sessionLength,
       // Silent / derived
@@ -253,22 +269,28 @@ export function SessionIntakeScreen() {
 
         <hr className={styles.divider} />
 
-        {/* 4. Location — visual body picker (replaces chip grid 2026-05-04) */}
-        <div className={styles.fieldGroup}>
-          <span className={styles.fieldLabel}>Where in your body is it focused?</span>
-          <BodyPicker
-            selectedRegions={locationRegions}
-            selectedMuscles={locationMuscles}
-            fallback={locationFallback}
-            onChange={(next) => {
-              setLocationRegions(next.regions)
-              setLocationMuscles(next.muscles)
-              setLocationFallback(next.fallback)
-            }}
-          />
-        </div>
+        {/* 4. Location — visual body picker, only for tightness_or_pain branch.
+            Anatomical location is not asked on the anxious_or_overwhelmed branch
+            (emotional state, no somatic locus). */}
+        {branch === 'tightness_or_pain' && (
+          <>
+            <div className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>Where in your body is it focused?</span>
+              <BodyPicker
+                selectedRegions={locationRegions}
+                selectedMuscles={locationMuscles}
+                diffuseUnspecified={diffuseUnspecified}
+                onChange={(next) => {
+                  setLocationRegions(next.regions)
+                  setLocationMuscles(next.muscles)
+                  setDiffuseUnspecified(next.diffuseUnspecified)
+                }}
+              />
+            </div>
 
-        <hr className={styles.divider} />
+            <hr className={styles.divider} />
+          </>
+        )}
 
         {/* 5. Position */}
         <div className={styles.fieldGroup}>
