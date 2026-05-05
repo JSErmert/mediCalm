@@ -67,41 +67,27 @@ describe('SessionIntakeScreen — PT Clinical Pass 2 (refined 2026-05-04)', () =
     expect(within(sensitivityGroup).getByRole('button', { name: /^not sure$/i })).toBeInTheDocument()
   })
 
-  it('renders the location prompt with multi-select chips and group labels', async () => {
+  it('renders the location prompt and the body picker', async () => {
     renderWithBranch('tightness_or_pain')
     await waitFor(() => {
       expect(screen.getByText(/where in your body is it focused/i)).toBeInTheDocument()
     })
-    // Group labels
-    expect(screen.getByText(/^head & neck$/i)).toBeInTheDocument()
-    expect(screen.getByText(/^upper torso & back$/i)).toBeInTheDocument()
-    expect(screen.getByText(/^arms$/i)).toBeInTheDocument()
-    expect(screen.getByText(/^lower back & pelvis$/i)).toBeInTheDocument()
-    expect(screen.getByText(/^legs$/i)).toBeInTheDocument()
-    expect(screen.getByText(/^general$/i)).toBeInTheDocument()
-    // A few representative regions
-    expect(screen.getByRole('button', { name: /^neck$/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /jaw \/ tmj \/ facial/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /shoulder \(L\)/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^lower back$/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^whole body$/i })).toBeInTheDocument()
+    // Two SVGs (front + back) inside the picker
+    const svgs = document.querySelectorAll('svg[aria-label*="body picker" i]')
+    expect(svgs.length).toBe(2)
   })
 
-  it('allows selecting multiple location chips', async () => {
+  it('allows selecting a body region via SVG group click', async () => {
     renderWithBranch('tightness_or_pain')
     await waitFor(() => {
       expect(screen.getByText(/where in your body is it focused/i)).toBeInTheDocument()
     })
-    const neck = screen.getByRole('button', { name: /^neck$/i })
-    const lowerBack = screen.getByRole('button', { name: /^lower back$/i })
-    await userEvent.click(neck)
-    await userEvent.click(lowerBack)
-    expect(neck).toHaveAttribute('aria-pressed', 'true')
-    expect(lowerBack).toHaveAttribute('aria-pressed', 'true')
-    // Toggle one off
-    await userEvent.click(neck)
-    expect(neck).toHaveAttribute('aria-pressed', 'false')
-    expect(lowerBack).toHaveAttribute('aria-pressed', 'true')
+    // ankle_foot_left has only front+back paths — single click auto-tags region (no drawer)
+    const ankleGroup = document.querySelector('g[data-region="ankle_foot_left"]') as Element
+    expect(ankleGroup).toBeTruthy()
+    await userEvent.click(ankleGroup)
+    // The chip below the picker should now display the region name
+    expect(screen.getByText(/left ankle \/ foot/i)).toBeInTheDocument()
   })
 
   it('renders all 5 position options', async () => {
@@ -147,7 +133,8 @@ describe('SessionIntakeScreen — PT Clinical Pass 2 (refined 2026-05-04)', () =
     expect(continueBtn!).toBeDisabled()
     await userEvent.click(screen.getByRole('button', { name: /^moderate$/i })) // sensitivity
     expect(continueBtn!).toBeDisabled()
-    await userEvent.click(screen.getByRole('button', { name: /^lower back$/i })) // location
+    const ankleGroup = document.querySelector('g[data-region="ankle_foot_left"]') as Element
+    await userEvent.click(ankleGroup)
     expect(continueBtn!).toBeDisabled()
     await userEvent.click(screen.getByRole('button', { name: /^sitting$/i }))
     expect(continueBtn!).toBeDisabled()
@@ -178,8 +165,13 @@ describe('SessionIntakeScreen — PT Clinical Pass 2 (refined 2026-05-04)', () =
     // Pick sensitivity that does NOT match irritability's old derivation (fast→high) so we
     // can prove the explicit field overrides the previously-derived value.
     await userEvent.click(screen.getByRole('button', { name: /^low$/i }))
-    await userEvent.click(screen.getByRole('button', { name: /^lower back$/i }))
-    await userEvent.click(screen.getByRole('button', { name: /^neck$/i }))
+    // Pick two regions via the body picker:
+    //  - ankle_foot_left auto-tags (single front+back pair)
+    //  - shoulder_left opens drawer; pick one muscle then close
+    await userEvent.click(document.querySelector('g[data-region="ankle_foot_left"]') as Element)
+    await userEvent.click(document.querySelector('g[data-region="shoulder_left"]') as Element)
+    await userEvent.click(screen.getByRole('button', { name: /left shoulder \(front\)/i }))
+    await userEvent.click(screen.getByRole('button', { name: /close drawer/i }))
     await userEvent.click(screen.getByRole('button', { name: /^sitting$/i }))
     await userEvent.click(screen.getByRole('button', { name: /^long$/i }))
     await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
@@ -192,8 +184,8 @@ describe('SessionIntakeScreen — PT Clinical Pass 2 (refined 2026-05-04)', () =
         current_context: 'sitting',
         session_length_preference: 'long',
       })
-      expect(capturedIntake.location).toEqual(expect.arrayContaining(['lower_back', 'neck']))
-      expect(capturedIntake.location.length).toBe(2)
+      expect(capturedIntake.location).toEqual(expect.arrayContaining(['ankle_foot_left', 'shoulder_left']))
+      expect(capturedIntake.location_muscles).toEqual(['shoulder_front_left'])
     })
   })
 
