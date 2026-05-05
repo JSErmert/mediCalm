@@ -16,7 +16,7 @@
 import { useMemo } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { PROTOCOLS } from '../data/protocols'
-import { interpretSession } from '../engine/presentation/interpretationLayer'
+import { interpretSession, derivePositionHint } from '../engine/presentation/interpretationLayer'
 import { getOrComputePatternSummary } from '../engine/hari/patternReader'
 import { computeSessionInsights } from '../engine/hari/sessionInsights'
 import { SessionInsightsPanel } from '../components/SessionInsightsPanel'
@@ -32,6 +32,11 @@ export function SessionSetupScreen() {
 
   // Derive input-specific focus statement and optional breathing hint
   const { focus, breathingHint } = interpretSession(session.pain_input)
+
+  // 2026-05-05 Scope A: PT-grounded contextual position hint based on
+  // branch + location_pattern. Renders as an addendum below the protocol's
+  // own support_mode (which remains the safety-validated default).
+  const positionHint = derivePositionHint(state.hariIntake)
 
   // M5.4 — compute optional insights from pattern history (purely presentational)
   const insights = useMemo(() => {
@@ -70,6 +75,13 @@ export function SessionSetupScreen() {
           <div className={styles.supportBlock} aria-label="Recommended position">
             <span className={styles.supportLabel}>Position</span>
             <span className={styles.supportValue}>{supportMode}</span>
+          </div>
+        )}
+
+        {positionHint && (
+          <div className={styles.supportBlock} aria-label="Position note">
+            <span className={styles.supportLabel}>Position note</span>
+            <span className={styles.supportValue}>{positionHint}</span>
           </div>
         )}
 

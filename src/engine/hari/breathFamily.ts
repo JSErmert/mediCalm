@@ -89,7 +89,10 @@ const BREATH_FAMILIES: Record<BreathFamilyName, BreathFamily> = {
     exhaleSeconds: 7,
     sessionName: 'Calm Reset',
     instructionTone: 'calming / direct',
-    openingPrompt: "Follow the breath. Each cycle helps your nervous system settle.",
+    // 2026-05-05 Scope A: PT-grounded diaphragmatic framing for anxious branch.
+    // Cues belly engagement (countering upper-chest anxiety pattern) + passive
+    // exhale (no forced effort).
+    openingPrompt: "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release.",
   },
   // Tight — spacious lateral expansion
   lateral_expansion: {

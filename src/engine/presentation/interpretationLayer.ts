@@ -16,6 +16,7 @@
  *            Safety + Reassurance Spec (doc 06) — language constraints
  */
 import type { PainInputState } from '../../types'
+import type { HariSessionIntake } from '../../types/hari'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -233,5 +234,39 @@ export function interpretSession(input: PainInputState): SessionInterpretation {
     pattern: 'diffuse_activation',
     modifiers,
     focus: 'Calm the system and reduce tension through steady breath.',
+  }
+}
+
+// ── Position hint derivation (Scope A — 2026-05-05) ──────────────────────────
+
+/**
+ * Contextual position hint derived from intake branch + location_pattern.
+ *
+ * PT-grounded refinement (Scope A): localized patterns respond well to gentle
+ * decompression in a supported horizontal position; widespread/multifocal
+ * patterns favour an upright spine. Anxious-branch and unspecified patterns
+ * fall back to the protocol's own support_mode default.
+ *
+ * Returns undefined when no hint applies. The returned string is a
+ * non-overriding addendum to the protocol's support_mode (which remains
+ * the safety-validated default).
+ */
+export function derivePositionHint(
+  intake: HariSessionIntake | null | undefined
+): string | undefined {
+  if (!intake) return undefined
+  if (intake.branch !== 'tightness_or_pain') return undefined
+
+  switch (intake.location_pattern) {
+    case 'single':
+    case 'connected':
+      return 'If you can, try this lying down — localized patterns respond well to gentle decompression in a supported horizontal position.'
+    case 'widespread':
+    case 'multifocal':
+      return 'Sitting tall but easy works well — keep your spine long and supported.'
+    case 'diffuse_unspecified':
+    case undefined:
+    default:
+      return undefined
   }
 }
