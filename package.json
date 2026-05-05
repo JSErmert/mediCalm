@@ -11,7 +11,8 @@
     "test:run": "vitest run",
     "e2e": "playwright test",
     "capture": "playwright test e2e/baseline-capture.spec.ts",
-    "snapshot:review": "git archive --format=zip --prefix=mediCalm/ HEAD -o mediCalm-review-snapshot.zip"
+    "snapshot:review": "git archive --format=zip --prefix=mediCalm/ HEAD -o mediCalm-review-snapshot.zip",
+    "sweep": "vite-node scripts/intakeOutputSweep.ts"
   },
   "dependencies": {
     "framer-motion": "^11.15.0",

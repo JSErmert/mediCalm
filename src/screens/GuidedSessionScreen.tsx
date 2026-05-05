@@ -36,9 +36,14 @@ export function GuidedSessionScreen() {
 
   // M6.8.3 — pendingBreathPrescription takes priority (Continue What Helped, already prescription-ready).
   // M6+M7.1 — normal M6 flow builds via buildDeliveryConfig (M6 prescription + M7.1 adaptation).
+  // 2026-05-05 wire-through: pass the user's explicit session_length_preference
+  // so it can adjust effortCapacity within safety bounds (see applyLengthPreference).
   const sessionConfig = state.pendingBreathPrescription
     ?? (state.stateInterpretationResult
-      ? buildDeliveryConfig(state.stateInterpretationResult)
+      ? buildDeliveryConfig(
+          state.stateInterpretationResult,
+          state.hariIntake?.session_length_preference ?? 'standard'
+        )
       : null)
 
   // M4.6 — HARI round tracking

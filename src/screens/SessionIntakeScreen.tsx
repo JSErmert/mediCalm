@@ -36,7 +36,11 @@ import { getEligibleHariHistory } from '../storage/sessionHistory'
 import { getOrComputePatternSummary } from '../engine/hari/patternReader'
 import { computeAdaptiveIntakeDefaults } from '../engine/hari/adaptiveIntakeDefaults'
 import { interpretStates } from '../engine/hari/stateInterpretation'
-import { branchToEmotionalStates } from '../engine/intakeTranslation'
+import {
+  branchToEmotionalStates,
+  applyIrritabilityEscalation,
+  deriveSymptomFocusFromLocation,
+} from '../engine/intakeTranslation'
 import { BodyPicker } from '../components/BodyPicker'
 import { MUSCLE_TO_REGION } from '../components/BodyPicker/data/regions'
 import { inferLocationPattern } from '../engine/hari/locationPatterns'
@@ -153,27 +157,38 @@ export function SessionIntakeScreen() {
       ? 'diffuse_unspecified'
       : inferLocationPattern(rolledLocations)
 
+    // 2026-05-05 wire-through: irritability escalates flare_sensitivity
+    // (one-way safety dial — never downgrades the user's explicit pick).
+    const effectiveFlare = applyIrritabilityEscalation(sensitivity, irritability)
+
+    // 2026-05-05 wire-through: symptom_focus is derived from the user's body
+    // picker selection. Falls back to the silent adaptive default only when
+    // the user provided no anatomical input (anxious branch / escape hatch).
+    const finalLocation = diffuseUnspecified ? [] : rolledLocations
+    const derivedFocus = deriveSymptomFocusFromLocation(finalLocation, locationPattern, silentFocus)
+
     const intake: HariSessionIntake = {
       branch,
       irritability,
       baseline_intensity: baselineIntensity,
-      flare_sensitivity: sensitivity,
-      location: diffuseUnspecified ? [] : rolledLocations,
+      flare_sensitivity: effectiveFlare,
+      location: finalLocation,
       location_muscles: locationMuscles.length > 0 ? locationMuscles : undefined,
       location_pattern: locationPattern,
       current_context: currentContext,
       session_length_preference: sessionLength,
-      // Silent / derived
+      // Silent / derived (symptom_focus now reflects the user's body picker pick)
       session_intent: silentIntent,
-      symptom_focus: silentFocus,
+      symptom_focus: derivedFocus,
     }
 
-    // M6.4: interpret derived emotional states using the user's explicit sensitivity.
+    // M6.4: interpret derived emotional states using the effective flare
+    // (escalated by irritability when applicable).
     const states: HariEmotionalState[] = branchToEmotionalStates(branch)
     const interpretationResult = interpretStates({
       states,
       intensity: baselineIntensity,
-      sensitivity,
+      sensitivity: effectiveFlare,
     })
     dispatch({ type: 'SET_STATE_INTERPRETATION', result: interpretationResult })
 

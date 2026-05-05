@@ -162,12 +162,15 @@ describe('SessionIntakeScreen — PT Clinical Pass 2 (refined 2026-05-04)', () =
       expect(screen.getByRole('button', { name: /comes on quickly, goes away slowly/i })).toBeInTheDocument()
     })
     await userEvent.click(screen.getByRole('button', { name: /comes on quickly, goes away slowly/i }))
-    // Pick sensitivity that does NOT match irritability's old derivation (fast→high) so we
-    // can prove the explicit field overrides the previously-derived value.
+    // Pick sensitivity 'low'. With the 2026-05-05 irritability wire-through,
+    // 'fast_onset_slow_resolution' escalates the effective flare_sensitivity
+    // to 'high' (one-way safety dial — never downgrades the user's explicit
+    // pick, but does raise it when clinical caution warrants).
     await userEvent.click(screen.getByRole('button', { name: /^low$/i }))
     // Pick two regions via the body picker:
-    //  - ankle_foot_left auto-tags (single front+back pair)
-    //  - shoulder_left opens drawer; pick one muscle then close
+    //  - ankle_foot_left auto-tags (single front+back pair) → spread_tension bucket
+    //  - shoulder_left opens drawer; pick one muscle then close → neck_upper bucket
+    // Two buckets → derived symptom_focus = 'mixed'.
     await userEvent.click(document.querySelector('g[data-region="ankle_foot_left"]') as Element)
     await userEvent.click(document.querySelector('g[data-region="shoulder_left"]') as Element)
     await userEvent.click(screen.getByRole('button', { name: /left shoulder \(front\)/i }))
@@ -180,9 +183,10 @@ describe('SessionIntakeScreen — PT Clinical Pass 2 (refined 2026-05-04)', () =
       expect(capturedIntake).toMatchObject({
         branch: 'tightness_or_pain',
         irritability: 'fast_onset_slow_resolution',
-        flare_sensitivity: 'low',          // explicit user input — NOT 'high' derived from irritability
+        flare_sensitivity: 'high',          // escalated from 'low' by irritability wire-through
         current_context: 'sitting',
         session_length_preference: 'long',
+        symptom_focus: 'mixed',              // derived from location (ankle + shoulder spans 2 buckets)
       })
       expect(capturedIntake.location).toEqual(expect.arrayContaining(['ankle_foot_left', 'shoulder_left']))
       expect(capturedIntake.location_muscles).toEqual(['shoulder_front_left'])
