@@ -1,7 +1,25 @@
+import { useState } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { BodyPicker } from './BodyPicker'
+import { BodyPicker, type BodyPickerSelection } from './BodyPicker'
+
+// Test helper: a controlled wrapper that propagates state back into BodyPicker.
+// Required for tests that assert behavior across re-renders (e.g. drawer-close
+// auto-tag relies on the muscle prop reflecting an in-session pick). The bare
+// `<BodyPicker selectedMuscles={[]} ... onChange={vi.fn()} />` pattern keeps
+// muscles frozen at [] across renders because vi.fn() doesn't update props.
+function ControlledBodyPicker({ onChange }: { onChange?: (s: BodyPickerSelection) => void }) {
+  const [state, setState] = useState<BodyPickerSelection>({ regions: [], muscles: [], fallback: null })
+  return (
+    <BodyPicker
+      selectedRegions={state.regions}
+      selectedMuscles={state.muscles}
+      fallback={state.fallback}
+      onChange={(next) => { setState(next); onChange?.(next) }}
+    />
+  )
+}
 
 describe('BodyPicker — basic structure', () => {
   it('renders both anterior and posterior body SVGs', () => {
@@ -79,9 +97,7 @@ describe('BodyPicker — muscle pick', () => {
 describe('BodyPicker — drawer close', () => {
   it('closing drawer with no muscles picked tags the region itself', async () => {
     const onChange = vi.fn()
-    const { container } = render(
-      <BodyPicker selectedRegions={[]} selectedMuscles={[]} fallback={null} onChange={onChange} />
-    )
+    const { container } = render(<ControlledBodyPicker onChange={onChange} />)
     await userEvent.click(container.querySelector('g[data-region="shoulder_left"]')!)
     await userEvent.click(screen.getByRole('button', { name: /close drawer/i }))
     expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({
@@ -92,9 +108,7 @@ describe('BodyPicker — drawer close', () => {
 
   it('closing drawer after picking a muscle keeps the muscle (region inferred)', async () => {
     const onChange = vi.fn()
-    const { container } = render(
-      <BodyPicker selectedRegions={[]} selectedMuscles={[]} fallback={null} onChange={onChange} />
-    )
+    const { container } = render(<ControlledBodyPicker onChange={onChange} />)
     await userEvent.click(container.querySelector('g[data-region="shoulder_left"]')!)
     await userEvent.click(screen.getByRole('button', { name: /left shoulder \(side\)/i }))
     await userEvent.click(screen.getByRole('button', { name: /close drawer/i }))
@@ -116,6 +130,19 @@ describe('BodyPicker — fallbacks', () => {
       muscles: [],
       fallback: 'whole_body',
     })
+  })
+
+  it('tapping a region while a fallback is active clears the fallback', async () => {
+    const onChange = vi.fn()
+    const { container } = render(
+      <BodyPicker selectedRegions={[]} selectedMuscles={[]} fallback="whole_body" onChange={onChange} />
+    )
+    // Tap a multi-muscle region (drawer opens). The first onChange call after
+    // the tap must clear the fallback to preserve mutual-exclusion, even if
+    // the user then closes the drawer without picking a muscle.
+    await userEvent.click(container.querySelector('g[data-region="shoulder_left"]')!)
+    const firstCall = onChange.mock.calls[0]?.[0]
+    expect(firstCall).toEqual({ regions: [], muscles: [], fallback: null })
   })
 })
 

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import type { BodyLocation, BodyMuscle } from '../../types/hari'
 import { BodyPickerSVG } from './BodyPickerSVG'
 import { MuscleDrawer } from './MuscleDrawer'
@@ -42,16 +42,17 @@ export function BodyPicker({
 }: BodyPickerProps) {
   const [drawerRegion, setDrawerRegion] = useState<BodyLocation | null>(null)
 
-  // Track whether any muscle was toggled ON for the current drawer region
-  // during this drawer session. Used by handleDrawerClose to decide whether
-  // to auto-tag the region when no muscles are in the (controlled) prop.
-  const drawerMuscleAdded = useRef(false)
-
   function emit(next: BodyPickerSelection) {
     onChange(next)
   }
 
   function handleRegionTap(region: BodyLocation) {
+    if (fallback) {
+      // Clear active fallback before any region/muscle selection — they are
+      // mutually exclusive. This must run BEFORE the drawer opens so that
+      // closing the drawer without a muscle pick still leaves no fallback.
+      emit({ regions: selectedRegions, muscles: selectedMuscles, fallback: null })
+    }
     const muscles = musclesForRegion(region)
     if (muscles.length <= SINGLE_REGION_THRESHOLD) {
       // Single-muscle (or front+back pair) region — auto-tag without drawer
@@ -65,7 +66,6 @@ export function BodyPicker({
       emit({ regions: next, muscles: nextMuscles, fallback: null })
       return
     }
-    drawerMuscleAdded.current = false
     setDrawerRegion(region)
   }
 
@@ -78,25 +78,16 @@ export function BodyPicker({
     const nextRegions = !isSelected && !selectedRegions.includes(region)
       ? [...selectedRegions, region]
       : selectedRegions
-    // Track that a muscle was added in this drawer session
-    if (!isSelected) drawerMuscleAdded.current = true
     emit({ regions: nextRegions, muscles: nextMuscles, fallback: null })
   }
 
   function handleDrawerClose() {
     if (drawerRegion) {
-      // Only auto-tag the region if no muscles were added during this drawer
-      // session and the region is not already in the selection.
-      // We use a ref (drawerMuscleAdded) rather than checking selectedMuscles
-      // prop because this component is typically controlled — the prop may not
-      // reflect changes made during the current drawer session.
-      const anyForRegionInProp = selectedMuscles.some(m => MUSCLE_TO_REGION[m] === drawerRegion)
-      const regionAlreadySelected = selectedRegions.includes(drawerRegion)
-      if (!drawerMuscleAdded.current && !anyForRegionInProp && !regionAlreadySelected) {
+      const anyForRegion = selectedMuscles.some(m => MUSCLE_TO_REGION[m] === drawerRegion)
+      if (!anyForRegion && !selectedRegions.includes(drawerRegion)) {
         emit({ regions: [...selectedRegions, drawerRegion], muscles: selectedMuscles, fallback: null })
       }
     }
-    drawerMuscleAdded.current = false
     setDrawerRegion(null)
   }
 
