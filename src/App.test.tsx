@@ -16,10 +16,12 @@ async function navigatePastStateSelection() {
 // Navigates from session_intake → hari_safety_gate.
 async function fillHariIntakeAndSubmit() {
   await userEvent.click(screen.getByRole('button', { name: /comes on slowly, goes away quickly/i }))
-  // Sensitivity is scoped to its own group to avoid colliding with the Location "Not sure" chip.
+  // Sensitivity is scoped to its own group to avoid colliding with the BodyPicker fallback "Not sure".
   const sensitivityGroup = screen.getByRole('group', { name: /flare sensitivity/i })
   await userEvent.click(within(sensitivityGroup).getByRole('button', { name: /^moderate$/i }))
-  await userEvent.click(screen.getByRole('button', { name: /^lower back$/i }))
+  // Location: ankle_foot_left auto-tags via BodyPicker SVG (single front+back pair, no drawer).
+  const ankleGroup = document.querySelector('g[data-region="ankle_foot_left"]') as Element
+  await userEvent.click(ankleGroup)
   await userEvent.click(screen.getByRole('button', { name: /^sitting$/i }))
   await userEvent.click(screen.getByRole('button', { name: /^standard$/i }))
   await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
@@ -58,7 +60,8 @@ describe('App root', () => {
     await userEvent.click(screen.getByRole('button', { name: /comes on slowly, goes away quickly/i }))
     const sensitivityGroup = screen.getByRole('group', { name: /flare sensitivity/i })
     await userEvent.click(within(sensitivityGroup).getByRole('button', { name: /^moderate$/i }))
-    await userEvent.click(screen.getByRole('button', { name: /^lower back$/i }))
+    const ankleGroup = document.querySelector('g[data-region="ankle_foot_left"]') as Element
+    await userEvent.click(ankleGroup)
     await userEvent.click(screen.getByRole('button', { name: /^sitting$/i }))
     await userEvent.click(screen.getByRole('button', { name: /^standard$/i }))
     await userEvent.click(screen.getByRole('button', { name: /^continue$/i }))
