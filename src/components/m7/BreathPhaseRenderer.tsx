@@ -1,15 +1,20 @@
 /**
  * BreathPhaseRenderer — renders an M7 BreathPhase using the legacy BreathingOrb
- * visualization, wrapped in the legacy two-zone clinical context layout
- * (sessionName, diaphragmaticCue, durationLabel, round counter, position cue).
+ * visualization, wrapped in the legacy two-zone clinical context layout.
  *
- * Visually identical to a pre-M7 breath session: the orb scale animation,
- * countdown, instruction text, and round tracking flow through BreathingOrb;
- * the surrounding clinical context (top zone + round counter + Scope A
- * position note) mirrors what GuidedSessionScreen renders on the legacy path.
+ * Render parity with main's GuidedSessionScreen breath-phase render path is
+ * load-bearing per M7.2 discipline: "breath content within phases unchanged
+ * from M7.1." Every numbered element from main's render is mirrored here.
  *
- * M7.2's contribution is wrapping it in the multi-phase state machine — the
- * orb itself is unchanged.
+ * Mode signal:
+ *   When `m6ProgressFraction` is defined → M6/sessionConfig mode:
+ *     - mechanical round counter suppressed
+ *     - subtle time-based progress bar rendered under the orb
+ *     - callers should also pass gentleLabels=true and preStartDelay=1500
+ *   When `m6ProgressFraction` is undefined → HARI/legacy mode:
+ *     - round counter (RoundDots + numeric) rendered above the orb
+ *     - no progress bar
+ *     - callers should pass gentleLabels=false and preStartDelay=0
  *
  * Authority:
  *   docs/superpowers/specs/2026-05-05-m7-pt-pathway-foundation-design.md §3.2
@@ -39,6 +44,20 @@ type Props = {
   durationLabel?: string
   /** Scope A contextual position hint, derived from intake branch + pattern. */
   positionCue?: string
+  /** Mirrors GuidedSessionScreen `gentleLabels={!!sessionConfig}`. Default: true. */
+  gentleLabels?: boolean
+  /** Mirrors GuidedSessionScreen `preStartDelay={sessionConfig ? 1500 : 0}`. Default: 0. */
+  preStartDelay?: number
+  /**
+   * When defined, suppresses the mechanical round counter and renders a
+   * time-based progress bar (M6 mode). Mirrors `m6ProgressFraction` in
+   * GuidedSessionScreen — value in [0, 1].
+   */
+  m6ProgressFraction?: number
+  /** Mirrors GuidedSessionScreen orb force-remount key (used on HARI continue-rounds). */
+  orbKey?: number
+  /** Mirrors GuidedSessionScreen `orbRunning` gate. Default: true. */
+  orbRunning?: boolean
 }
 
 export function BreathPhaseRenderer({
@@ -50,6 +69,11 @@ export function BreathPhaseRenderer({
   diaphragmaticCue,
   durationLabel,
   positionCue,
+  gentleLabels = true,
+  preStartDelay = 0,
+  m6ProgressFraction,
+  orbKey,
+  orbRunning = true,
 }: Props) {
   const family = BREATH_FAMILIES[phase.breath_family]
   const timingProfile = {
@@ -62,6 +86,8 @@ export function BreathPhaseRenderer({
   const currentDisplayRound = Math.min(completedRounds + 1, totalRounds)
 
   const hasTopZone = !!(sessionName || diaphragmaticCue || durationLabel)
+  const showTimeProgress = m6ProgressFraction !== undefined
+  const showRoundCounter = !showTimeProgress
 
   return (
     <div className={styles.breathingPhase} role="region" aria-label="Breath phase">
@@ -74,34 +100,49 @@ export function BreathPhaseRenderer({
       )}
 
       <div className={styles.guidanceZone}>
-        <div
-          className={styles.progressRow}
-          aria-label={`Round ${currentDisplayRound} of ${totalRounds}`}
-        >
-          <RoundDots
-            totalRounds={totalRounds}
-            completedRounds={completedRounds}
-            currentRound={currentDisplayRound}
-          />
-          <span className={styles.roundCounter}>
-            {currentDisplayRound} / {totalRounds}
-          </span>
-        </div>
+        {showRoundCounter && (
+          <div
+            className={styles.progressRow}
+            aria-label={`Round ${currentDisplayRound} of ${totalRounds}`}
+          >
+            <RoundDots
+              totalRounds={totalRounds}
+              completedRounds={completedRounds}
+              currentRound={currentDisplayRound}
+            />
+            <span className={styles.roundCounter}>
+              {currentDisplayRound} / {totalRounds}
+            </span>
+          </div>
+        )}
 
         {phase.cue.opening && <p className={styles.cueText}>{phase.cue.opening}</p>}
 
         <div className={styles.orbArea}>
-          <BreathingOrb
-            timingProfile={timingProfile}
-            expressionProfile={expressionProfile}
-            protocolId={protocolId}
-            onRoundComplete={(n) => setCompletedRounds(n)}
-            onAllRoundsComplete={onComplete}
-            gentleLabels
-          />
+          {orbRunning && (
+            <BreathingOrb
+              key={orbKey}
+              timingProfile={timingProfile}
+              expressionProfile={expressionProfile}
+              protocolId={protocolId}
+              onRoundComplete={(n) => setCompletedRounds(n)}
+              onAllRoundsComplete={onComplete}
+              gentleLabels={gentleLabels}
+              preStartDelay={preStartDelay}
+            />
+          )}
         </div>
 
         {phase.cue.closing && <p className={styles.cueText}>{phase.cue.closing}</p>}
+
+        {showTimeProgress && (
+          <div className={styles.timeProgress} aria-hidden="true">
+            <div
+              className={styles.timeProgressBar}
+              style={{ width: `${m6ProgressFraction * 100}%` }}
+            />
+          </div>
+        )}
 
         {positionCue && (
           <p className={styles.positionCue} aria-label="Position note">

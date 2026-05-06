@@ -29,6 +29,16 @@ type Props = {
   durationLabel?: string
   /** Clinical context — Scope A position note. Forwarded to BreathPhaseRenderer. */
   positionCue?: string
+  /** Mirrors GuidedSessionScreen `gentleLabels={!!sessionConfig}`. Forwarded to BreathPhaseRenderer. */
+  gentleLabels?: boolean
+  /** Mirrors GuidedSessionScreen `preStartDelay={sessionConfig ? 1500 : 0}`. Forwarded to BreathPhaseRenderer. */
+  preStartDelay?: number
+  /** When defined, drives M6 mode in BreathPhaseRenderer (suppresses round counter, renders time-progress bar). */
+  m6ProgressFraction?: number
+  /** Mirrors GuidedSessionScreen orb force-remount key. Forwarded to BreathPhaseRenderer. */
+  orbKey?: number
+  /** Mirrors GuidedSessionScreen `orbRunning` gate. Forwarded to BreathPhaseRenderer. */
+  orbRunning?: boolean
 }
 
 export function PhaseRenderer({
@@ -42,6 +52,11 @@ export function PhaseRenderer({
   diaphragmaticCue,
   durationLabel,
   positionCue,
+  gentleLabels,
+  preStartDelay,
+  m6ProgressFraction,
+  orbKey,
+  orbRunning,
 }: Props) {
   const [phaseIndex, setPhaseIndex] = useState(0)
   const phase: Phase | undefined = variant.phases[phaseIndex]
@@ -77,6 +92,11 @@ export function PhaseRenderer({
           diaphragmaticCue={diaphragmaticCue}
           durationLabel={durationLabel}
           positionCue={positionCue}
+          gentleLabels={gentleLabels}
+          preStartDelay={preStartDelay}
+          m6ProgressFraction={m6ProgressFraction}
+          orbKey={orbKey}
+          orbRunning={orbRunning}
         />
       )}
       {phase.type === 'transition' && (

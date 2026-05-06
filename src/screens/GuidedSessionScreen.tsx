@@ -446,6 +446,11 @@ export function GuidedSessionScreen() {
             diaphragmaticCue={sessionConfig ? sessionConfig.openingPrompt : session.goal}
             durationLabel={m6DurationLabel ?? undefined}
             positionCue={derivePositionHint(state.hariIntake)}
+            gentleLabels={!!sessionConfig}
+            preStartDelay={sessionConfig ? 1500 : 0}
+            m6ProgressFraction={sessionConfig ? m6ProgressFraction : undefined}
+            orbKey={orbKey}
+            orbRunning={orbRunning}
             onPhaseStart={(phase_index, phase_type, phase_subtype) => {
               startPhase(phaseLogRef.current, phase_index, phase_type, phase_subtype)
             }}
