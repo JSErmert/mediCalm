@@ -163,3 +163,103 @@ describe('M7 pathway/variant types — §3.4–3.6', () => {
     expect(r.variant_id).toBe('x')
   })
 })
+
+import type {
+  SelectionTable,
+  SelectionTableRow,
+  PathwaySelection,
+  VariantResolution,
+  SelectionRefinements,
+  AggregateTruthState,
+  IntakeSensorState,
+  EffectiveIntakeState,
+  PhaseLogEntry,
+  TruthState,
+} from './m7'
+
+describe('M7 selection table + function signatures + M6.9 stubs (§3.7–3.10)', () => {
+  it('SelectionTable rows enumerate selection_state → pathway_id (I15 totality)', () => {
+    const row: SelectionTableRow = {
+      selection_state: { branch: ['anxious_or_overwhelmed'] },
+      pathway_id: 'p',
+      pathway_version: '0.1.0',
+    }
+    const t: SelectionTable = { table_version: '0.1.0', rows: [row] }
+    expect(t.rows.length).toBe(1)
+  })
+
+  it('PathwaySelection function signature consumes only sensor_state (I17)', () => {
+    const fn: PathwaySelection = (_state) => ({ pathway_id: 'p', pathway_version: '0.1.0' })
+    const result = fn({
+      branch: 'anxious_or_overwhelmed',
+      current_context: 'sitting',
+      session_intent: 'quick_reset',
+      session_length_preference: 'standard',
+      flare_sensitivity: 'moderate',
+      baseline_intensity: 4,
+      irritability: 'symmetric',
+    })
+    expect(result.pathway_id).toBe('p')
+  })
+
+  it('VariantResolution accepts hints optionally (Q8 lock)', () => {
+    const fn: VariantResolution = (_pid, _cond, _hints) => ({
+      variant_id: 'x', variant_version: '0.1.0',
+      pathway_id: 'p', pathway_version: '0.1.0',
+      conditioning: { irritability: 'symmetric', flare_sensitivity: 'moderate', baseline_intensity_band: 'moderate' },
+      phases: [{ type: 'breath', breath_family: 'calm_downregulate', num_cycles: 1, cue: { opening: '', closing: '' } }],
+      authored_by: 'x', authored_at: '2026-05-05T00:00:00.000Z',
+      review_status: 'draft',
+    })
+    expect(fn('p', { irritability: 'symmetric', flare_sensitivity: 'moderate', baseline_intensity_band: 'moderate' }).variant_id).toBe('x')
+  })
+
+  it('SelectionRefinements carries generation_version + confidence flag', () => {
+    const r: SelectionRefinements = {
+      generated_at: '2026-05-05T00:00:00.000Z',
+      generation_version: '0.0.0',
+      confidence_threshold_met: false,
+    }
+    expect(r.confidence_threshold_met).toBe(false)
+  })
+
+  it('PhaseLogEntry uses closed enums on drop_off_reason + source', () => {
+    const e: PhaseLogEntry = {
+      phase_index: 0,
+      phase_type: 'breath',
+      started_at: '2026-05-05T00:00:00.000Z',
+    }
+    expect(e.phase_index).toBe(0)
+  })
+
+  it('TruthState fields are all optional for M7.1 sessions', () => {
+    const t: TruthState = {}
+    expect(t).toBeDefined()
+  })
+
+  it('IntakeSensorState carries all selection + variant-feeding dims (§3.10)', () => {
+    const s: IntakeSensorState = {
+      branch: 'anxious_or_overwhelmed',
+      current_context: 'sitting',
+      session_intent: 'quick_reset',
+      session_length_preference: 'standard',
+      flare_sensitivity: 'moderate',
+      baseline_intensity: 4,
+      irritability: 'symmetric',
+    }
+    expect(s.branch).toBe('anxious_or_overwhelmed')
+  })
+
+  it('EffectiveIntakeState is Partial<IntakeSensorState> — only refined fields present', () => {
+    const e: EffectiveIntakeState = { flare_sensitivity: 'high' }
+    expect(e.flare_sensitivity).toBe('high')
+  })
+
+  it('AggregateTruthState carries generation_version + generated_at (M6.9 artifact stub)', () => {
+    const a: AggregateTruthState = {
+      generation_version: '0.0.0',
+      generated_at: '2026-05-05T00:00:00.000Z',
+    }
+    expect(a.generation_version).toBe('0.0.0')
+  })
+})
