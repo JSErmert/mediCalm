@@ -6,6 +6,8 @@
  * Provenance labels are preserved per Source Truth Doctrine (doc 02).
  */
 
+import type { HistoryEntryM7Additions } from './m7'
+
 // ── Provenance ────────────────────────────────────────────────────────────────
 
 export type ProvenanceLabel =
@@ -198,6 +200,13 @@ export interface HistoryEntry {
    * Authority: M4.7 §3–§4
    */
   hari_metadata?: import('./hari').PersistedHariMetadata
+  // ── M7 additions (all optional; legacy records remain valid per I37) ────────
+  intake_sensor_state?: HistoryEntryM7Additions['intake_sensor_state']
+  effective_intake_state?: HistoryEntryM7Additions['effective_intake_state']
+  pathway_ref?: HistoryEntryM7Additions['pathway_ref']
+  phase_log?: HistoryEntryM7Additions['phase_log']
+  truth_state?: HistoryEntryM7Additions['truth_state']
+  refinement_context?: HistoryEntryM7Additions['refinement_context']
 }
 
 // ── Personalization ───────────────────────────────────────────────────────────
@@ -303,3 +312,5 @@ export interface MechanismObject {
   contraindication_tags: string[]
   protocol_priority_tags: string[]
 }
+
+export * from './m7'
