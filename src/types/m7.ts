@@ -235,6 +235,24 @@ export type TruthState = {
   user_validation?: 'validated' | 'invalidated' | 'pending'
 }
 
+/**
+ * M7 runtime build result — carried on RuntimeSession from session creation
+ * to HistoryEntry save in shadow mode. Contains the resolved pathway_ref and
+ * the intake_sensor_state used for M7 selection.
+ * Authority: M7.1 shadow-mode contract; §3.10 I38-I39.
+ */
+export type M7RuntimeBuild = {
+  /** The pathway reference to persist on HistoryEntry (I39). */
+  pathway_ref: {
+    pathway_id: PathwayId
+    pathway_version: SemVer
+    variant_id: VariantId
+    variant_version: SemVer
+  }
+  /** The intake sensor state used for M7 selection, for HistoryEntry (I38). */
+  intake_sensor_state: IntakeSensorState
+}
+
 /** All fields optional — legacy HistoryEntry records remain valid per I37. */
 export type HistoryEntryM7Additions = {
   intake_sensor_state?: IntakeSensorState

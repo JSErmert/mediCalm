@@ -33,6 +33,8 @@ import {
 import { runSafetyGate, resolveHariSession } from '../engine/hari/index'
 import { buildHariSession } from '../engine/hari/sessionBridge'
 import { loadBodyContext } from '../storage/bodyContext'
+import { buildM7Session } from '../engine/m7/integration'
+import type { IntakeSensorState } from '../types/m7'
 import { useAppContext } from '../context/AppContext'
 import { isDevOverride } from '../utils/devFlags'
 import styles from './HariSafetyGateScreen.module.css'
@@ -136,13 +138,42 @@ export function HariSafetyGateScreen() {
 
     const session = buildHariSession(hariResolution, clearResult)
 
+    // M7.1 shadow mode — build M7 session alongside legacy path.
+    // breathDowngraded mirrors the HARI engine's flare_sensitivity → elevated logic:
+    // flare_sensitivity 'high' → score 2 → elevated → breath downgraded (stateEstimation.ts:149-150).
+    const intakeSensorState: IntakeSensorState = {
+      branch: safeIntake.branch,
+      location: safeIntake.location,
+      location_pattern: safeIntake.location_pattern,
+      current_context: safeIntake.current_context,
+      session_intent: safeIntake.session_intent,
+      session_length_preference: safeIntake.session_length_preference,
+      flare_sensitivity: safeIntake.flare_sensitivity,
+      baseline_intensity: safeIntake.baseline_intensity,
+      irritability: safeIntake.irritability,
+      derived_signals: { breathDowngraded: safeIntake.flare_sensitivity === 'high' },
+    }
+    let m7Build: import('../types/m7').M7RuntimeBuild | undefined
+    try {
+      const m7Result = buildM7Session(intakeSensorState)
+      m7Build = {
+        pathway_ref: m7Result.pathway_ref,
+        intake_sensor_state: intakeSensorState,
+      }
+    } catch (err) {
+      // Shadow mode: M7 failure must not break the legacy session path.
+      console.warn('[mediCalm M7] buildM7Session failed (shadow mode — session continues):', err)
+    }
+
+    const sessionWithM7 = m7Build ? { ...session, m7_build: m7Build } : session
+
     dispatch({ type: 'SET_PAIN_INPUT', input: session.pain_input })
     dispatch({
       type: 'SET_INTERVENTION_PACKAGE',
       pkg: hariResolution.intervention,
       framing: hariResolution.session_framing,
     })
-    dispatch({ type: 'SET_ACTIVE_SESSION', session })
+    dispatch({ type: 'SET_ACTIVE_SESSION', session: sessionWithM7 })
     // Always route through session_setup so the user sees the protocol
     // name, focus, position, and length before the session begins.
     // PT pass 2 simplification (2026-05-04) makes this preview MORE

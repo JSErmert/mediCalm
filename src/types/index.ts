@@ -123,6 +123,12 @@ export interface RuntimeSession {
   safety_override_used?: boolean
   /** HARI decision metadata — tracking only, does not affect M3 runtime. Present only for HARI-originated sessions. */
   hari_metadata?: import('./hari').HariSessionMetadata
+  /**
+   * M7.1 shadow-mode build result — present on sessions that ran through M7 orchestration.
+   * Carried from session creation to HistoryEntry save. Does not affect session rendering.
+   * Authority: docs/superpowers/specs/2026-05-05-m7-pt-pathway-foundation-design.md §8 M7.1
+   */
+  m7_build?: import('./m7').M7RuntimeBuild
 }
 
 // ── Feedback ──────────────────────────────────────────────────────────────────

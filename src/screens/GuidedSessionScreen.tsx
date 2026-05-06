@@ -262,6 +262,12 @@ export function GuidedSessionScreen() {
       session_type: session.hari_metadata ? 'HARI' : 'LEGACY',
       ...(persistedHari && { hari_metadata: persistedHari }),
       ...(session.hari_metadata && { validation_status: 'pending' }),
+      // M7.1 shadow-mode: persist intake_sensor_state + pathway_ref when M7 ran (I38, I39).
+      // phase_log + truth_state populated in Task 16.
+      ...(session.m7_build && {
+        intake_sensor_state: session.m7_build.intake_sensor_state,
+        pathway_ref: session.m7_build.pathway_ref,
+      }),
     }
     saveSession(entry)
     dispatch({ type: 'CLEAR_SESSION' })
@@ -306,6 +312,12 @@ export function GuidedSessionScreen() {
       session_type: session.hari_metadata ? 'HARI' : 'LEGACY',
       ...(persistedHari && { hari_metadata: persistedHari }),
       ...(session.hari_metadata && { validation_status: 'pending' }),
+      // M7.1 shadow-mode: persist intake_sensor_state + pathway_ref when M7 ran (I38, I39).
+      // phase_log + truth_state populated in Task 16.
+      ...(session.m7_build && {
+        intake_sensor_state: session.m7_build.intake_sensor_state,
+        pathway_ref: session.m7_build.pathway_ref,
+      }),
     }
     saveSession(entry)
     dispatch({ type: 'CLEAR_SESSION' })
