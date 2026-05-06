@@ -21,6 +21,14 @@ type Props = {
   expressionProfile?: ExpressionProfile
   /** Forwarded to BreathingOrb for protocol-specific micro-guidance copy. Optional. */
   protocolId?: string
+  /** Clinical context — top-zone protocol/pathway name. Forwarded to BreathPhaseRenderer. */
+  sessionName?: string
+  /** Clinical context — top-zone diaphragmatic / opening cue. Forwarded to BreathPhaseRenderer. */
+  diaphragmaticCue?: string
+  /** Clinical context — top-zone duration label. Forwarded to BreathPhaseRenderer. */
+  durationLabel?: string
+  /** Clinical context — Scope A position note. Forwarded to BreathPhaseRenderer. */
+  positionCue?: string
 }
 
 export function PhaseRenderer({
@@ -30,6 +38,10 @@ export function PhaseRenderer({
   onSessionComplete,
   expressionProfile,
   protocolId,
+  sessionName,
+  diaphragmaticCue,
+  durationLabel,
+  positionCue,
 }: Props) {
   const [phaseIndex, setPhaseIndex] = useState(0)
   const phase: Phase | undefined = variant.phases[phaseIndex]
@@ -61,6 +73,10 @@ export function PhaseRenderer({
           onComplete={handlePhaseComplete}
           expressionProfile={expressionProfile}
           protocolId={protocolId}
+          sessionName={sessionName}
+          diaphragmaticCue={diaphragmaticCue}
+          durationLabel={durationLabel}
+          positionCue={positionCue}
         />
       )}
       {phase.type === 'transition' && (

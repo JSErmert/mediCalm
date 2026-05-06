@@ -64,4 +64,103 @@ describe('BreathPhaseRenderer', () => {
     render(<BreathPhaseRenderer phase={phase} onComplete={onComplete} />)
     expect(onComplete).not.toHaveBeenCalled()
   })
+
+  // Regression guard (smoke-test surfaced 2026-05-06, second iteration):
+  // M7-routed sessions render the BreathingOrb correctly, but the surrounding
+  // clinical context elements that legacy GuidedSessionScreen renders during
+  // the breath phase were missing in M7's BreathPhaseRenderer. M7.2's locked
+  // discipline says breath content within phases is unchanged from M7.1 —
+  // so the legacy two-zone layout MUST render around the orb when M7 forwards
+  // the appropriate context props.
+  describe('clinical context wrapper (regression guard)', () => {
+    it('renders sessionName when provided (top zone — protocol name)', () => {
+      render(
+        <BreathPhaseRenderer
+          phase={phase}
+          onComplete={() => {}}
+          sessionName="Calm Downregulation"
+        />
+      )
+      expect(screen.getByText(/calm downregulation/i)).toBeInTheDocument()
+    })
+
+    it('renders diaphragmaticCue when provided (top zone — opening prompt)', () => {
+      render(
+        <BreathPhaseRenderer
+          phase={phase}
+          onComplete={() => {}}
+          diaphragmaticCue="Belly soft, breath low — let the diaphragm lead."
+        />
+      )
+      expect(screen.getByText(/belly soft, breath low/i)).toBeInTheDocument()
+    })
+
+    it('renders durationLabel when provided (top zone — duration)', () => {
+      render(
+        <BreathPhaseRenderer
+          phase={phase}
+          onComplete={() => {}}
+          durationLabel="About 3 minutes"
+        />
+      )
+      expect(screen.getByText(/about 3 minutes/i)).toBeInTheDocument()
+    })
+
+    it('renders positionCue when provided (Scope A position note)', () => {
+      render(
+        <BreathPhaseRenderer
+          phase={phase}
+          onComplete={() => {}}
+          positionCue="If you can, try this lying down — localized patterns respond well to gentle decompression."
+        />
+      )
+      expect(
+        screen.getByText(/try this lying down/i)
+      ).toBeInTheDocument()
+    })
+
+    it('renders the round counter (Round X of Y) and total cycles', () => {
+      // num_cycles = 4 in the test phase fixture; on initial render
+      // completedRounds=0 so currentDisplayRound=1.
+      render(<BreathPhaseRenderer phase={phase} onComplete={() => {}} />)
+      const counter = screen.getByLabelText(/^Round 1 of 4$/i)
+      expect(counter).toBeInTheDocument()
+      expect(counter.textContent).toMatch(/1\s*\/\s*4/)
+    })
+
+    it('renders ALL clinical context elements together (smoke-equivalent)', () => {
+      render(
+        <BreathPhaseRenderer
+          phase={phase}
+          onComplete={() => {}}
+          sessionName="Calm Downregulation"
+          diaphragmaticCue="Belly soft, breath low."
+          durationLabel="About 3 minutes"
+          positionCue="If you can, try this lying down."
+        />
+      )
+      // Top-zone context
+      expect(screen.getByText(/calm downregulation/i)).toBeInTheDocument()
+      expect(screen.getByText(/belly soft, breath low/i)).toBeInTheDocument()
+      expect(screen.getByText(/about 3 minutes/i)).toBeInTheDocument()
+      // Round counter
+      expect(screen.getByLabelText(/^Round 1 of 4$/i)).toBeInTheDocument()
+      // BreathingOrb (the visualization)
+      expect(screen.getByLabelText(/^Breathing:/i)).toBeInTheDocument()
+      // Position cue
+      expect(screen.getByText(/try this lying down/i)).toBeInTheDocument()
+    })
+
+    it('omits clinical context elements when their props are absent', () => {
+      // Backward-compatible: existing callers / tests pass only phase + onComplete.
+      // The renderer must not invent placeholder copy when context isn't supplied.
+      render(<BreathPhaseRenderer phase={phase} onComplete={() => {}} />)
+      // No sessionName / diaphragmaticCue / durationLabel / positionCue rendered.
+      // (cue.opening / cue.closing from the phase struct still render — those
+      // are part of the variant's authored content, not external context.)
+      expect(screen.queryByText(/calm downregulation/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/about 3 minutes/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/lying down/i)).not.toBeInTheDocument()
+    })
+  })
 })
