@@ -64,3 +64,37 @@ describe('M7 phase types — Q2.A locked shapes', () => {
     expect(phases.length).toBe(2)
   })
 })
+
+import type { TierACitation, ReasoningChain, GroundingSummary } from './m7'
+
+describe('M7 grounding types — Tier A/B contract (§3.3)', () => {
+  it('TierACitation carries PMID + source_link + exact_figure verbatim with units', () => {
+    const c: TierACitation = {
+      pmid: '33117119',
+      source_link: 'https://pubmed.ncbi.nlm.nih.gov/33117119/',
+      exact_figure: 'resonance frequency 6 breaths/min ± 0.5',
+      figure_units: 'breaths/min',
+    }
+    expect(c.pmid).toBe('33117119')
+    expect(c.exact_figure).toContain('6 breaths/min')
+  })
+
+  it('GroundingSummary holds Tier A citations + Tier B reasoning chains', () => {
+    const chain: ReasoningChain = {
+      claim: '4-7 breath ratio supports vagal activation',
+      reasoning: 'Slower exhale than inhale shifts autonomic balance toward parasympathetic.',
+      terminating_citations: ['33117119'],
+    }
+    const g: GroundingSummary = {
+      tier_A_citations: [{
+        pmid: '33117119',
+        source_link: 'https://pubmed.ncbi.nlm.nih.gov/33117119/',
+        exact_figure: '6 breaths/min',
+        figure_units: 'breaths/min',
+      }],
+      tier_B_reasoning_chains: [chain],
+    }
+    expect(g.tier_A_citations.length).toBe(1)
+    expect(g.tier_B_reasoning_chains[0].terminating_citations).toContain('33117119')
+  })
+})

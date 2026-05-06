@@ -49,3 +49,25 @@ export type TransitionPhase = {
 }
 
 export type Phase = BreathPhase | PositionHoldPhase | TransitionPhase
+
+// ── Grounding (§3.3 — Tier A/B contract) ─────────────────────────────────────
+
+export type TierACitation = {
+  pmid: PMID
+  source_link: string
+  /** Verbatim figure with units; never paraphrased numerics (§2.6). */
+  exact_figure: string
+  figure_units: string
+}
+
+export type ReasoningChain = {
+  claim: string
+  reasoning: string
+  /** Chain MUST terminate in Tier A — references PMIDs in own grounding or referenced corpus. */
+  terminating_citations: PMID[]
+}
+
+export type GroundingSummary = {
+  tier_A_citations: TierACitation[]
+  tier_B_reasoning_chains: ReasoningChain[]
+}
