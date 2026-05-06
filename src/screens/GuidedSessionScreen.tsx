@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { SessionFeedback, HistoryEntry } from '../types'
 import type { ReassessmentResponse, ContinuationAction, PersistedReassessmentResult, PersistedHariMetadata } from '../types/hari'
+import type { PhaseLogEntry } from '../types/m7'
 import { useAppContext } from '../context/AppContext'
 import { BreathingOrb } from '../components/BreathingOrb'
 import { CompletionForm } from '../components/CompletionForm'
@@ -9,6 +10,7 @@ import { saveSession } from '../storage/sessionHistory'
 import { deriveExpressionProfile } from '../engine/presentation/expressionProfile'
 import { decideContinuation } from '../engine/hari/reassessmentLoop'
 import { buildDeliveryConfig } from '../engine/hari/sessionConfig'
+import { startPhase, completePhase, abortPhase, safetyStopPhase, deriveTruthState } from '../engine/m7/phaseLog'
 import styles from './GuidedSessionScreen.module.css'
 
 /**
@@ -83,6 +85,15 @@ export function GuidedSessionScreen() {
 
   const startTimeRef = useRef(Date.now())
   const elapsedAtStopRef = useRef(0)
+
+  // M7.1 phase_log — mutable array initialized once per session mount (Task 16).
+  // phaseLogRef holds the array reference; startPhase is called once on mount.
+  const phaseLogRef = useRef<PhaseLogEntry[]>([])
+
+  useEffect(() => {
+    startPhase(phaseLogRef.current, 0, 'breath')
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // M6: time-based progress for SessionConfig sessions
   const [, setProgressTick] = useState(0)
@@ -215,6 +226,10 @@ export function GuidedSessionScreen() {
   function handleSafetyInterrupt() {
     setOrbRunning(false)
     setShowStopConfirm(false)
+    // M7.1 Task 16: close the breath phase with safety_stopped reason.
+    if (phaseLogRef.current.length > 0 && !phaseLogRef.current[0].completed_at) {
+      safetyStopPhase(phaseLogRef.current, 0)
+    }
     setPhase('safety_interrupt')
   }
 
@@ -225,6 +240,12 @@ export function GuidedSessionScreen() {
 
   function handleSave(feedback: SessionFeedback) {
     const elapsed = getElapsedSeconds()
+
+    // M7.1 Task 16: close the breath phase with completion reason before saving.
+    const phaseLog = phaseLogRef.current
+    if (phaseLog.length > 0 && !phaseLog[0].completed_at) {
+      completePhase(phaseLog, 0)
+    }
 
     // M4.7: build persisted HARI metadata block for HARI sessions
     const persistedHari: PersistedHariMetadata | undefined = session.hari_metadata
@@ -263,10 +284,17 @@ export function GuidedSessionScreen() {
       ...(persistedHari && { hari_metadata: persistedHari }),
       ...(session.hari_metadata && { validation_status: 'pending' }),
       // M7.1 shadow-mode: persist intake_sensor_state + pathway_ref when M7 ran (I38, I39).
-      // phase_log + truth_state populated in Task 16.
+      // M7.1 Task 16: phase_log + truth_state now populated.
       ...(session.m7_build && {
         intake_sensor_state: session.m7_build.intake_sensor_state,
         pathway_ref: session.m7_build.pathway_ref,
+        phase_log: phaseLog,
+        truth_state: deriveTruthState(
+          phaseLog,
+          feedback.pain_before,
+          feedback.pain_after,
+          session.hari_metadata ? 'pending' : undefined,
+        ),
       }),
     }
     saveSession(entry)
@@ -276,6 +304,12 @@ export function GuidedSessionScreen() {
 
   function handleStoppedSave(feedback: SessionFeedback) {
     const elapsed = elapsedAtStopRef.current || getElapsedSeconds()
+
+    // M7.1 Task 16: close the breath phase with user_aborted reason before saving.
+    const phaseLog = phaseLogRef.current
+    if (phaseLog.length > 0 && !phaseLog[0].completed_at) {
+      abortPhase(phaseLog, 0)
+    }
 
     // M4.7: persist partial HARI metadata for stopped sessions (no post_session_intensity)
     const persistedHari: PersistedHariMetadata | undefined = session.hari_metadata
@@ -313,10 +347,17 @@ export function GuidedSessionScreen() {
       ...(persistedHari && { hari_metadata: persistedHari }),
       ...(session.hari_metadata && { validation_status: 'pending' }),
       // M7.1 shadow-mode: persist intake_sensor_state + pathway_ref when M7 ran (I38, I39).
-      // phase_log + truth_state populated in Task 16.
+      // M7.1 Task 16: phase_log + truth_state now populated.
       ...(session.m7_build && {
         intake_sensor_state: session.m7_build.intake_sensor_state,
         pathway_ref: session.m7_build.pathway_ref,
+        phase_log: phaseLog,
+        truth_state: deriveTruthState(
+          phaseLog,
+          feedback.pain_before,
+          feedback.pain_after,
+          session.hari_metadata ? 'pending' : undefined,
+        ),
       }),
     }
     saveSession(entry)

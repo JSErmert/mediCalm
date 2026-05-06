@@ -6,7 +6,7 @@
  * helpers (completePhase, abortPhase, safetyStopPhase, systemErrorPhase) or by
  * the orphan sweep. After closure, no further mutation permitted.
  */
-import type { PhaseLogEntry } from '../../types/m7'
+import type { PhaseLogEntry, TruthState } from '../../types/m7'
 import type { HistoryEntry } from '../../types'
 
 function nowISO(): string {
@@ -90,5 +90,42 @@ export function sweepOrphans(history: HistoryEntry[]): void {
       phaseEntry.drop_off_reason = 'system_error'
       phaseEntry.drop_off_reason_source = 'inferred_from_orphan_sweep'
     }
+  }
+}
+
+/**
+ * Derive mechanical TruthState fields from phase_log + pain readings.
+ * Authority: §3.10 I40, M7.1 Task 16 Sub-task B.
+ *
+ * - completion_status: 'safety_stopped' if any entry has safety_stopped;
+ *   'aborted' if any has user_aborted; else 'complete'.
+ * - completion_percentage: completed_count / total_count (0 if total === 0).
+ * - pain_delta: pain_after - pain_before.
+ * - state_coherence: always 'pending' at M7.1 (M6.9 territory at M7.3+).
+ * - user_validation: pass-through of validation_status ?? 'pending'.
+ */
+export function deriveTruthState(
+  phase_log: PhaseLogEntry[],
+  pain_before: number,
+  pain_after: number,
+  validation_status?: 'validated' | 'invalidated' | 'pending',
+): TruthState {
+  const total = phase_log.length
+  const completed_count = phase_log.filter((e) => e.drop_off_reason === 'completed').length
+  const completion_percentage = total === 0 ? 0 : completed_count / total
+
+  let completion_status: TruthState['completion_status'] = 'complete'
+  if (phase_log.some((e) => e.drop_off_reason === 'safety_stopped')) {
+    completion_status = 'safety_stopped'
+  } else if (phase_log.some((e) => e.drop_off_reason === 'user_aborted')) {
+    completion_status = 'aborted'
+  }
+
+  return {
+    completion_status,
+    completion_percentage,
+    pain_delta: pain_after - pain_before,
+    state_coherence: 'pending',
+    user_validation: validation_status ?? 'pending',
   }
 }

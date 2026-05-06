@@ -17,6 +17,15 @@ export function loadHistory(): HistoryEntry[] {
   return storageGet<HistoryEntry[]>(KEY) ?? []
 }
 
+/**
+ * Persist a full history array (e.g. after orphan sweep or bulk mutation).
+ * Uses the same key as loadHistory / saveSession — KEY = 'session_history'.
+ * Authority: M7.1 Task 16 Sub-task C (orphan sweep on app-load).
+ */
+export function saveHistory(history: HistoryEntry[]): void {
+  storageSet(KEY, history)
+}
+
 export function saveSession(entry: HistoryEntry): void {
   const history = loadHistory()
   // M4.1 §18: New sessions start as 'pending' and require validation before the next session.

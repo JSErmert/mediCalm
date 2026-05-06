@@ -6,6 +6,7 @@ import {
   safetyStopPhase,
   systemErrorPhase,
   sweepOrphans,
+  deriveTruthState,
 } from './phaseLog'
 import type { PhaseLogEntry } from '../../types/m7'
 import type { HistoryEntry } from '../../types'
@@ -124,5 +125,80 @@ describe('M7 sweepOrphans — backfill incomplete phase_log entries (I26, I32)',
 
     sweepOrphans(history)
     expect(history[0].phase_log![0].drop_off_reason).toBe('completed')
+  })
+})
+
+describe('deriveTruthState — mechanical TruthState fields (M7.1 Task 16 Sub-task B)', () => {
+  it('returns completion_status="complete" when all phases completed', () => {
+    const log: PhaseLogEntry[] = []
+    startPhase(log, 0, 'breath')
+    completePhase(log, 0)
+    const result = deriveTruthState(log, 6, 4, 'pending')
+    expect(result.completion_status).toBe('complete')
+  })
+
+  it('returns completion_status="aborted" when any phase is user_aborted', () => {
+    const log: PhaseLogEntry[] = []
+    startPhase(log, 0, 'breath')
+    abortPhase(log, 0)
+    const result = deriveTruthState(log, 6, 4, 'pending')
+    expect(result.completion_status).toBe('aborted')
+  })
+
+  it('returns completion_status="safety_stopped" when any phase is safety_stopped (takes precedence over aborted)', () => {
+    const log: PhaseLogEntry[] = []
+    startPhase(log, 0, 'breath')
+    safetyStopPhase(log, 0)
+    const result = deriveTruthState(log, 6, 4, 'pending')
+    expect(result.completion_status).toBe('safety_stopped')
+  })
+
+  it('completion_percentage is 1 when all phases completed', () => {
+    const log: PhaseLogEntry[] = []
+    startPhase(log, 0, 'breath')
+    completePhase(log, 0)
+    const result = deriveTruthState(log, 5, 3, undefined)
+    expect(result.completion_percentage).toBe(1)
+  })
+
+  it('completion_percentage is 0 when no phases completed', () => {
+    const log: PhaseLogEntry[] = []
+    startPhase(log, 0, 'breath')
+    abortPhase(log, 0)
+    const result = deriveTruthState(log, 5, 5, undefined)
+    expect(result.completion_percentage).toBe(0)
+  })
+
+  it('completion_percentage is 0 for empty log', () => {
+    const result = deriveTruthState([], 5, 5, undefined)
+    expect(result.completion_percentage).toBe(0)
+  })
+
+  it('pain_delta is pain_after - pain_before', () => {
+    const log: PhaseLogEntry[] = []
+    startPhase(log, 0, 'breath')
+    completePhase(log, 0)
+    const result = deriveTruthState(log, 7, 4, 'pending')
+    expect(result.pain_delta).toBe(-3)
+  })
+
+  it('pain_delta is positive when pain increases', () => {
+    const result = deriveTruthState([], 3, 6, undefined)
+    expect(result.pain_delta).toBe(3)
+  })
+
+  it('state_coherence is always "pending" at M7.1', () => {
+    const result = deriveTruthState([], 5, 5, undefined)
+    expect(result.state_coherence).toBe('pending')
+  })
+
+  it('user_validation passes through provided validation_status', () => {
+    const result = deriveTruthState([], 5, 5, 'validated')
+    expect(result.user_validation).toBe('validated')
+  })
+
+  it('user_validation defaults to "pending" when not provided', () => {
+    const result = deriveTruthState([], 5, 5, undefined)
+    expect(result.user_validation).toBe('pending')
   })
 })
