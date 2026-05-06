@@ -1,3 +1,11 @@
+/**
+ * BetweenTransition — narrated 5s pause between phases.
+ *
+ * STATUS at v0.2 (post-2026-05-06): UNUSED by live pathway library (variants
+ * are single-phase `[breath]`, so no between-phase boundaries exist). Retained
+ * for advisor-driven reintroduction at M7.3+ once multi-phase variants
+ * (e.g. position_hold + breath sequences) are clinically defensible.
+ */
 import { useEffect } from 'react'
 import styles from './BetweenTransition.module.css'
 

@@ -1,3 +1,12 @@
+/**
+ * ClosingTransition — 5s closing narration after the breath phase.
+ *
+ * STATUS at v0.2 (post-2026-05-06): UNUSED by live pathway library.
+ * Pathway variants reverted to single-phase `[breath]` per operator UX call
+ * (closing kept the user stuck instead of exiting; pre-M7 completion flow
+ * already handles session exit cleanly). Component retained for advisor-
+ * driven reintroduction at M7.3+ if clinically defensible.
+ */
 import { useEffect } from 'react'
 import styles from './ClosingTransition.module.css'
 

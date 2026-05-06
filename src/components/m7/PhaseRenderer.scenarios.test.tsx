@@ -4,13 +4,17 @@
  * Authority: docs/superpowers/specs/2026-05-05-m7-pt-pathway-foundation-design.md §7
  *            (canonical scenarios 1 + 7 active at M7.2+)
  *
+ * v0.2 post-2026-05-06: pathway variants are single-phase `[breath]` after the
+ * operator UX call deleted intro + closing transitions. These scenarios assert
+ * the breath-only flow: PhaseRenderer enters phase 0 (breath), the breath
+ * stub fires onComplete, PhaseRenderer fires onSessionComplete.
+ *
  * BreathPhaseRenderer is mocked here so the scenario tests cover the
- * intro → breath → closing state-machine sequence deterministically.
- * BreathPhaseRenderer's own tests cover the BreathingOrb integration —
- * the regression class "breath phase shows nothing" is caught there.
+ * single-phase state-machine sequence deterministically. BreathPhaseRenderer's
+ * own tests cover BreathingOrb integration + clinical-context wrapper parity.
  */
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, act } from '@testing-library/react'
+import { render, act } from '@testing-library/react'
 import { M7_VARIANTS } from '../../data/m7Pathways'
 
 vi.mock('./BreathPhaseRenderer', () => ({
@@ -28,9 +32,12 @@ function getVariant(pathway_id: string) {
   return v
 }
 
-describe('M7.2 canonical scenarios — phase render', () => {
-  it('Scenario 1 (active M7.2+) — anxious branch normal completion: intro → breath → closing', () => {
+describe('M7.2 canonical scenarios — single-phase breath render (v0.2 post-2026-05-06)', () => {
+  it('Scenario 1 — anxious branch normal completion: single breath phase → onSessionComplete', () => {
     const v = getVariant('anxious_calm_downregulate_reduced_effort_standard')
+    expect(v.phases.length).toBe(1)
+    expect(v.phases[0].type).toBe('breath')
+
     vi.useFakeTimers()
     const onComplete = vi.fn()
     const onPhaseStart = vi.fn()
@@ -44,29 +51,24 @@ describe('M7.2 canonical scenarios — phase render', () => {
       />
     )
 
-    // Intro 5s
-    expect(screen.getByLabelText('Session intro')).toBeInTheDocument()
-    expect(onPhaseStart).toHaveBeenCalledWith(0, 'transition', 'intro')
-    act(() => { vi.advanceTimersByTime(5000) })
-    expect(onPhaseEnd).toHaveBeenCalledWith(0)
+    // Single breath phase — phase index 0, type 'breath', no subtype
+    expect(onPhaseStart).toHaveBeenCalledWith(0, 'breath', undefined)
+    expect(onPhaseStart).toHaveBeenCalledTimes(1)
 
-    // Breath phase (mocked stub fires onComplete after 1s)
-    expect(onPhaseStart).toHaveBeenCalledWith(1, 'breath', undefined)
+    // Mocked stub fires onComplete after 1s
     act(() => { vi.advanceTimersByTime(1000) })
-    expect(onPhaseEnd).toHaveBeenCalledWith(1)
-
-    // Closing 5s
-    expect(screen.getByLabelText('Session closing')).toBeInTheDocument()
-    expect(onPhaseStart).toHaveBeenCalledWith(2, 'transition', 'closing')
-    act(() => { vi.advanceTimersByTime(5000) })
-    expect(onPhaseEnd).toHaveBeenCalledWith(2)
+    expect(onPhaseEnd).toHaveBeenCalledWith(0)
+    expect(onPhaseEnd).toHaveBeenCalledTimes(1)
 
     expect(onComplete).toHaveBeenCalledTimes(1)
     vi.useRealTimers()
   })
 
-  it('Scenario 7 (active M7.2+) — tightness branch normal completion', () => {
+  it('Scenario 7 — tightness branch normal completion: single breath phase → onSessionComplete', () => {
     const v = getVariant('tightness_decompression_reduced_effort_short')
+    expect(v.phases.length).toBe(1)
+    expect(v.phases[0].type).toBe('breath')
+
     vi.useFakeTimers()
     const onComplete = vi.fn()
     render(
@@ -78,12 +80,7 @@ describe('M7.2 canonical scenarios — phase render', () => {
       />
     )
 
-    expect(screen.getByLabelText('Session intro')).toBeInTheDocument()
-    act(() => { vi.advanceTimersByTime(5000) })
     act(() => { vi.advanceTimersByTime(1000) })
-    expect(screen.getByLabelText('Session closing')).toBeInTheDocument()
-    act(() => { vi.advanceTimersByTime(5000) })
-
     expect(onComplete).toHaveBeenCalledTimes(1)
     vi.useRealTimers()
   })

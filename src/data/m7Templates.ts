@@ -5,9 +5,16 @@
  * `TransitionPhase.template_version` from variant artifacts. Templates are
  * Class 2 (immutable post-publish; new versions added, old retained).
  *
+ * STATUS at v0.2 (post-2026-05-06): UNREFERENCED by the live pathway library.
+ * Pathway library v0.2 reverted variants to single-phase `[breath]` per operator
+ * UX call (intro/closing transitions deleted). Templates are retained here as
+ * dead but valid registry entries — preserved for advisor-driven reintroduction
+ * at M7.3+ if clinically defensible.
+ *
  * Authority: docs/superpowers/specs/2026-05-05-m7-pt-pathway-foundation-design.md §3.2
  *            (TransitionPhase data shape) + Q5 Refinement 1 (template_version
  *            pinned in artifact for historical reproducibility).
+ *            §8 M7.2 deliverables + §9 out of scope (transitions deletion).
  */
 import type { SemVer, TemplateId } from '../types/m7'
 

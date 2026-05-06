@@ -539,24 +539,26 @@ Nine named end-to-end scenarios constitute the regression contract. Milestone ac
 
 **Behavioral guarantee:** users see no change. Same intro length, same single-phase sessions, same cue copy.
 
-### M7.2 — Heterogeneous phase rendering (UX upgrade)
+### M7.2 — Heterogeneous phase rendering (substrate work; no user-visible UX upgrade beyond M7.1)
+
+> **Operator UX call 2026-05-06:** intro + closing transitions DELETED post-smoke-test. Intro added no value; closing kept the user stuck instead of exiting; pre-M7 flow already handles session entry/exit cleanly. M7.2 retains template registry + lightweight typography + multi-phase render capability but ships no user-visible UX upgrade beyond M7.1. Transition reintroduction deferred to M7.3+ (advisor-driven, only if clinically defensible).
 
 **Ships:**
-- Render loop handles breath + transition phase types (position_hold deferred to M7.3).
-- Transition phase rendering with subtype-specific behavior (intro 5-count countdown, between narration, closing completion).
-- Template registry initial population with versioning discipline.
+- Render loop (`PhaseRenderer`) handles breath + transition phase types — multi-phase capability preserved (no v0.2 pathway uses transitions, but the dispatch surface is intact).
+- Transition components (`IntroTransition`, `BetweenTransition`, `ClosingTransition`) and template registry implemented and tested but UNUSED at v0.2 — preserved for advisor-driven reintroduction at M7.3+.
 - Lightweight typography styling per locked design intent.
-- Pathway library v0.2: every variant gains explicit intro + closing transitions; breath phase content unchanged.
-- Updated canonical scenarios test pass (multi-phase rendering scenarios green).
-- Authored `PTPathway.authored_duration_seconds` adjusted to accommodate intro+closing (sessions effectively gain ~10 seconds at M7.2; intentional UX change).
+- Pathway library v0.2: variants are single-phase `[breath]` (transitions deleted post-smoke-test 2026-05-06). `authored_duration_seconds` reverted to breath-only totals (240/360/480s).
+- Breath-phase render parity with main's GuidedSessionScreen breath path: time progress bar, `preStartDelay=1500` on M6 sessions, `gentleLabels={!!sessionConfig}`, round-counter suppression in M6 mode, `key={orbKey}` forwarding, `orbRunning` gate. Six-item diff parity asserted in `BreathPhaseRenderer.test.tsx`.
+- Scope A position cue (`derivePositionHint`) rendered during the breath phase for M7-routed sessions.
+- Phase log + truth_state plumbing remain wired (M7.1 substrate); for single-phase variants, `phase_log` records one breath entry per session.
 
 **Acceptance criteria:**
-- All M7.1 variants extended to include intro + closing transitions.
-- Transition phase rendering passes recovery dynamics tests.
-- Template registry has version-pinned references in every variant artifact.
-- 5-count intro and 5s transitions visible to users for all sessions.
+- All M7.1 variants single-phase `[breath]` (no transitions); `M7_VARIANTS` shape verified by test.
+- M7-routed `BreathPhaseRenderer` renders identically to main's legacy breath-phase render (six-item diff regression test).
+- `PhaseRenderer` multi-phase state machine green on a synthetic three-phase variant (capability proof for M7.3+).
+- Template registry retained with pinned versions; transition components compile and pass their own tests.
 
-**Behavioral change:** session experience starts with 5-count intro, ends with closing narration, with smooth narrated transitions. Breath content within phases unchanged from M7.1.
+**Behavioral change:** none user-visible beyond M7.1. The M7-routed breath phase preserves full legacy parity plus Scope A position cue and any variant-authored `cue.opening` / `cue.closing` copy (empty at v0.2; reserved for clinical authoring at M7.3+).
 
 ### M7.3 — Mid-session controls + position_hold + M6.9 substrate
 
@@ -599,6 +601,7 @@ Nine named end-to-end scenarios constitute the regression contract. Milestone ac
 
 ## 9. Out of scope (deferred to M7.5+ or beyond)
 
+- **Intro and closing transitions in pathway variants** — design intent invalidated by smoke-test 2026-05-06 (intro added no value; closing kept the user stuck instead of exiting; pre-M7 completion flow already handles session exit cleanly). Deleted from v0.2. Components, template registry, and `PhaseRenderer` dispatch capability retained but unused; available for advisor-driven reintroduction at M7.3+ if clinically defensible.
 - **Bidirectional refinements on safety-relevant dims** (M6.9 may eventually loosen safety with strong confidence thresholds, post M8 with accumulated evidence).
 - **Structured embedded breath patterns inside `position_hold` phases** (current options limited to `'unstructured' | 'soft_natural'`; embedded patterns deferred pending clinical evidence v1 needs them).
 - **Parameter overrides on breath families** (variants get distinct breath behavior by selecting different families, not by overriding parameters; override surface deferred to M7.5+ with explicit grounding-chain extensions per override).

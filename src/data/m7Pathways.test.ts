@@ -59,39 +59,23 @@ describe('M7 pathway library v0.1 — 12-pathway migration completeness', () => 
   })
 })
 
-describe('M7 pathway library v0.2 — variants gain explicit intro + closing', () => {
-  it('every variant has exactly 3 phases: intro transition + breath + closing transition', () => {
+// v0.2 originally added intro + closing transitions to every variant; those were
+// deleted post-smoke-test 2026-05-06 per operator UX call (intro added no value;
+// closing kept the user stuck instead of exiting). Variants reverted to
+// single-phase `[breath]`. Transition components, template registry, and
+// PhaseRenderer dispatch capability are retained but unused; available for
+// advisor-driven reintroduction at M7.3+ if clinically defensible.
+describe('M7 pathway library v0.2 — single-phase [breath] (transitions deleted 2026-05-06)', () => {
+  it('every variant has exactly 1 phase, of type breath', () => {
     for (const v of M7_VARIANTS) {
-      expect(v.phases.length).toBe(3)
-      expect(v.phases[0].type).toBe('transition')
-      expect(v.phases[1].type).toBe('breath')
-      expect(v.phases[2].type).toBe('transition')
+      expect(v.phases.length).toBe(1)
+      expect(v.phases[0].type).toBe('breath')
     }
   })
 
-  it('phase[0] is an intro transition', () => {
+  it('no variant carries a transition phase at v0.2', () => {
     for (const v of M7_VARIANTS) {
-      const p0 = v.phases[0]
-      if (p0.type !== 'transition') throw new Error('expected transition')
-      expect(p0.subtype).toBe('intro')
-    }
-  })
-
-  it('phase[2] is a closing transition', () => {
-    for (const v of M7_VARIANTS) {
-      const p2 = v.phases[2]
-      if (p2.type !== 'transition') throw new Error('expected transition')
-      expect(p2.subtype).toBe('closing')
-    }
-  })
-
-  it('every transition references a template with version 1.0.0', () => {
-    for (const v of M7_VARIANTS) {
-      for (const phase of v.phases) {
-        if (phase.type === 'transition') {
-          expect(phase.template_version).toBe('1.0.0')
-        }
-      }
+      expect(v.phases.some(p => p.type === 'transition')).toBe(false)
     }
   })
 

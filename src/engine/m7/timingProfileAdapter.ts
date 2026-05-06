@@ -7,8 +7,10 @@
  * single-TimingProfile consumers (sweep harness, any non-PhaseRenderer site)
  * can still pull the breath ratios + cycle count.
  *
- * Variant phase order is no longer assumed (v0.2 places intro at index 0,
- * breath at index 1, closing at index 2). The adapter searches by type.
+ * Phase order is not assumed — the adapter searches by type. At v0.2 today
+ * variants are single-phase `[breath]`, but PhaseRenderer's multi-phase
+ * capability (and the transition dispatch surface) remains intact for
+ * advisor-driven reintroduction at M7.3+.
  */
 import type { PTVariant, BreathPhase } from '../../types/m7'
 import type { TimingProfile } from '../../types'

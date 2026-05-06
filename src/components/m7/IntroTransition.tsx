@@ -1,3 +1,13 @@
+/**
+ * IntroTransition — 5-count intro narration before the breath phase.
+ *
+ * STATUS at v0.2 (post-2026-05-06): UNUSED by live pathway library.
+ * Pathway variants reverted to single-phase `[breath]` per operator UX call
+ * (intro added no value during smoke-test). Component retained for advisor-
+ * driven reintroduction at M7.3+ if clinically defensible. Render path through
+ * PhaseRenderer.TransitionDispatcher remains intact; reintroduction only
+ * requires re-adding intro phases to authored variants.
+ */
 import { useEffect, useRef } from 'react'
 import styles from './IntroTransition.module.css'
 
