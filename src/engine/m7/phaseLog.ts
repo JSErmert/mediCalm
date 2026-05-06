@@ -7,6 +7,7 @@
  * the orphan sweep. After closure, no further mutation permitted.
  */
 import type { PhaseLogEntry } from '../../types/m7'
+import type { HistoryEntry } from '../../types'
 
 function nowISO(): string {
   return new Date().toISOString()
@@ -71,4 +72,23 @@ export function systemErrorPhase(log: PhaseLogEntry[], phase_index: number): voi
   e.duration_actual_seconds = durationSeconds(e.started_at, completed_at)
   e.drop_off_reason = 'system_error'
   e.drop_off_reason_source = 'inferred_from_session_end'
+}
+
+/**
+ * Orphan sweep — idempotent backfill of incomplete phase_log entries.
+ * Runs on app-load AND next-session-start. Touches only entries with no completed_at;
+ * leaves complete entries unchanged. Per Q7 Refinement 3.
+ */
+export function sweepOrphans(history: HistoryEntry[]): void {
+  const now = nowISO()
+  for (const entry of history) {
+    if (!entry.phase_log) continue
+    for (const phaseEntry of entry.phase_log) {
+      if (phaseEntry.completed_at) continue  // idempotent — skip closed
+      phaseEntry.completed_at = now
+      phaseEntry.duration_actual_seconds = durationSeconds(phaseEntry.started_at, now)
+      phaseEntry.drop_off_reason = 'system_error'
+      phaseEntry.drop_off_reason_source = 'inferred_from_orphan_sweep'
+    }
+  }
 }
