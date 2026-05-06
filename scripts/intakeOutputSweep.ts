@@ -430,10 +430,16 @@ for (const branch of BRANCHES) {
                   continue
                 }
 
-                // ── M7.1 regression assertion (postfix only) ──────────────────
+                // ── M7.2 regression assertion (postfix only) ──────────────────
                 // M7 selection routes on session_length_preference and mirrors
                 // the postfix wire-through, not the baseline (which ignores length).
-                // Zero divergence in postfix mode = M7.1 acceptance criterion.
+                //
+                // M7.1 contract: BREATH-PHASE timing equivalence with legacy.
+                //   The TimingProfile adapter finds the breath phase by type;
+                //   intro + closing transitions don't affect this comparison.
+                // M7.2 contract: every variant has exactly 3 phases
+                //   ([intro_transition, breath, closing_transition]) per the
+                //   pathway library v0.2 migration.
                 if (SWEEP_VARIANT === 'postfix') {
                   const caseIndex = written
                   const intakeSensorState = buildIntakeSensorState(intake)
@@ -447,6 +453,11 @@ for (const branch of BRANCHES) {
                   if (!legacyTimingMatches) {
                     throw new Error(
                       `M7.1 regression at case ${caseIndex}: legacy ${JSON.stringify({ inhale: dc.inhaleSeconds, exhale: dc.exhaleSeconds, rounds: legacyRounds })} vs m7 ${JSON.stringify(m7Result.timing)} for intake ${JSON.stringify(intakeSensorState)}`
+                    )
+                  }
+                  if (m7Result.variant.phases.length !== 3) {
+                    throw new Error(
+                      `M7.2 phase count regression at case ${caseIndex}: expected 3 phases (intro+breath+closing), got ${m7Result.variant.phases.length} for variant ${m7Result.variant.variant_id}`
                     )
                   }
                 }
