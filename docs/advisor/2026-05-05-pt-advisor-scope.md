@@ -5,8 +5,9 @@ A clinical breath and regulation support tool for people in moments of
 musculoskeletal pain, tension, or stress. The product delivers structured,
 PMID-grounded breath sessions with phase-based progression — diaphragmatic
 onboarding, primary breath work, optional positional holds, integration.
-Pre-Beta. Solo developer (lived-experience motivation), documentation-first
-discipline, no diagnosis claims, safety-first throughout.
+Currently in development; no public release. Solo developer (lived-experience
+motivation), documentation-first discipline, no diagnosis claims, safety-first
+throughout.
 
 ## What we are building right now
 A foundation milestone (internally "M7") that introduces a curated catalog
@@ -73,6 +74,9 @@ phase-based), equity, formal advisory credit, or combination.
 Expectations from your side are welcome — happy to align with what's
 appropriate for the engagement.
 
+Public attribution as clinical advisor is opt-in; internal-only review is
+the default and we'll align on this together.
+
 ## How an engagement starts
 1. Introductory conversation (~30 minutes, no commitment) — overview
    of the product, the review scope, and how your input would be used.
@@ -84,7 +88,8 @@ mediCalm's audit-trail discipline — every session in the catalog
 reviewable, every clinical claim grounded, every variant traceable
 to its conditioning logic — is what separates "wellness app with PT
 vocabulary" from "clinically defensible session delivery." Your
-review is the gate that determines which one mediCalm becomes.
+review is what moves mediCalm from PT-vocabulary positioning to
+clinical defensibility.
 
 ## Contact
 [JSEer's name and contact info — placeholder]
