@@ -40,7 +40,7 @@ const DURATION_BY_EFFORT: Record<EffortLevel, number> = {
 
 // ── Breath Family Definitions ─────────────────────────────────────────────────
 
-const BREATH_FAMILIES: Record<BreathFamilyName, BreathFamily> = {
+export const BREATH_FAMILIES: Record<BreathFamilyName, BreathFamily> = {
   // Pain + high sensitivity — low effort, soft pacing, no demand
   flare_safe_soft_exhale: {
     name: 'flare_safe_soft_exhale',
