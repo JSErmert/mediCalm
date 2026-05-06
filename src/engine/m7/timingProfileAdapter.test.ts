@@ -4,10 +4,14 @@ import type { PTVariant } from '../../types/m7'
 
 function variant(family: 'flare_safe_soft_exhale' | 'calm_downregulate' | 'decompression_expand', cycles: number): PTVariant {
   return {
-    variant_id: 'v', variant_version: '0.1.0',
-    pathway_id: 'p', pathway_version: '0.1.0',
+    variant_id: 'v', variant_version: '0.2.0',
+    pathway_id: 'p', pathway_version: '0.2.0',
     conditioning: { irritability: 'symmetric', flare_sensitivity: 'moderate', baseline_intensity_band: 'moderate' },
-    phases: [{ type: 'breath', breath_family: family, num_cycles: cycles, cue: { opening: '', closing: '' } }],
+    phases: [
+      { type: 'transition', subtype: 'intro', template_id: 'standard_5_count', template_version: '1.0.0', duration_seconds: 5 },
+      { type: 'breath', breath_family: family, num_cycles: cycles, cue: { opening: '', closing: '' } },
+      { type: 'transition', subtype: 'closing', template_id: 'standard_completion', template_version: '1.0.0', duration_seconds: 5 },
+    ],
     authored_by: 'x', authored_at: '2026-05-05T00:00:00.000Z',
     review_status: 'engineering_passed',
   }
@@ -35,9 +39,9 @@ describe('M7 timingProfileAdapter — PTVariant → legacy TimingProfile', () =>
     expect(t.rounds).toBe(24)
   })
 
-  it('throws when first phase is not a breath phase', () => {
+  it('throws when variant has no breath phase', () => {
     const v = variant('calm_downregulate', 1)
-    v.phases = [{ type: 'transition', subtype: 'intro', template_id: 't', template_version: '1.0.0', duration_seconds: 5 }]
-    expect(() => variantToTimingProfile(v)).toThrow()
+    v.phases = v.phases.filter(p => p.type !== 'breath')
+    expect(() => variantToTimingProfile(v)).toThrow(/breath/)
   })
 })
