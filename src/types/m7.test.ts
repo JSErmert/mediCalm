@@ -98,3 +98,68 @@ describe('M7 grounding types — Tier A/B contract (§3.3)', () => {
     expect(g.tier_B_reasoning_chains[0].terminating_citations).toContain('33117119')
   })
 })
+
+import type { PathwaySelectionCriteria, PTPathway, PTVariant, ResolvedPathway } from './m7'
+
+describe('M7 pathway/variant types — §3.4–3.6', () => {
+  it('PathwaySelectionCriteria carries selection-feeding dim arrays', () => {
+    const c: PathwaySelectionCriteria = {
+      branch: ['anxious_or_overwhelmed'],
+      session_length_preference: ['standard'],
+    }
+    expect(c.branch).toContain('anxious_or_overwhelmed')
+  })
+
+  it('PTPathway has identity, criteria, duration, grounding, review_status', () => {
+    const p: PTPathway = {
+      pathway_id: 'anxious_calm_downregulate_standard',
+      pathway_version: '0.1.0',
+      display_name: 'Anxious Calm Downregulate',
+      clinical_summary: 'Standard-length downregulation for anxious branch.',
+      selection_criteria: { branch: ['anxious_or_overwhelmed'] },
+      authored_duration_seconds: 360,
+      grounding: { tier_A_citations: [], tier_B_reasoning_chains: [] },
+      authored_by: 'JSEer',
+      authored_at: '2026-05-05T00:00:00.000Z',
+      review_status: 'engineering_passed',
+    }
+    expect(p.review_status).toBe('engineering_passed')
+  })
+
+  it('PTVariant references parent pathway and carries phases + conditioning', () => {
+    const v: PTVariant = {
+      variant_id: 'anx-calm-std-irrit-sym-flare-mod-int-mod',
+      variant_version: '0.1.0',
+      pathway_id: 'anxious_calm_downregulate_standard',
+      pathway_version: '0.1.0',
+      conditioning: {
+        irritability: 'symmetric',
+        flare_sensitivity: 'moderate',
+        baseline_intensity_band: 'moderate',
+      },
+      phases: [{
+        type: 'breath',
+        breath_family: 'calm_downregulate',
+        num_cycles: 32,
+        cue: { opening: '', closing: '' },
+      }],
+      authored_by: 'JSEer',
+      authored_at: '2026-05-05T00:00:00.000Z',
+      review_status: 'engineering_passed',
+    }
+    expect(v.phases.length).toBeGreaterThanOrEqual(1)
+    expect(v.phases.some(p => p.type === 'breath')).toBe(true)  // I7
+  })
+
+  it('ResolvedPathway is an alias for PTVariant', () => {
+    const r: ResolvedPathway = {
+      variant_id: 'x', variant_version: '0.1.0',
+      pathway_id: 'p', pathway_version: '0.1.0',
+      conditioning: { irritability: 'symmetric', flare_sensitivity: 'moderate', baseline_intensity_band: 'moderate' },
+      phases: [{ type: 'breath', breath_family: 'calm_downregulate', num_cycles: 1, cue: { opening: '', closing: '' } }],
+      authored_by: 'x', authored_at: '2026-05-05T00:00:00.000Z',
+      review_status: 'draft',
+    }
+    expect(r.variant_id).toBe('x')
+  })
+})

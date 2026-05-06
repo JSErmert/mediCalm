@@ -71,3 +71,72 @@ export type GroundingSummary = {
   tier_A_citations: TierACitation[]
   tier_B_reasoning_chains: ReasoningChain[]
 }
+
+import type {
+  IntakeBranch,
+  LocationPattern,
+  SessionLengthPreference,
+  CurrentContext,
+  SessionIntent,
+  IrritabilityPattern,
+  FlareSensitivity,
+} from './hari'
+
+// ── Selection criteria (§3.4) ────────────────────────────────────────────────
+
+export type PathwaySelectionCriteria = {
+  branch: IntakeBranch[]
+  location_pattern?: LocationPattern[]
+  session_length_preference?: SessionLengthPreference[]
+  current_context?: CurrentContext[]
+  session_intent?: SessionIntent[]
+  derived_signals?: { breathDowngraded?: boolean }
+}
+
+// ── PTPathway — clinical-concept entity (§3.5) ───────────────────────────────
+
+export type ReviewStatus = 'draft' | 'engineering_passed' | 'pt_advisor_passed' | 'locked'
+
+export type PTPathway = {
+  pathway_id: PathwayId
+  pathway_version: SemVer
+  display_name: string
+  clinical_summary: string
+  selection_criteria: PathwaySelectionCriteria
+  authored_duration_seconds: number
+  grounding: GroundingSummary
+  authored_by: string
+  authored_at: ISODate
+  reviewed_by?: string
+  reviewed_at?: ISODate
+  review_status: ReviewStatus
+}
+
+// ── PTVariant — resolved artifact (§3.6) ─────────────────────────────────────
+
+export type VariantConditioning = {
+  irritability: IrritabilityPattern
+  flare_sensitivity: FlareSensitivity
+  baseline_intensity_band: 'low' | 'moderate' | 'high'
+}
+
+export type PTVariant = {
+  variant_id: VariantId
+  variant_version: SemVer
+  /** Pinned reference to parent (immutable post-publish per I23). */
+  pathway_id: PathwayId
+  pathway_version: SemVer
+  conditioning: VariantConditioning
+  /** Phase order immutable (I10); ≥1 breath phase (I7). */
+  phases: Phase[]
+  /** Variant-specific grounding where it differs from pathway-level (else inherits). */
+  grounding?: GroundingSummary
+  authored_by: string
+  authored_at: ISODate
+  reviewed_by?: string
+  reviewed_at?: ISODate
+  review_status: ReviewStatus
+}
+
+/** Alias — the durable cross-surface artifact every downstream surface projects from (Q1 lock). */
+export type ResolvedPathway = PTVariant
