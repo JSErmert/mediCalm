@@ -59,6 +59,9 @@ import type {
   LocationPattern,
 } from '../src/types/hari'
 
+import { buildM7Session } from '../src/engine/m7/integration'
+import type { IntakeSensorState } from '../src/types/m7'
+
 import {
   branchToEmotionalStates,
   applyIrritabilityEscalation,
@@ -270,6 +273,25 @@ function fingerprintFor(row: Omit<SweepRow, 'output_fingerprint' | 'case_id'>): 
   ].join('|')
 }
 
+// ── M7 sensor state builder ───────────────────────────────────────────────────
+
+function buildIntakeSensorState(intake: HariSessionIntake): IntakeSensorState {
+  const breathDowngraded =
+    intake.flare_sensitivity === 'high' || intake.baseline_intensity >= 7
+  return {
+    branch: intake.branch,
+    location: intake.location,
+    location_pattern: intake.location_pattern,
+    current_context: intake.current_context,
+    session_intent: intake.session_intent,
+    session_length_preference: intake.session_length_preference,
+    flare_sensitivity: intake.flare_sensitivity,
+    baseline_intensity: intake.baseline_intensity,
+    irritability: intake.irritability,
+    derived_signals: { breathDowngraded },
+  }
+}
+
 function runCase(intake: HariSessionIntake, locationLabel?: string): SweepRow {
   const states = branchToEmotionalStates(intake.branch)
   const interpretation = interpretStates({
@@ -407,6 +429,29 @@ for (const branch of BRANCHES) {
                   console.error(`[sweep] case failed: ${caseId(intake, locationLabel)}`, err)
                   continue
                 }
+
+                // ── M7.1 regression assertion (postfix only) ──────────────────
+                // M7 selection routes on session_length_preference and mirrors
+                // the postfix wire-through, not the baseline (which ignores length).
+                // Zero divergence in postfix mode = M7.1 acceptance criterion.
+                if (SWEEP_VARIANT === 'postfix') {
+                  const caseIndex = written
+                  const intakeSensorState = buildIntakeSensorState(intake)
+                  const m7Result = buildM7Session(intakeSensorState)
+                  const dc = row.delivery_config
+                  const legacyRounds = Math.floor(dc.durationSeconds / (dc.inhaleSeconds + dc.exhaleSeconds))
+                  const legacyTimingMatches =
+                    dc.inhaleSeconds === m7Result.timing.inhale_seconds &&
+                    dc.exhaleSeconds === m7Result.timing.exhale_seconds &&
+                    legacyRounds === m7Result.timing.rounds
+                  if (!legacyTimingMatches) {
+                    throw new Error(
+                      `M7.1 regression at case ${caseIndex}: legacy ${JSON.stringify({ inhale: dc.inhaleSeconds, exhale: dc.exhaleSeconds, rounds: legacyRounds })} vs m7 ${JSON.stringify(m7Result.timing)} for intake ${JSON.stringify(intakeSensorState)}`
+                    )
+                  }
+                }
+                // ─────────────────────────────────────────────────────────────
+
                 writeStream.write(JSON.stringify(row) + '\n')
                 recordRow(row)
                 written++
