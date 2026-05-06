@@ -242,6 +242,9 @@ export type TruthState = {
  * Authority: M7.1 shadow-mode contract; §3.10 I38-I39.
  */
 export type M7RuntimeBuild = {
+  /** The fully-resolved variant artifact (frozen at selection time per the
+   *  sibling-projection discipline). M7.2 PhaseRenderer projects from this. */
+  variant: PTVariant
   /** The pathway reference to persist on HistoryEntry (I39). */
   pathway_ref: {
     pathway_id: PathwayId

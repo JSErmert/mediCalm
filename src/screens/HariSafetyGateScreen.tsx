@@ -157,6 +157,7 @@ export function HariSafetyGateScreen() {
     try {
       const m7Result = buildM7Session(intakeSensorState)
       m7Build = {
+        variant: m7Result.variant,
         pathway_ref: m7Result.pathway_ref,
         intake_sensor_state: intakeSensorState,
       }

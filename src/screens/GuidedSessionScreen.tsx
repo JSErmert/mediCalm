@@ -6,12 +6,21 @@ import { useAppContext } from '../context/AppContext'
 import { BreathingOrb } from '../components/BreathingOrb'
 import { CompletionForm } from '../components/CompletionForm'
 import { RoundDots } from '../components/RoundDots'
+import { PhaseRenderer } from '../components/m7/PhaseRenderer'
 import { saveSession } from '../storage/sessionHistory'
 import { deriveExpressionProfile } from '../engine/presentation/expressionProfile'
 import { decideContinuation } from '../engine/hari/reassessmentLoop'
 import { buildDeliveryConfig } from '../engine/hari/sessionConfig'
 import { startPhase, completePhase, abortPhase, safetyStopPhase, deriveTruthState } from '../engine/m7/phaseLog'
 import styles from './GuidedSessionScreen.module.css'
+
+// M7.2: find the index of the currently-open phase (no completed_at).
+// Returns -1 if none open. Used to close whichever phase is active when the
+// session ends abnormally (abort / safety_stop) — works for both legacy
+// single-phase logs and M7.2 multi-phase logs.
+function findOpenPhaseIndex(phaseLog: PhaseLogEntry[]): number {
+  return phaseLog.findIndex(p => !p.completed_at)
+}
 
 /**
  * Authority: M2_SESSION_EXPERIENCE_SPEC.md
@@ -86,12 +95,16 @@ export function GuidedSessionScreen() {
   const startTimeRef = useRef(Date.now())
   const elapsedAtStopRef = useRef(0)
 
-  // M7.1 phase_log — mutable array initialized once per session mount (Task 16).
-  // phaseLogRef holds the array reference; startPhase is called once on mount.
+  // M7.1 phase_log — mutable array initialized once per session mount.
+  // phaseLogRef holds the array reference. For LEGACY sessions, startPhase fires
+  // once on mount (single breath phase). For M7.2 (session.m7_build present),
+  // PhaseRenderer fires startPhase / completePhase per phase boundary instead.
   const phaseLogRef = useRef<PhaseLogEntry[]>([])
 
   useEffect(() => {
-    startPhase(phaseLogRef.current, 0, 'breath')
+    if (!session.m7_build) {
+      startPhase(phaseLogRef.current, 0, 'breath')
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -226,9 +239,11 @@ export function GuidedSessionScreen() {
   function handleSafetyInterrupt() {
     setOrbRunning(false)
     setShowStopConfirm(false)
-    // M7.1 Task 16: close the breath phase with safety_stopped reason.
-    if (phaseLogRef.current.length > 0 && !phaseLogRef.current[0].completed_at) {
-      safetyStopPhase(phaseLogRef.current, 0)
+    // M7.2: close whichever phase is currently open with safety_stopped reason.
+    // Works for legacy (single phase index 0) and M7.2 (any phase index).
+    const openIdx = findOpenPhaseIndex(phaseLogRef.current)
+    if (openIdx >= 0) {
+      safetyStopPhase(phaseLogRef.current, openIdx)
     }
     setPhase('safety_interrupt')
   }
@@ -241,10 +256,13 @@ export function GuidedSessionScreen() {
   function handleSave(feedback: SessionFeedback) {
     const elapsed = getElapsedSeconds()
 
-    // M7.1 Task 16: close the breath phase with completion reason before saving.
+    // M7.2: close whichever phase is currently open with completion reason.
+    // Legacy sessions: closes index 0 (single phase). M7.2 sessions: PhaseRenderer
+    // already closed every phase via onPhaseEnd, so findOpenPhaseIndex returns -1.
     const phaseLog = phaseLogRef.current
-    if (phaseLog.length > 0 && !phaseLog[0].completed_at) {
-      completePhase(phaseLog, 0)
+    const openIdx = findOpenPhaseIndex(phaseLog)
+    if (openIdx >= 0) {
+      completePhase(phaseLog, openIdx)
     }
 
     // M4.7: build persisted HARI metadata block for HARI sessions
@@ -305,10 +323,13 @@ export function GuidedSessionScreen() {
   function handleStoppedSave(feedback: SessionFeedback) {
     const elapsed = elapsedAtStopRef.current || getElapsedSeconds()
 
-    // M7.1 Task 16: close the breath phase with user_aborted reason before saving.
+    // M7.2: close whichever phase is currently open with user_aborted reason.
+    // Legacy sessions: closes index 0. M7.2 sessions: closes whichever phase
+    // (intro/breath/closing) the user stopped during.
     const phaseLog = phaseLogRef.current
-    if (phaseLog.length > 0 && !phaseLog[0].completed_at) {
-      abortPhase(phaseLog, 0)
+    const openIdx = findOpenPhaseIndex(phaseLog)
+    if (openIdx >= 0) {
+      abortPhase(phaseLog, openIdx)
     }
 
     // M4.7: persist partial HARI metadata for stopped sessions (no post_session_intensity)
@@ -407,7 +428,46 @@ export function GuidedSessionScreen() {
   return (
     <main className={styles.screen}>
 
-      {phase === 'breathing' && (
+      {phase === 'breathing' && session.m7_build && (
+        // M7.2: heterogeneous phase rendering for M7-routed sessions.
+        // PhaseRenderer iterates variant.phases[] (intro → breath → closing) and
+        // fires per-phase callbacks into the phase_log. onSessionComplete advances
+        // to the existing 'completion' phase so the CompletionForm flow runs.
+        <div className={styles.breathingPhase}>
+          <PhaseRenderer
+            variant={session.m7_build.variant}
+            onPhaseStart={(phase_index, phase_type, phase_subtype) => {
+              startPhase(phaseLogRef.current, phase_index, phase_type, phase_subtype)
+            }}
+            onPhaseEnd={(phase_index) => {
+              completePhase(phaseLogRef.current, phase_index)
+            }}
+            onSessionComplete={() => {
+              setPhase('completion')
+            }}
+          />
+          <footer className={styles.sessionFooter}>
+            <button
+              className={styles.safetyButton}
+              type="button"
+              onClick={handleSafetyInterrupt}
+              aria-label="I feel unwell — stop session"
+            >
+              I feel unwell
+            </button>
+            <button
+              className={styles.stopButton}
+              type="button"
+              onClick={handleStopButtonPress}
+              aria-label="Stop session"
+            >
+              Stop
+            </button>
+          </footer>
+        </div>
+      )}
+
+      {phase === 'breathing' && !session.m7_build && (
         <div className={styles.breathingPhase}>
           {/* Zone 1 — static context, never changes */}
           <header className={styles.topZone} aria-label="Protocol context">
