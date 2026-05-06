@@ -5,6 +5,7 @@ import { BetweenTransition } from './BetweenTransition'
 import { ClosingTransition } from './ClosingTransition'
 import { getTemplate } from '../../data/m7Templates'
 import type { PTVariant, Phase, TransitionPhase } from '../../types/m7'
+import type { ExpressionProfile } from '../../engine/presentation/expressionProfile'
 import styles from './PhaseRenderer.module.css'
 
 type Props = {
@@ -16,9 +17,20 @@ type Props = {
   ) => void
   onPhaseEnd: (phase_index: number) => void
   onSessionComplete: () => void
+  /** Forwarded to BreathPhaseRenderer → BreathingOrb for visual styling. Optional. */
+  expressionProfile?: ExpressionProfile
+  /** Forwarded to BreathingOrb for protocol-specific micro-guidance copy. Optional. */
+  protocolId?: string
 }
 
-export function PhaseRenderer({ variant, onPhaseStart, onPhaseEnd, onSessionComplete }: Props) {
+export function PhaseRenderer({
+  variant,
+  onPhaseStart,
+  onPhaseEnd,
+  onSessionComplete,
+  expressionProfile,
+  protocolId,
+}: Props) {
   const [phaseIndex, setPhaseIndex] = useState(0)
   const phase: Phase | undefined = variant.phases[phaseIndex]
 
@@ -44,7 +56,12 @@ export function PhaseRenderer({ variant, onPhaseStart, onPhaseEnd, onSessionComp
   return (
     <div className={styles.container}>
       {phase.type === 'breath' && (
-        <BreathPhaseRenderer phase={phase} onComplete={handlePhaseComplete} />
+        <BreathPhaseRenderer
+          phase={phase}
+          onComplete={handlePhaseComplete}
+          expressionProfile={expressionProfile}
+          protocolId={protocolId}
+        />
       )}
       {phase.type === 'transition' && (
         <TransitionDispatcher phase={phase} onComplete={handlePhaseComplete} />

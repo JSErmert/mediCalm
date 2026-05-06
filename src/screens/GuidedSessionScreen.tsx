@@ -436,6 +436,8 @@ export function GuidedSessionScreen() {
         <div className={styles.breathingPhase}>
           <PhaseRenderer
             variant={session.m7_build.variant}
+            expressionProfile={expressionProfile}
+            protocolId={session.protocol_id}
             onPhaseStart={(phase_index, phase_type, phase_subtype) => {
               startPhase(phaseLogRef.current, phase_index, phase_type, phase_subtype)
             }}

@@ -3,20 +3,24 @@
  *
  * Authority: docs/superpowers/specs/2026-05-05-m7-pt-pathway-foundation-design.md §7
  *            (canonical scenarios 1 + 7 active at M7.2+)
+ *
+ * BreathPhaseRenderer is mocked here so the scenario tests cover the
+ * intro → breath → closing state-machine sequence deterministically.
+ * BreathPhaseRenderer's own tests cover the BreathingOrb integration —
+ * the regression class "breath phase shows nothing" is caught there.
  */
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
-import { PhaseRenderer } from './PhaseRenderer'
 import { M7_VARIANTS } from '../../data/m7Pathways'
-import { BREATH_FAMILIES } from '../../engine/hari/breathFamily'
-import type { BreathPhase } from '../../types/m7'
 
-function breathDurationMs(variant: ReturnType<typeof getVariant>): number {
-  const breath = variant.phases.find((p): p is BreathPhase => p.type === 'breath')!
-  const family = BREATH_FAMILIES[breath.breath_family]
-  const cycleSeconds = family.inhaleSeconds + family.exhaleSeconds + (family.holdSeconds ?? 0)
-  return cycleSeconds * breath.num_cycles * 1000
-}
+vi.mock('./BreathPhaseRenderer', () => ({
+  BreathPhaseRenderer: ({ onComplete }: { onComplete: () => void }) => {
+    setTimeout(onComplete, 1000)
+    return <div role="region" aria-label="Breath phase (test stub)" />
+  },
+}))
+
+import { PhaseRenderer } from './PhaseRenderer'
 
 function getVariant(pathway_id: string) {
   const v = M7_VARIANTS.find(v => v.pathway_id === pathway_id)
@@ -46,9 +50,9 @@ describe('M7.2 canonical scenarios — phase render', () => {
     act(() => { vi.advanceTimersByTime(5000) })
     expect(onPhaseEnd).toHaveBeenCalledWith(0)
 
-    // Breath phase
+    // Breath phase (mocked stub fires onComplete after 1s)
     expect(onPhaseStart).toHaveBeenCalledWith(1, 'breath', undefined)
-    act(() => { vi.advanceTimersByTime(breathDurationMs(v)) })
+    act(() => { vi.advanceTimersByTime(1000) })
     expect(onPhaseEnd).toHaveBeenCalledWith(1)
 
     // Closing 5s
@@ -76,7 +80,7 @@ describe('M7.2 canonical scenarios — phase render', () => {
 
     expect(screen.getByLabelText('Session intro')).toBeInTheDocument()
     act(() => { vi.advanceTimersByTime(5000) })
-    act(() => { vi.advanceTimersByTime(breathDurationMs(v)) })
+    act(() => { vi.advanceTimersByTime(1000) })
     expect(screen.getByLabelText('Session closing')).toBeInTheDocument()
     act(() => { vi.advanceTimersByTime(5000) })
 

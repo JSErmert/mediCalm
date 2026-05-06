@@ -1,8 +1,22 @@
 // src/components/m7/PhaseRenderer.test.tsx
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
-import { PhaseRenderer } from './PhaseRenderer'
 import type { PTVariant } from '../../types/m7'
+
+// Mock BreathPhaseRenderer so PhaseRenderer's state-machine logic can be
+// tested independently of BreathingOrb's internal lifecycle (entry countdown,
+// inter-phase pauses, etc., which are tested in BreathPhaseRenderer.test.tsx).
+// The stub fires onComplete after a single 1s tick so fake timers can drive it
+// deterministically. See `vi.advanceTimersByTime(1000)` below for the breath
+// phase advance.
+vi.mock('./BreathPhaseRenderer', () => ({
+  BreathPhaseRenderer: ({ onComplete }: { onComplete: () => void }) => {
+    setTimeout(onComplete, 1000)
+    return <div role="region" aria-label="Breath phase (test stub)" />
+  },
+}))
+
+import { PhaseRenderer } from './PhaseRenderer'
 
 function variant(): PTVariant {
   return {
@@ -37,9 +51,9 @@ describe('PhaseRenderer — multi-phase state machine', () => {
     act(() => { vi.advanceTimersByTime(5000) })
     expect(onPhaseEnd).toHaveBeenCalledWith(0)
 
-    // breath 1 cycle = 11s for calm_downregulate (4/0/7)
+    // breath phase: stub fires onComplete after 1s
     expect(onPhaseStart).toHaveBeenCalledWith(1, 'breath', undefined)
-    act(() => { vi.advanceTimersByTime(11_000) })
+    act(() => { vi.advanceTimersByTime(1000) })
     expect(onPhaseEnd).toHaveBeenCalledWith(1)
 
     // closing 5s
