@@ -3,7 +3,7 @@
 **Generated:** 2026-05-05
 **Total cases swept:** 95,040
 **Distinct output fingerprints:** 9
-**Sweep duration:** 3.2s
+**Sweep duration:** 4.3s
 
 Authority: `docs/superpowers/specs/2026-05-05-intake-output-sweep-design.md`
 

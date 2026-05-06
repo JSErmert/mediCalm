@@ -3,7 +3,7 @@
 **Generated:** 2026-05-05
 **Total cases swept:** 253,440
 **Distinct output fingerprints:** 12
-**Sweep duration:** 10.5s
+**Sweep duration:** 14.7s
 
 Each section below describes a single distinct output reachable from the engine.
 The "cohort" is the set of intake combinations that produce this output.
@@ -415,7 +415,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "exhaleSeconds": 7,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle."
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release."
 }
 ```
 
@@ -429,7 +429,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "durationSeconds": 360,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle.",
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release.",
   "overloadSafe": false,
   "feasibilityApplied": false
 }
@@ -626,7 +626,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "exhaleSeconds": 7,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle."
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release."
 }
 ```
 
@@ -640,7 +640,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "durationSeconds": 480,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle.",
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release.",
   "overloadSafe": false,
   "feasibilityApplied": false
 }
@@ -1196,7 +1196,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "exhaleSeconds": 7,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle."
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release."
 }
 ```
 
@@ -1210,7 +1210,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "durationSeconds": 360,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle.",
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release.",
   "overloadSafe": false,
   "feasibilityApplied": false
 }
@@ -1384,7 +1384,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "exhaleSeconds": 7,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle."
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release."
 }
 ```
 
@@ -1398,7 +1398,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "durationSeconds": 480,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle.",
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release.",
   "overloadSafe": false,
   "feasibilityApplied": false
 }
@@ -1748,7 +1748,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "exhaleSeconds": 7,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle."
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release."
 }
 ```
 
@@ -1762,7 +1762,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "durationSeconds": 360,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle.",
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release.",
   "overloadSafe": false,
   "feasibilityApplied": false
 }
@@ -2258,7 +2258,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "exhaleSeconds": 7,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle."
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release."
 }
 ```
 
@@ -2272,7 +2272,7 @@ The "cohort" is the set of intake combinations that produce this output.
   "durationSeconds": 480,
   "sessionName": "Calm Reset",
   "instructionTone": "calming / direct",
-  "openingPrompt": "Follow the breath. Each cycle helps your nervous system settle.",
+  "openingPrompt": "Belly softens on the inhale, ribs settle on the exhale. Slow diaphragmatic breath — each cycle helps your nervous system release.",
   "overloadSafe": false,
   "feasibilityApplied": false
 }
