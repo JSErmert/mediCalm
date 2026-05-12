@@ -3,13 +3,26 @@ dist
 .DS_Store
 *.local
 test-results
-.superpowers/brainstorm
+.superpowers/
+.claude/
 tsconfig.tsbuildinfo
-.claude/settings.local.json
 .env
 .env.*
 playwright-report/
 coverage/
 *.log
 mediCalm-review-snapshot.zip
-docs/superpowers/audits/**/raw.jsonl
+
+# Internal AI-orchestration scaffolding — agent instructions, prompts,
+# milestone-process artifacts, governance frameworks.  Private working
+# documents not intended for a public audience.
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+docs/orchestration/
+docs/superpowers/
+docs/prompts/
+docs/context/18_mediCalm_claude_-code_system_prompt_ARCHIVED.md
+docs/milestones/Milestone 3/M3_4_1_Claude_Code_Execution_Prompt.md
+docs/milestones/Milestone 7-10 Architecture/CLAUDE_Evaluation_Prompt.md
+docs/milestones/Milestone 7-10 Architecture/CLAUDE_System_Prompt.md
