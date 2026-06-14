@@ -14,6 +14,9 @@
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  /* Global 1.5× scale — renders the whole app (type, spacing, orb, layout)
+     50% larger. Single reversible tunable; set to 1 to disable. */
+  zoom: 1.5;
 }
 
 body {
