@@ -498,3 +498,52 @@
 .crisisLink:hover {
   color: var(--color-text-secondary);
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   DESKTOP — only change vs the original layout: pin the crisis-support
+   affordance to the bottom-right corner so it is visible without scrolling.
+   Everything else on desktop stays identical to the base styles above.
+   ══════════════════════════════════════════════════════════════════════ */
+@media (min-width: 481px) {
+  .crisisSupport {
+    position: fixed;
+    right: var(--space-4);
+    bottom: var(--space-3);
+    width: auto;
+    padding: 0;
+    flex-direction: row;
+    gap: 0;
+    z-index: 5;
+  }
+  .crisisDivider {
+    display: none;
+  }
+  .crisisLink {
+    background: rgba(6, 22, 30, 0.66);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   MOBILE (≤ 480px) — compact the homepage so all content fits the first
+   viewport. These overrides apply ONLY at phone widths; the desktop layout
+   above is left untouched. Orb sphere size is intentionally unchanged.
+   ══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .screen        { padding-bottom: var(--space-4); }
+  .wordmarkBar   { padding: 12px 0 0; }
+  .hero          { padding: 6px 8px 0; }
+  .headline      { margin-bottom: 8px; }
+  .sub           { display: none; }           /* protocol description hidden on mobile */
+  .orbZone       { padding: 4px 0 2px; gap: 4px; }
+  .ctaZone       { padding: 2px 0 6px; gap: var(--space-1); }
+  .yourStateCard,
+  .yourPatternsCard { padding: 0.5rem 0.7rem; }
+  .history       { flex: none; }              /* removes the dead-space stretch */
+  .emptyState    { padding: var(--space-2) 0; line-height: var(--leading-normal); }
+  .devBanner     { margin-top: var(--space-4); }
+  .crisisSupport { padding: var(--space-3) var(--screen-padding) var(--space-4); }
+}
