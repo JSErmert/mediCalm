@@ -500,27 +500,42 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   ONE-SCREEN COMPACTION — applied at ALL widths so the homepage fits a
-   single viewport (no scroll) on both desktop and mobile. Crisis support
-   stays in normal flow at the bottom (no corner pill). Orb sphere unchanged.
+   DESKTOP — the ONLY change vs the original layout: the crisis-support link
+   moves up to sit to the RIGHT of the "No sessions yet" empty-state line, so
+   it's visible without scrolling. Everything else on desktop is untouched
+   (full 1.5× scale, original spacing, hero paragraph all preserved).
    ══════════════════════════════════════════════════════════════════════ */
-.screen        { padding-bottom: var(--space-4); }
-.wordmarkBar   { padding: 12px 0 0; }
-.hero          { padding: 6px 8px 0; }
-.headline      { margin-bottom: 8px; }
-.sub           { display: none; }           /* protocol description hidden */
-.orbZone       { padding: 4px 0 2px; gap: 4px; }
-.ctaZone       { padding: 2px 0 6px; gap: var(--space-1); }
-.yourStateCard,
-.yourPatternsCard { padding: 0.5rem 0.7rem; }
-.history       { flex: none; }              /* removes the dead-space stretch */
-.emptyState    { padding: var(--space-2) 0; line-height: var(--leading-normal); }
-.devBanner     { margin-top: var(--space-4); }
-.crisisSupport { padding: var(--space-3) var(--screen-padding) var(--space-4); }
+.emptyRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
 
-/* Desktop: render the homepage at effective ~1.2× (0.8 × the app's 1.5×
-   html zoom) so the whole page fits one screen with no scroll, even on a
-   768px laptop. Mobile keeps its own 1.125× scale. Other screens stay 1.5×. */
-@media (min-width: 481px) {
-  .screen { zoom: 0.8; }
+/* Keep the crisis link intact on the right of the empty-state line */
+.emptyRow .crisisLink {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   MOBILE (≤ 480px) — compact, single-screen layout. Applies ONLY at phone
+   widths; desktop is left at its original size.
+   ══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .emptyRow      { flex-direction: column; gap: var(--space-1); }
+  .screen        { padding-bottom: var(--space-4); }
+  .wordmarkBar   { padding: 12px 0 0; }
+  .hero          { padding: 6px 8px 0; }
+  .headline      { margin-bottom: 8px; }
+  .sub           { display: none; }           /* protocol description hidden on mobile */
+  .orbZone       { padding: 4px 0 2px; gap: 4px; }
+  .ctaZone       { padding: 2px 0 6px; gap: var(--space-1); }
+  .yourStateCard,
+  .yourPatternsCard { padding: 0.5rem 0.7rem; }
+  .history       { flex: none; }              /* removes the dead-space stretch */
+  .emptyState    { padding: var(--space-2) 0; line-height: var(--leading-normal); }
+  .devBanner     { margin-top: var(--space-4); }
+  .crisisSupport { padding: var(--space-3) var(--screen-padding) var(--space-4); }
 }
