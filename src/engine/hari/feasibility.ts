@@ -90,11 +90,10 @@ export function adjustForFeasibility(
   }
 
   // ── Invariants — applied to all other cases ───────────────────────────────
-  //   • inhale >= 3 for non-minimal effort (avoid rushed pacing)
+  //   • inhale >= 3 (avoid rushed pacing) — the minimal-effort case already
+  //     returned above (Rule 2), so effort is always non-minimal here
   //   • exhale > inhale (ensures parasympathetic activation)
-  const inhale = result.effort !== 'minimal'
-    ? Math.max(3, config.inhaleSeconds)
-    : config.inhaleSeconds
+  const inhale = Math.max(3, config.inhaleSeconds)
   const exhale = Math.max(inhale + 1, config.exhaleSeconds)
   const hold = config.holdSeconds
 
