@@ -245,20 +245,24 @@ export function HomeScreen() {
         />
       )}
 
-      {/* ── Dev banner — R&D override control ───────────────────────── */}
-      <div className={styles.devBanner} aria-hidden="true">
-        <span className={styles.devBannerLabel}>R&amp;D</span>
-        <span className={styles.devBannerText}>
-          {devMode ? 'Safety override active — enables route to review screen' : 'Safety override off'}
-        </span>
-        <button
-          className={`${styles.devBannerToggle} ${devMode ? styles.devBannerToggleOn : ''}`}
-          type="button"
-          onClick={handleToggleDev}
-        >
-          {devMode ? 'On' : 'Off'}
-        </button>
-      </div>
+      {/* ── Dev banner — R&D override control ─────────────────────────
+          Local-dev only: hidden from production builds (import.meta.env.DEV
+          is false in `vite build`) so the public site never shows it. */}
+      {import.meta.env.DEV && (
+        <div className={styles.devBanner} aria-hidden="true">
+          <span className={styles.devBannerLabel}>R&amp;D</span>
+          <span className={styles.devBannerText}>
+            {devMode ? 'Safety override active — enables route to review screen' : 'Safety override off'}
+          </span>
+          <button
+            className={`${styles.devBannerToggle} ${devMode ? styles.devBannerToggleOn : ''}`}
+            type="button"
+            onClick={handleToggleDev}
+          >
+            {devMode ? 'On' : 'Off'}
+          </button>
+        </div>
+      )}
 
     </main>
   )
