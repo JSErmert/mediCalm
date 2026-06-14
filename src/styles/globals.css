@@ -19,6 +19,14 @@ html {
   zoom: 1.5;
 }
 
+/* Mobile: zoom out 25% relative to the 1.5× desktop scale (1.5 → 1.125) so
+   dense screens such as the homepage fit within the viewport. */
+@media (max-width: 480px) {
+  html {
+    zoom: 1.125;
+  }
+}
+
 body {
   font-family: var(--font-sans);
   font-size: var(--text-base);
