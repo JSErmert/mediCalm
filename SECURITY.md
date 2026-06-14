@@ -24,6 +24,13 @@ Please include:
 
 I aim to acknowledge within 5 business days. Coordinated disclosure is appreciated — please give me a reasonable window to investigate and patch before any public discussion.
 
+## Implemented Controls
+
+- **Dependency / vulnerability scanning** — Trivy filesystem scan in CI (`.github/workflows/security.yml`), failing on HIGH/CRITICAL.
+- **Secret scanning** — gitleaks in CI plus a `pre-commit` gitleaks hook (`.pre-commit-config.yaml`), so secrets are caught before they are committed.
+- **Automated dependency updates** — Dependabot (weekly) for npm and GitHub Actions.
+- **Secret management** — no secrets are committed; environment values are supplied at runtime via env vars / host config, never in the repo. `.env*` is gitignored.
+
 ## Scope
 
 In scope:

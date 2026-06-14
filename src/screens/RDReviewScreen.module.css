@@ -6,7 +6,7 @@
 .screen {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: var(--app-min-h);
   max-width: 480px;
   margin: 0 auto;
   padding: 0 0 40px;

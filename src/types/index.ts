@@ -6,6 +6,8 @@
  * Provenance labels are preserved per Source Truth Doctrine (doc 02).
  */
 
+import type { HistoryEntryM7Additions } from './m7'
+
 // ── Provenance ────────────────────────────────────────────────────────────────
 
 export type ProvenanceLabel =
@@ -121,6 +123,12 @@ export interface RuntimeSession {
   safety_override_used?: boolean
   /** HARI decision metadata — tracking only, does not affect M3 runtime. Present only for HARI-originated sessions. */
   hari_metadata?: import('./hari').HariSessionMetadata
+  /**
+   * M7.1 shadow-mode build result — present on sessions that ran through M7 orchestration.
+   * Carried from session creation to HistoryEntry save. Does not affect session rendering.
+   * Authority: docs/superpowers/specs/2026-05-05-m7-pt-pathway-foundation-design.md §8 M7.1
+   */
+  m7_build?: import('./m7').M7RuntimeBuild
 }
 
 // ── Feedback ──────────────────────────────────────────────────────────────────
@@ -198,6 +206,13 @@ export interface HistoryEntry {
    * Authority: M4.7 §3–§4
    */
   hari_metadata?: import('./hari').PersistedHariMetadata
+  // ── M7 additions (all optional; legacy records remain valid per I37) ────────
+  intake_sensor_state?: HistoryEntryM7Additions['intake_sensor_state']
+  effective_intake_state?: HistoryEntryM7Additions['effective_intake_state']
+  pathway_ref?: HistoryEntryM7Additions['pathway_ref']
+  phase_log?: HistoryEntryM7Additions['phase_log']
+  truth_state?: HistoryEntryM7Additions['truth_state']
+  refinement_context?: HistoryEntryM7Additions['refinement_context']
 }
 
 // ── Personalization ───────────────────────────────────────────────────────────
@@ -303,3 +318,5 @@ export interface MechanismObject {
   contraindication_tags: string[]
   protocol_priority_tags: string[]
 }
+
+export * from './m7'

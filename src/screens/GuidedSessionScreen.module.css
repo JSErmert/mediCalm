@@ -9,7 +9,7 @@
  */
 
 .screen {
-  min-height: 100dvh;
+  min-height: var(--app-min-h);
   background: transparent;
   display: flex;
   flex-direction: column;

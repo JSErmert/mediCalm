@@ -1,0 +1,19 @@
+# Non-runtime files — excluded from Vercel uploads.
+# The production build (`npm run build` = tsc -b && vite build) only needs
+# src/, index.html, and the TS/Vite config. Everything below is docs, tests,
+# audits, or local scratch that bloats the upload (docs/ alone is ~1.4 GB and
+# breaks Vercel's 100 MB per-file limit).
+
+docs
+snapshots
+e2e
+playwright.config.ts
+test-results
+scripts
+.superpowers
+.recovered
+.cache
+mediCalm-review-snapshot.zip
+*.log
+LICENSE
+SECURITY.md

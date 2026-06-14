@@ -206,9 +206,22 @@ export function HomeScreen() {
         )}
 
         {history.length === 0 ? (
-          <p className={styles.emptyState}>
-            No sessions yet. Start your first session above.
-          </p>
+          <div className={styles.emptyRow}>
+            <p className={styles.emptyState}>
+              No sessions yet. Start your first session above.
+            </p>
+            {/* Crisis support moves up beside the empty state so it's visible
+                without scrolling (to the right on desktop, stacked on mobile).
+                When sessions exist it returns to the footer below. */}
+            <button
+              type="button"
+              className={styles.crisisLink}
+              onClick={() => dispatch({ type: 'NAVIGATE', screen: 'sad_safety' })}
+              aria-label="Need crisis support? Open SAD safety check"
+            >
+              Need crisis support?
+            </button>
+          </div>
         ) : (
           <ul className={styles.historyList} aria-label="Past sessions">
             {history.map((entry) => (
@@ -225,18 +238,22 @@ export function HomeScreen() {
         )}
       </section>
 
-      {/* ── Crisis support affordance (PT Clinical Pass 2) ──────────── */}
-      <div className={styles.crisisSupport}>
-        <div className={styles.crisisDivider} aria-hidden="true" />
-        <button
-          type="button"
-          className={styles.crisisLink}
-          onClick={() => dispatch({ type: 'NAVIGATE', screen: 'sad_safety' })}
-          aria-label="Need crisis support? Open SAD safety check"
-        >
-          Need crisis support?
-        </button>
-      </div>
+      {/* ── Crisis support affordance (PT Clinical Pass 2) ──────────────
+          Footer placement only when sessions exist; in the empty state it
+          moves up beside the "No sessions yet" line (see above). */}
+      {history.length > 0 && (
+        <div className={styles.crisisSupport}>
+          <div className={styles.crisisDivider} aria-hidden="true" />
+          <button
+            type="button"
+            className={styles.crisisLink}
+            onClick={() => dispatch({ type: 'NAVIGATE', screen: 'sad_safety' })}
+            aria-label="Need crisis support? Open SAD safety check"
+          >
+            Need crisis support?
+          </button>
+        </div>
+      )}
 
       {caseFileEntry && (
         <SessionCaseFile
@@ -245,20 +262,24 @@ export function HomeScreen() {
         />
       )}
 
-      {/* ── Dev banner — R&D override control ───────────────────────── */}
-      <div className={styles.devBanner} aria-hidden="true">
-        <span className={styles.devBannerLabel}>R&amp;D</span>
-        <span className={styles.devBannerText}>
-          {devMode ? 'Safety override active — enables route to review screen' : 'Safety override off'}
-        </span>
-        <button
-          className={`${styles.devBannerToggle} ${devMode ? styles.devBannerToggleOn : ''}`}
-          type="button"
-          onClick={handleToggleDev}
-        >
-          {devMode ? 'On' : 'Off'}
-        </button>
-      </div>
+      {/* ── Dev banner — R&D override control ─────────────────────────
+          Local-dev only: hidden from production builds (import.meta.env.DEV
+          is false in `vite build`) so the public site never shows it. */}
+      {import.meta.env.DEV && (
+        <div className={styles.devBanner} aria-hidden="true">
+          <span className={styles.devBannerLabel}>R&amp;D</span>
+          <span className={styles.devBannerText}>
+            {devMode ? 'Safety override active — enables route to review screen' : 'Safety override off'}
+          </span>
+          <button
+            className={`${styles.devBannerToggle} ${devMode ? styles.devBannerToggleOn : ''}`}
+            type="button"
+            onClick={handleToggleDev}
+          >
+            {devMode ? 'On' : 'Off'}
+          </button>
+        </div>
+      )}
 
     </main>
   )

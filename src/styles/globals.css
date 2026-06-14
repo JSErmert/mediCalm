@@ -14,6 +14,30 @@
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  /* Global 1.5× scale — renders the whole app (type, spacing, orb, layout)
+     50% larger. Single reversible tunable; set to 1 to disable. */
+  zoom: 1.5;
+}
+
+/* Mobile: zoom out 25% relative to the 1.5× desktop scale (1.5 → 1.125) so
+   dense screens such as the homepage fit within the viewport. */
+@media (max-width: 480px) {
+  html {
+    zoom: 1.125;
+  }
+}
+
+/* Full-viewport-height containers must divide by the active zoom: CSS `zoom`
+   does NOT adjust `dvh`, so a raw `100dvh` renders zoom× too tall, producing
+   phantom scroll on every page and pushing centered content too low. Default
+   keeps the mobile/unscaled value unchanged; desktop divides by its 1.5×. */
+:root {
+  --app-min-h: 100dvh;
+}
+@media (min-width: 481px) {
+  :root {
+    --app-min-h: calc(100dvh / 1.5);
+  }
 }
 
 body {
@@ -23,14 +47,14 @@ body {
   line-height: var(--leading-normal);
   color: var(--color-text-primary);
   background-color: var(--color-bg-base);
-  min-height: 100dvh;
+  min-height: var(--app-min-h);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
-  min-height: 100dvh;
+  min-height: var(--app-min-h);
   display: flex;
   flex-direction: column;
 }

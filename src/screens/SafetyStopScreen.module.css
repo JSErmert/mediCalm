@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100dvh;
+  min-height: var(--app-min-h);
   padding: 2rem 1.5rem;
   background: transparent;
 }

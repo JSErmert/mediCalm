@@ -1,6 +1,8 @@
-import { useReducer, type ReactNode } from 'react'
+import { useEffect, useReducer, type ReactNode } from 'react'
 import { AppContext, type AppState, type AppAction } from './AppContext'
 import { loadSettings } from '../storage/settings'
+import { sweepOrphans } from '../engine/m7/phaseLog'
+import { loadHistory, saveHistory } from '../storage/sessionHistory'
 
 function reducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
@@ -64,6 +66,16 @@ function getInitialState(): AppState {
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState)
+
+  // M7.1 Task 16 Sub-task C: orphan sweep on app-load.
+  // Idempotent — sweepOrphans skips entries that are already closed.
+  // Authority: §3.10 I40, Q7 Refinement 3.
+  useEffect(() => {
+    const history = loadHistory()
+    sweepOrphans(history)
+    saveHistory(history)
+  }, [])
+
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       {children}

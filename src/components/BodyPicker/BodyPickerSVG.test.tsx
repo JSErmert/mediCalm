@@ -35,7 +35,7 @@ describe('BodyPickerSVG', () => {
     const { container } = render(
       <BodyPickerSVG side="front" selectedRegions={['shoulder_left']} selectedMuscles={[]} onRegionTap={() => {}} onRegionHover={() => {}} />
     )
-    const shoulderGroup = container.querySelector('g[data-region="shoulder_left"]')
+    const shoulderGroup = container.querySelector<SVGGElement>('g[data-region="shoulder_left"]')
     expect(shoulderGroup?.className.baseVal).toMatch(/selected/)
   })
 
@@ -43,7 +43,7 @@ describe('BodyPickerSVG', () => {
     const { container } = render(
       <BodyPickerSVG side="front" selectedRegions={[]} selectedMuscles={['shoulder_front_left']} onRegionTap={() => {}} onRegionHover={() => {}} />
     )
-    const shoulderGroup = container.querySelector('g[data-region="shoulder_left"]')
+    const shoulderGroup = container.querySelector<SVGGElement>('g[data-region="shoulder_left"]')
     expect(shoulderGroup?.className.baseVal).toMatch(/selected/)
   })
 
