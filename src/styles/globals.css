@@ -27,6 +27,19 @@ html {
   }
 }
 
+/* Full-viewport-height containers must divide by the active zoom: CSS `zoom`
+   does NOT adjust `dvh`, so a raw `100dvh` renders zoom× too tall, producing
+   phantom scroll on every page and pushing centered content too low. Default
+   keeps the mobile/unscaled value unchanged; desktop divides by its 1.5×. */
+:root {
+  --app-min-h: 100dvh;
+}
+@media (min-width: 481px) {
+  :root {
+    --app-min-h: calc(100dvh / 1.5);
+  }
+}
+
 body {
   font-family: var(--font-sans);
   font-size: var(--text-base);
@@ -34,14 +47,14 @@ body {
   line-height: var(--leading-normal);
   color: var(--color-text-primary);
   background-color: var(--color-bg-base);
-  min-height: 100dvh;
+  min-height: var(--app-min-h);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
-  min-height: 100dvh;
+  min-height: var(--app-min-h);
   display: flex;
   flex-direction: column;
 }
