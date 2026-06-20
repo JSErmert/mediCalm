@@ -27,7 +27,7 @@ export function GroundedTip({ message }: { message: GroundedMessage }) {
         <span aria-hidden="true">▲</span> Learn more
       </button>
       {open && (
-        <div className="grounded-tip__popup" role="dialog" aria-label="Research source">
+        <div className="grounded-tip__popup" role="region" aria-label="Research source">
           <p className="grounded-tip__quote">&ldquo;{message.display_quote}&rdquo;</p>
           <p className="grounded-tip__attrib">
             {attribution} &middot; PMID {message.citation.pmid}
