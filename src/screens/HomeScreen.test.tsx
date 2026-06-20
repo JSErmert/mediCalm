@@ -1,9 +1,27 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AppProvider } from '../context/AppProvider'
 import { HomeScreen } from './HomeScreen'
 import { useAppContext } from '../context/AppContext'
+
+vi.mock('../engine/groundedMessages/selectTip', () => ({
+  selectPreSessionTip: () => ({
+    message_id: 'demo',
+    text: 'Slowing your exhale helps your nervous system settle.',
+    selectors: { symptom: ['tightness'] },
+    citation: {
+      pmid: '33117119',
+      source_link: 'https://pubmed.ncbi.nlm.nih.gov/33117119/',
+      exact_figure: 'f',
+      figure_units: 'u',
+    },
+    display_quote: 'Slow breathing increased HRV.',
+    authored_by: 'test',
+    authored_at: '2026-06-19T00:00:00.000Z',
+    review_status: 'pt_advisor_passed',
+  }),
+}))
 
 function renderWithProvider() {
   return render(
@@ -85,6 +103,13 @@ describe('HomeScreen', () => {
   it('renders the crisis support affordance', () => {
     renderWithProvider()
     expect(screen.getByRole('button', { name: /need crisis support/i })).toBeInTheDocument()
+  })
+
+  it('shows a grounded pre-session tip when the selection function returns one', async () => {
+    renderWithProvider()
+    expect(
+      await screen.findByText('Slowing your exhale helps your nervous system settle.')
+    ).toBeInTheDocument()
   })
 
   it('crisis support affordance navigates to sad_safety', async () => {

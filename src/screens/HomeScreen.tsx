@@ -20,7 +20,9 @@ import { isDevOverride } from '../utils/devFlags'
 import { HistoryCard } from '../components/HistoryCard'
 import { SessionCaseFile } from '../components/SessionCaseFile'
 import { YourPatternsPanel } from '../components/YourPatternsPanel'
+import { GroundedTip } from '../components/GroundedTip'
 import { buildContinueWhatHelpedSession } from '../engine/hari/continueWhatHelped'
+import { selectPreSessionTip } from '../engine/groundedMessages/selectTip'
 import styles from './HomeScreen.module.css'
 
 export function HomeScreen() {
@@ -51,6 +53,8 @@ export function HomeScreen() {
       setShowContinue(true)
     }
   }, [])
+
+  const preSessionTip = selectPreSessionTip(history[0] ?? null)
 
   function handleStart() {
     // M6.2: All new sessions enter via state selection.
@@ -159,6 +163,12 @@ export function HomeScreen() {
           Begin session
         </button>
         <p className={styles.ctaSub}>Calibrated to your current intensity level · approx. 4–6 min</p>
+
+        {preSessionTip && (
+          <div className={styles.tipZone}>
+            <GroundedTip message={preSessionTip} />
+          </div>
+        )}
 
         <div className={styles.contextRow}>
           <button
