@@ -89,45 +89,48 @@ function renderSetup(branch: IntakeBranch, pattern: LocationPattern | undefined)
   )
 }
 
-describe('SessionSetupScreen — Scope A position hint', () => {
+describe('SessionSetupScreen — position setup cue (Layer 3)', () => {
   beforeEach(() => localStorage.clear())
 
-  it("renders lying-down hint when branch=tightness_or_pain & pattern=connected", async () => {
+  it('shows the short lying-down cue for connected pattern, and the old long note is gone', async () => {
     renderSetup('tightness_or_pain', 'connected')
-    const note = await waitFor(() => screen.getByLabelText('Position note'))
-    expect(note.textContent).toMatch(/lying down/i)
-    expect(note.textContent).toMatch(/localized/i)
+    await waitFor(() => screen.getByLabelText('Session setup'))
+    expect(screen.getByText(/try this lying down/i)).toBeInTheDocument()
+    expect(screen.queryByText(/localized/i)).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Position note')).not.toBeInTheDocument()
   })
 
-  it("renders lying-down hint when branch=tightness_or_pain & pattern=single", async () => {
+  it('shows the short lying-down cue for single pattern', async () => {
     renderSetup('tightness_or_pain', 'single')
-    const note = await waitFor(() => screen.getByLabelText('Position note'))
-    expect(note.textContent).toMatch(/lying down/i)
+    await waitFor(() => screen.getByLabelText('Session setup'))
+    expect(screen.getByText(/try this lying down/i)).toBeInTheDocument()
   })
 
-  it("renders upright-spine hint when branch=tightness_or_pain & pattern=widespread", async () => {
+  it('shows the upright cue for widespread pattern (not lying down)', async () => {
     renderSetup('tightness_or_pain', 'widespread')
-    const note = await waitFor(() => screen.getByLabelText('Position note'))
-    expect(note.textContent).toMatch(/sitting tall/i)
+    await waitFor(() => screen.getByLabelText('Session setup'))
+    expect(screen.getByText(/sit tall with your back/i)).toBeInTheDocument()
+    expect(screen.queryByText(/try this lying down/i)).not.toBeInTheDocument()
   })
 
-  it("renders upright-spine hint when branch=tightness_or_pain & pattern=multifocal", async () => {
+  it('shows the upright cue for multifocal pattern', async () => {
     renderSetup('tightness_or_pain', 'multifocal')
-    const note = await waitFor(() => screen.getByLabelText('Position note'))
-    expect(note.textContent).toMatch(/sitting tall/i)
+    await waitFor(() => screen.getByLabelText('Session setup'))
+    expect(screen.getByText(/sit tall with your back/i)).toBeInTheDocument()
   })
 
-  it("does not render hint when branch=tightness_or_pain & pattern=diffuse_unspecified", async () => {
+  it('shows no position cue for diffuse_unspecified pattern', async () => {
     renderSetup('tightness_or_pain', 'diffuse_unspecified')
-    // Wait for the screen itself to render before asserting absence
     await waitFor(() => screen.getByLabelText('Session setup'))
-    expect(screen.queryByLabelText('Position note')).not.toBeInTheDocument()
+    expect(screen.queryByText(/try this lying down/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/sit tall with your back/i)).not.toBeInTheDocument()
   })
 
-  it("does not render hint when branch=anxious_or_overwhelmed", async () => {
-    renderSetup('anxious_or_overwhelmed', 'single')
+  it('shows no position cue for anxious branch (no location pattern)', async () => {
+    renderSetup('anxious_or_overwhelmed', undefined)
     await waitFor(() => screen.getByLabelText('Session setup'))
-    expect(screen.queryByLabelText('Position note')).not.toBeInTheDocument()
+    expect(screen.queryByText(/try this lying down/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/sit tall with your back/i)).not.toBeInTheDocument()
   })
 })
 
@@ -172,6 +175,19 @@ function renderRevealSetup(stateInterpretationResult: StateInterpretationResult 
   } as unknown as React.ContextType<typeof AppContext>
   return render(<AppContext.Provider value={value}><SessionSetupScreen /></AppContext.Provider>)
 }
+
+// ── Grounded Guidance Layer 3: setup cues ────────────────────────────────────
+
+describe('SessionSetupScreen — Layer 3 setup cues', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('renders the diaphragmatic setup cue text', () => {
+    renderSetup('tightness_or_pain', 'single')
+    expect(screen.getByText(/only the lower hand rise/i)).toBeInTheDocument()
+  })
+})
+
+// ── Grounded Guidance Layer 1: recommendation reveal ─────────────────────────
 
 describe('SessionSetupScreen — grounded recommendation reveal', () => {
   beforeEach(() => localStorage.clear())

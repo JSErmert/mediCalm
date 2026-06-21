@@ -11,6 +11,10 @@ describe('grounded message bank — structural gate', () => {
     expect(GROUNDED_MESSAGES.length).toBeGreaterThan(0)
   })
 
+  it('includes PMID 24835338 (research-001) for setup-cue citations', () => {
+    expect(GROUNDED_MESSAGES.some((m) => m.citation.pmid === '24835338')).toBe(true)
+  })
+
   it('has unique message_ids', () => {
     const ids = GROUNDED_MESSAGES.map((m) => m.message_id)
     expect(new Set(ids).size).toBe(ids.length)

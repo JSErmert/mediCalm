@@ -11,7 +11,9 @@ import { saveSession } from '../storage/sessionHistory'
 import { deriveExpressionProfile } from '../engine/presentation/expressionProfile'
 import { decideContinuation } from '../engine/hari/reassessmentLoop'
 import { buildDeliveryConfig } from '../engine/hari/sessionConfig'
-import { derivePositionHint } from '../engine/presentation/interpretationLayer'
+import { selectBreathingCues } from '../engine/groundedMessages/selectBreathingCues'
+import { classifyNeedProfile } from '../engine/hari/needProfile'
+import type { LocationTag } from '../types/taxonomy'
 import { startPhase, completePhase, abortPhase, safetyStopPhase, deriveTruthState } from '../engine/m7/phaseLog'
 import styles from './GuidedSessionScreen.module.css'
 
@@ -418,6 +420,14 @@ export function GuidedSessionScreen() {
   // currentRound shown to user is completedRounds + 1 (which round they're on now)
   const currentDisplayRound = Math.min(completedRounds + 1, totalRounds)
 
+  const inSessionCues = selectBreathingCues({
+    location: session.pain_input.location_tags as LocationTag[],
+    locationPattern: state.hariIntake?.location_pattern,
+    goal: state.stateInterpretationResult
+      ? classifyNeedProfile(state.stateInterpretationResult).primaryGoal
+      : null,
+  }).inSessionCues
+
   // M6: time-based progress + duration label
   const m6DurationLabel = sessionConfig
     ? `About ${Math.max(1, Math.round(sessionConfig.durationSeconds / 60))} minute${Math.round(sessionConfig.durationSeconds / 60) === 1 ? '' : 's'}`
@@ -434,18 +444,17 @@ export function GuidedSessionScreen() {
         // PhaseRenderer iterates variant.phases[] (intro → breath → closing) and
         // fires per-phase callbacks into the phase_log. onSessionComplete advances
         // to the existing 'completion' phase so the CompletionForm flow runs.
-        // Clinical context props (sessionName, diaphragmaticCue, durationLabel,
-        // positionCue) are forwarded so M7 breath phases render with the same
-        // surrounding context the legacy path renders — see BreathPhaseRenderer.
+        // Clinical context props (sessionName, durationLabel, inSessionCues)
+        // are forwarded so M7 breath phases render with grounded guidance —
+        // see BreathPhaseRenderer.
         <div className={styles.breathingPhase}>
           <PhaseRenderer
             variant={session.m7_build.variant}
             expressionProfile={expressionProfile}
             protocolId={session.protocol_id}
             sessionName={sessionConfig ? sessionConfig.sessionName : session.protocol_name}
-            diaphragmaticCue={sessionConfig ? sessionConfig.openingPrompt : session.goal}
             durationLabel={m6DurationLabel ?? undefined}
-            positionCue={derivePositionHint(state.hariIntake)}
+            inSessionCues={inSessionCues}
             gentleLabels={!!sessionConfig}
             preStartDelay={sessionConfig ? 1500 : 0}
             m6ProgressFraction={sessionConfig ? m6ProgressFraction : undefined}

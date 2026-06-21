@@ -4,6 +4,7 @@ import { render, screen, act } from '@testing-library/react'
 import { BreathPhaseRenderer } from './BreathPhaseRenderer'
 import styles from './BreathPhaseRenderer.module.css'
 import type { BreathPhase } from '../../types/m7'
+import type { BreathingCue } from '../../types/breathingCue'
 
 const phase: BreathPhase = {
   type: 'breath',
@@ -85,17 +86,6 @@ describe('BreathPhaseRenderer', () => {
       expect(screen.getByText(/calm downregulation/i)).toBeInTheDocument()
     })
 
-    it('renders diaphragmaticCue when provided (top zone — opening prompt)', () => {
-      render(
-        <BreathPhaseRenderer
-          phase={phase}
-          onComplete={() => {}}
-          diaphragmaticCue="Belly soft, breath low — let the diaphragm lead."
-        />
-      )
-      expect(screen.getByText(/belly soft, breath low/i)).toBeInTheDocument()
-    })
-
     it('renders durationLabel when provided (top zone — duration)', () => {
       render(
         <BreathPhaseRenderer
@@ -107,17 +97,16 @@ describe('BreathPhaseRenderer', () => {
       expect(screen.getByText(/about 3 minutes/i)).toBeInTheDocument()
     })
 
-    it('renders positionCue when provided (Scope A position note)', () => {
+    it('shows the first in-session cue at round 0 (Layer 3 rotation)', () => {
+      const cues: BreathingCue[] = [
+        { id: 'a', text: 'First cue', phase: 'in_session', core: true },
+        { id: 'b', text: 'Second cue', phase: 'in_session', core: true },
+      ]
       render(
-        <BreathPhaseRenderer
-          phase={phase}
-          onComplete={() => {}}
-          positionCue="If you can, try this lying down — localized patterns respond well to gentle decompression."
-        />
+        <BreathPhaseRenderer phase={phase} onComplete={() => {}} inSessionCues={cues} />,
       )
-      expect(
-        screen.getByText(/try this lying down/i)
-      ).toBeInTheDocument()
+      expect(screen.getByText('First cue')).toBeInTheDocument()
+      expect(screen.queryByText(/PMID/i)).not.toBeInTheDocument() // no citation UI mid-breath (INV-2)
     })
 
     it('renders the round counter (Round X of Y) and total cycles', () => {
@@ -135,33 +124,27 @@ describe('BreathPhaseRenderer', () => {
           phase={phase}
           onComplete={() => {}}
           sessionName="Calm Downregulation"
-          diaphragmaticCue="Belly soft, breath low."
           durationLabel="About 3 minutes"
-          positionCue="If you can, try this lying down."
         />
       )
       // Top-zone context
       expect(screen.getByText(/calm downregulation/i)).toBeInTheDocument()
-      expect(screen.getByText(/belly soft, breath low/i)).toBeInTheDocument()
       expect(screen.getByText(/about 3 minutes/i)).toBeInTheDocument()
       // Round counter
       expect(screen.getByLabelText(/^Round 1 of 4$/i)).toBeInTheDocument()
       // BreathingOrb (the visualization)
       expect(screen.getByLabelText(/^Breathing:/i)).toBeInTheDocument()
-      // Position cue
-      expect(screen.getByText(/try this lying down/i)).toBeInTheDocument()
     })
 
     it('omits clinical context elements when their props are absent', () => {
       // Backward-compatible: existing callers / tests pass only phase + onComplete.
       // The renderer must not invent placeholder copy when context isn't supplied.
       render(<BreathPhaseRenderer phase={phase} onComplete={() => {}} />)
-      // No sessionName / diaphragmaticCue / durationLabel / positionCue rendered.
+      // No sessionName / durationLabel / inSessionCues rendered.
       // (cue.opening / cue.closing from the phase struct still render — those
       // are part of the variant's authored content, not external context.)
       expect(screen.queryByText(/calm downregulation/i)).not.toBeInTheDocument()
       expect(screen.queryByText(/about 3 minutes/i)).not.toBeInTheDocument()
-      expect(screen.queryByText(/lying down/i)).not.toBeInTheDocument()
     })
   })
 
@@ -332,15 +315,13 @@ describe('BreathPhaseRenderer', () => {
     })
 
     describe('full-render smoke equivalent (M6 mode, all elements together)', () => {
-      it('renders sessionName + diaphragmaticCue + durationLabel + orb + time progress + position note (round counter suppressed)', () => {
+      it('renders sessionName + durationLabel + orb + time progress (round counter suppressed)', () => {
         const { container } = render(
           <BreathPhaseRenderer
             phase={phase}
             onComplete={() => {}}
             sessionName="Calm Downregulation"
-            diaphragmaticCue="Belly soft, breath low."
             durationLabel="About 3 minutes"
-            positionCue="If you can, try this lying down."
             gentleLabels={true}
             preStartDelay={1500}
             m6ProgressFraction={0.25}
@@ -350,29 +331,24 @@ describe('BreathPhaseRenderer', () => {
         )
         // Top zone
         expect(screen.getByText(/calm downregulation/i)).toBeInTheDocument()
-        expect(screen.getByText(/belly soft, breath low/i)).toBeInTheDocument()
         expect(screen.getByText(/about 3 minutes/i)).toBeInTheDocument()
         // Orb
         expect(screen.getByLabelText(/^Breathing:/i)).toBeInTheDocument()
         // Time progress (rendered, round counter suppressed)
         expect(container.getElementsByClassName(styles.timeProgress)[0]).toBeTruthy()
         expect(screen.queryByLabelText(/^Round \d+ of \d+$/)).not.toBeInTheDocument()
-        // Position note
-        expect(screen.getByText(/lying down/i)).toBeInTheDocument()
         // M7-additive cue copy still rendered
         expect(screen.getByText(/settle into the breath/i)).toBeInTheDocument()
         expect(screen.getByText(/easing back/i)).toBeInTheDocument()
       })
 
-      it('renders sessionName + diaphragmaticCue + durationLabel + orb + round counter + position note (no time progress) — HARI/legacy mode', () => {
+      it('renders sessionName + durationLabel + orb + round counter (no time progress) — HARI/legacy mode', () => {
         const { container } = render(
           <BreathPhaseRenderer
             phase={phase}
             onComplete={() => {}}
             sessionName="HARI Session"
-            diaphragmaticCue="Soften and settle."
             durationLabel="About 2 minutes"
-            positionCue="Sitting tall but easy works well."
             gentleLabels={false}
             preStartDelay={0}
             // m6ProgressFraction intentionally undefined → HARI/legacy mode
@@ -381,15 +357,12 @@ describe('BreathPhaseRenderer', () => {
         )
         // Top zone
         expect(screen.getByText(/hari session/i)).toBeInTheDocument()
-        expect(screen.getByText(/soften and settle/i)).toBeInTheDocument()
         expect(screen.getByText(/about 2 minutes/i)).toBeInTheDocument()
         // Orb
         expect(screen.getByLabelText(/^Breathing:/i)).toBeInTheDocument()
         // Round counter (rendered, time progress NOT rendered)
         expect(screen.getByLabelText(/^Round 1 of 4$/)).toBeInTheDocument()
         expect(container.getElementsByClassName(styles.timeProgress)[0]).toBeFalsy()
-        // Position note
-        expect(screen.getByText(/sitting tall but easy/i)).toBeInTheDocument()
       })
     })
   })

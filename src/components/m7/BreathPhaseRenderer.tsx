@@ -27,7 +27,10 @@ import { RoundDots } from '../RoundDots'
 import { BREATH_FAMILIES } from '../../engine/hari/breathFamily'
 import type { BreathPhase } from '../../types/m7'
 import type { ExpressionProfile } from '../../engine/presentation/expressionProfile'
+import type { BreathingCue } from '../../types/breathingCue'
 import styles from './BreathPhaseRenderer.module.css'
+
+const CUES_PER_ROTATION = 2
 
 type Props = {
   phase: BreathPhase
@@ -38,12 +41,10 @@ type Props = {
   protocolId?: string
   /** Top-zone protocol/pathway name (e.g. sessionConfig.sessionName). */
   sessionName?: string
-  /** Top-zone opening prompt — Scope A diaphragmatic / breath-mechanic cue. */
-  diaphragmaticCue?: string
   /** Top-zone duration label (e.g. "About 3 minutes"). */
   durationLabel?: string
-  /** Scope A contextual position hint, derived from intake branch + pattern. */
-  positionCue?: string
+  /** Pre-compiled, rotated in-session cues (Layer 3). App-voice text only. */
+  inSessionCues?: BreathingCue[]
   /** Mirrors GuidedSessionScreen `gentleLabels={!!sessionConfig}`. Default: true. */
   gentleLabels?: boolean
   /** Mirrors GuidedSessionScreen `preStartDelay={sessionConfig ? 1500 : 0}`. Default: 0. */
@@ -66,9 +67,8 @@ export function BreathPhaseRenderer({
   expressionProfile,
   protocolId,
   sessionName,
-  diaphragmaticCue,
   durationLabel,
-  positionCue,
+  inSessionCues,
   gentleLabels = true,
   preStartDelay = 0,
   m6ProgressFraction,
@@ -85,7 +85,12 @@ export function BreathPhaseRenderer({
   const [completedRounds, setCompletedRounds] = useState(0)
   const currentDisplayRound = Math.min(completedRounds + 1, totalRounds)
 
-  const hasTopZone = !!(sessionName || diaphragmaticCue || durationLabel)
+  const cues = inSessionCues ?? []
+  const currentCue = cues.length > 0
+    ? cues[Math.floor(completedRounds / CUES_PER_ROTATION) % cues.length]
+    : null
+
+  const hasTopZone = !!(sessionName || durationLabel)
   const showTimeProgress = m6ProgressFraction !== undefined
   const showRoundCounter = !showTimeProgress
 
@@ -94,7 +99,6 @@ export function BreathPhaseRenderer({
       {hasTopZone && (
         <header className={styles.topZone} aria-label="Protocol context">
           {sessionName && <p className={styles.protocolName}>{sessionName}</p>}
-          {diaphragmaticCue && <p className={styles.goalText}>{diaphragmaticCue}</p>}
           {durationLabel && <p className={styles.durationLabel}>{durationLabel}</p>}
         </header>
       )}
@@ -144,9 +148,9 @@ export function BreathPhaseRenderer({
           </div>
         )}
 
-        {positionCue && (
-          <p className={styles.positionCue} aria-label="Position note">
-            {positionCue}
+        {currentCue && (
+          <p className={styles.positionCue} aria-label="Breathing cue">
+            {currentCue.text}
           </p>
         )}
       </div>
