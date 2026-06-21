@@ -1,6 +1,13 @@
 node_modules
 dist
 .DS_Store
+
+# Mission Control Apex Mode — local dispatch artifacts (read from working tree, never committed)
+.worktrees/
+.apex/
+apex-bundle.json
+mission-control.json
+
 *.local
 test-results
 .superpowers/
