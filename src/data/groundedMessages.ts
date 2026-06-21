@@ -4,7 +4,10 @@ export const GROUNDED_MESSAGES: GroundedMessage[] = [
   {
     message_id: 'gentle_exercise_eases_sensitization',
     text: 'Gentle, regular movement can calm an over-sensitized pain system over time.',
-    selectors: { symptom: ['aching', 'soreness', 'burning'] },
+    // goal[] is engineering routing metadata (same class as symptom[]), not a
+    // faithfulness claim — it decides where the already-attested message routes
+    // at the recommendation-reveal. PT sanity-check of the routing recommended.
+    selectors: { symptom: ['aching', 'soreness', 'burning'], goal: ['decompress', 'restore'] },
     citation: {
       pmid: '39818121',
       source_link: 'https://pubmed.ncbi.nlm.nih.gov/39818121/',

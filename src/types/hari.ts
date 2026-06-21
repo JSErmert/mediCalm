@@ -812,6 +812,26 @@ export type RegulatoryGoal =
   | 'activate'      // sad/exhausted when feasible — mild energy support
 
 /**
+ * Runtime list of every RegulatoryGoal. Kept adjacent to the type union as the
+ * single source of truth; the exhaustiveness guard below fails to compile if the
+ * union and this list ever drift.
+ */
+export const REGULATORY_GOALS = [
+  'decompress',
+  'restore',
+  'stabilize',
+  'downregulate',
+  'expand',
+  'ground',
+  'activate',
+] as const satisfies readonly RegulatoryGoal[]
+
+// Compile-time exhaustiveness: every RegulatoryGoal must appear in REGULATORY_GOALS.
+type _GoalsCovered = Exclude<RegulatoryGoal, (typeof REGULATORY_GOALS)[number]>
+const _goalsExhaustive: _GoalsCovered extends never ? true : false = true
+void _goalsExhaustive
+
+/**
  * Regulatory need profile — intermediate layer between input and breath selection.
  * Decouples state interpretation from direct ratio assignment.
  * Authority: M6.8

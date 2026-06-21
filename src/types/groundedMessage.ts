@@ -1,5 +1,6 @@
 import type { TierACitation, ReviewStatus, ISODate } from './m7'
 import type { LocationTag, SymptomTag, TriggerTag } from './taxonomy'
+import type { RegulatoryGoal } from './hari'
 
 export type { ReviewStatus } from './m7'
 
@@ -7,6 +8,7 @@ export type MessageSelectors = {
   location?: LocationTag[]
   symptom?: SymptomTag[]
   trigger?: TriggerTag[]
+  goal?: RegulatoryGoal[]
 }
 
 export type GroundedMessage = {

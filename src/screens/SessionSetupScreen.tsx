@@ -20,6 +20,9 @@ import { interpretSession, derivePositionHint } from '../engine/presentation/int
 import { getOrComputePatternSummary } from '../engine/hari/patternReader'
 import { computeSessionInsights } from '../engine/hari/sessionInsights'
 import { SessionInsightsPanel } from '../components/SessionInsightsPanel'
+import { classifyNeedProfile } from '../engine/hari/needProfile'
+import { RecommendationReveal } from '../components/RecommendationReveal'
+import type { SymptomTag, LocationTag } from '../types/taxonomy'
 import styles from './SessionSetupScreen.module.css'
 
 export function SessionSetupScreen() {
@@ -37,6 +40,16 @@ export function SessionSetupScreen() {
   // branch + location_pattern. Renders as an addendum below the protocol's
   // own support_mode (which remains the safety-validated default).
   const positionHint = derivePositionHint(state.hariIntake)
+
+  // Grounded Guidance Layer 1 — derive the recommendation's goal from the
+  // already-stored interpretation result (no new engine call into the reducer).
+  const derivedGoal = state.stateInterpretationResult
+    ? classifyNeedProfile(state.stateInterpretationResult).primaryGoal
+    : null
+  const evidenceInput = {
+    symptom: session.pain_input.symptom_tags as SymptomTag[],
+    location: session.pain_input.location_tags as LocationTag[],
+  }
 
   // M5.4 — compute optional insights from pattern history (purely presentational)
   const insights = useMemo(() => {
@@ -95,6 +108,8 @@ export function SessionSetupScreen() {
 
         {/* M5.4 — optional insights panel, secondary element, never blocking */}
         <SessionInsightsPanel insights={insights} />
+
+        <RecommendationReveal goal={derivedGoal} input={evidenceInput} />
       </div>
 
       <footer className={styles.footer}>
