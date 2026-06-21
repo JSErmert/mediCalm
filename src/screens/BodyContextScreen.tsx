@@ -58,7 +58,6 @@ const CATEGORY_ORDER: BodyContextCategory[] = [
 const CERTAINTY_OPTIONS: { value: BodyContextCertainty; label: string }[] = [
   { value: 'confirmed', label: 'Confirmed' },
   { value: 'suspected', label: 'Suspected' },
-  { value: 'unsure',    label: 'Not sure'  },
 ]
 
 const STATUS_OPTIONS: { value: BodyContextStatus; label: string }[] = [
