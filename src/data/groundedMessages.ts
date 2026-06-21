@@ -24,4 +24,22 @@ export const GROUNDED_MESSAGES: GroundedMessage[] = [
     // and lets the message clear liveMessages() to reach real users.
     review_status: 'pt_advisor_passed',
   },
+  {
+    message_id: 'chest_expansion_supports_breathing',
+    text: 'Gentle rib and chest expansion supports easier breathing.',
+    selectors: { location: ['ribs', 'chest', 'upper_back'], goal: ['decompress'] },
+    citation: {
+      pmid: '24835338',
+      source_link: 'https://pubmed.ncbi.nlm.nih.gov/24835338/',
+      exact_figure: 'r = 0.42',
+      figure_units: 'Pearson correlation (chest expansion vs maximum voluntary ventilation)',
+    },
+    display_quote:
+      'Chest expansion correlated significantly with maximum voluntary ventilation (r = 0.42).',
+    authored_by: 'JSEer',
+    authored_at: '2026-06-21T00:00:00.000Z',
+    // Sourced from the-muscle-pt research-001 (Wirth 2014), PubMed-direct verified.
+    // DARK (engineering_passed) until Zach Ermert, SPT attests faithfulness.
+    review_status: 'engineering_passed',
+  },
 ]

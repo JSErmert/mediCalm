@@ -126,3 +126,7 @@
 .beginButton:active {
   opacity: 0.75;
 }
+
+.setupCues { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; width: 100%; max-width: 22rem; }
+.setupCue { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.setupCueText { font-size: 0.75rem; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.5; }

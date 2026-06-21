@@ -6,6 +6,7 @@ import { ClosingTransition } from './ClosingTransition'
 import { getTemplate } from '../../data/m7Templates'
 import type { PTVariant, Phase, TransitionPhase } from '../../types/m7'
 import type { ExpressionProfile } from '../../engine/presentation/expressionProfile'
+import type { BreathingCue } from '../../types/breathingCue'
 import styles from './PhaseRenderer.module.css'
 
 type Props = {
@@ -23,12 +24,10 @@ type Props = {
   protocolId?: string
   /** Clinical context — top-zone protocol/pathway name. Forwarded to BreathPhaseRenderer. */
   sessionName?: string
-  /** Clinical context — top-zone diaphragmatic / opening cue. Forwarded to BreathPhaseRenderer. */
-  diaphragmaticCue?: string
   /** Clinical context — top-zone duration label. Forwarded to BreathPhaseRenderer. */
   durationLabel?: string
-  /** Clinical context — Scope A position note. Forwarded to BreathPhaseRenderer. */
-  positionCue?: string
+  /** Pre-compiled in-session cues (Layer 3). Forwarded to BreathPhaseRenderer. */
+  inSessionCues?: BreathingCue[]
   /** Mirrors GuidedSessionScreen `gentleLabels={!!sessionConfig}`. Forwarded to BreathPhaseRenderer. */
   gentleLabels?: boolean
   /** Mirrors GuidedSessionScreen `preStartDelay={sessionConfig ? 1500 : 0}`. Forwarded to BreathPhaseRenderer. */
@@ -49,9 +48,8 @@ export function PhaseRenderer({
   expressionProfile,
   protocolId,
   sessionName,
-  diaphragmaticCue,
   durationLabel,
-  positionCue,
+  inSessionCues,
   gentleLabels,
   preStartDelay,
   m6ProgressFraction,
@@ -89,9 +87,8 @@ export function PhaseRenderer({
           expressionProfile={expressionProfile}
           protocolId={protocolId}
           sessionName={sessionName}
-          diaphragmaticCue={diaphragmaticCue}
           durationLabel={durationLabel}
-          positionCue={positionCue}
+          inSessionCues={inSessionCues}
           gentleLabels={gentleLabels}
           preStartDelay={preStartDelay}
           m6ProgressFraction={m6ProgressFraction}

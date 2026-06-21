@@ -16,12 +16,16 @@
 import { useMemo } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { PROTOCOLS } from '../data/protocols'
-import { interpretSession, derivePositionHint } from '../engine/presentation/interpretationLayer'
+import { interpretSession } from '../engine/presentation/interpretationLayer'
 import { getOrComputePatternSummary } from '../engine/hari/patternReader'
 import { computeSessionInsights } from '../engine/hari/sessionInsights'
 import { SessionInsightsPanel } from '../components/SessionInsightsPanel'
 import { classifyNeedProfile } from '../engine/hari/needProfile'
 import { RecommendationReveal } from '../components/RecommendationReveal'
+import { GroundedTip } from '../components/GroundedTip'
+import { selectBreathingCues } from '../engine/groundedMessages/selectBreathingCues'
+import { liveMessages } from '../engine/groundedMessages/selectTip'
+import { GROUNDED_MESSAGES } from '../data/groundedMessages'
 import type { SymptomTag, LocationTag } from '../types/taxonomy'
 import styles from './SessionSetupScreen.module.css'
 
@@ -36,16 +40,22 @@ export function SessionSetupScreen() {
   // Derive input-specific focus statement and optional breathing hint
   const { focus, breathingHint } = interpretSession(session.pain_input)
 
-  // 2026-05-05 Scope A: PT-grounded contextual position hint based on
-  // branch + location_pattern. Renders as an addendum below the protocol's
-  // own support_mode (which remains the safety-validated default).
-  const positionHint = derivePositionHint(state.hariIntake)
-
   // Grounded Guidance Layer 1 — derive the recommendation's goal from the
   // already-stored interpretation result (no new engine call into the reducer).
   const derivedGoal = state.stateInterpretationResult
     ? classifyNeedProfile(state.stateInterpretationResult).primaryGoal
     : null
+
+  const { setupCues } = selectBreathingCues({
+    location: session.pain_input.location_tags as LocationTag[],
+    locationPattern: state.hariIntake?.location_pattern,
+    goal: derivedGoal,
+  })
+  const live = liveMessages(GROUNDED_MESSAGES)
+  function citationFor(pmid?: string) {
+    return pmid ? live.find((m) => m.citation.pmid === pmid) ?? null : null
+  }
+
   const evidenceInput = {
     symptom: session.pain_input.symptom_tags as SymptomTag[],
     location: session.pain_input.location_tags as LocationTag[],
@@ -91,13 +101,6 @@ export function SessionSetupScreen() {
           </div>
         )}
 
-        {positionHint && (
-          <div className={styles.supportBlock} aria-label="Position note">
-            <span className={styles.supportLabel}>Position note</span>
-            <span className={styles.supportValue}>{positionHint}</span>
-          </div>
-        )}
-
         <div className={styles.durationBlock} aria-label="Estimated session length">
           <span className={styles.durationLabel}>Length</span>
           <span className={styles.durationValue}>
@@ -110,6 +113,20 @@ export function SessionSetupScreen() {
         <SessionInsightsPanel insights={insights} />
 
         <RecommendationReveal goal={derivedGoal} input={evidenceInput} />
+
+        {setupCues.length > 0 && (
+          <div className={styles.setupCues} aria-label="Before you begin">
+            {setupCues.map((cue) => {
+              const cited = citationFor(cue.grounding?.pmid)
+              return (
+                <div key={cue.id} className={styles.setupCue}>
+                  <p className={styles.setupCueText}>{cue.text}</p>
+                  {cited && <GroundedTip message={cited} />}
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       <footer className={styles.footer}>
