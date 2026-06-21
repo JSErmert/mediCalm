@@ -6,9 +6,9 @@ import { useEffect } from 'react'
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { AppProvider } from '../context/AppProvider'
-import { useAppContext } from '../context/AppContext'
+import { AppContext, useAppContext } from '../context/AppContext'
 import { SessionSetupScreen } from './SessionSetupScreen'
-import type { HariSessionIntake, LocationPattern, IntakeBranch } from '../types/hari'
+import type { HariSessionIntake, LocationPattern, IntakeBranch, StateInterpretationResult } from '../types/hari'
 import type { RuntimeSession, PainInputState, SafetyAssessment } from '../types'
 
 function painInput(): PainInputState {
@@ -128,5 +128,68 @@ describe('SessionSetupScreen — Scope A position hint', () => {
     renderSetup('anxious_or_overwhelmed', 'single')
     await waitFor(() => screen.getByLabelText('Session setup'))
     expect(screen.queryByLabelText('Position note')).not.toBeInTheDocument()
+  })
+})
+
+// ── Grounded Guidance Layer 1: recommendation reveal ─────────────────────────
+
+function revealSession(): RuntimeSession {
+  return {
+    session_id: 's',
+    created_at: '2026-06-21T00:00:00.000Z',
+    protocol_id: 'PROTO_REDUCED_EFFORT',
+    protocol_name: 'Gentle Breath',
+    goal: 'Ease pressure',
+    display_mode: 'breath_only',
+    timing_profile: { inhale_seconds: 3, exhale_seconds: 6, rounds: 20 },
+    cue_sequence: [],
+    estimated_length_seconds: 240,
+    status: 'completed',
+    stop_conditions: [],
+    allowed_follow_up: [],
+    provenance_tags: [],
+    pain_input: { pain_level: 4, location_tags: [], symptom_tags: ['aching'] },
+    safety_assessment: { mode: 'DIRECT_SESSION_MODE', safety_tags: [], stop_reason: null },
+  } as unknown as RuntimeSession
+}
+
+function renderRevealSetup(stateInterpretationResult: StateInterpretationResult | null) {
+  const value = {
+    state: {
+      activeSession: revealSession(),
+      stateInterpretationResult,
+      hariIntake: null,
+      pendingPainInput: null,
+      safetyAssessment: null,
+      settings: {},
+      interventionPackage: null,
+      sessionFraming: null,
+      pendingStateEntry: null,
+      pendingBreathPrescription: null,
+      activeScreen: 'session_setup' as const,
+    },
+    dispatch: () => {},
+  } as unknown as React.ContextType<typeof AppContext>
+  return render(<AppContext.Provider value={value}><SessionSetupScreen /></AppContext.Provider>)
+}
+
+describe('SessionSetupScreen — grounded recommendation reveal', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('does not crash and shows no reveal when there is no interpretation result', () => {
+    renderRevealSetup(null)
+    expect(screen.queryByText(/why this for you/i)).not.toBeInTheDocument()
+  })
+
+  it('shows the reveal when interpretation yields decompress goal', async () => {
+    const result: StateInterpretationResult = {
+      overload: false,
+      primary: 'pain',
+      breath: '3/5',
+      effort: 'standard',
+      bias: 'protect_decompress',
+    }
+    renderRevealSetup(result)
+    await waitFor(() => expect(screen.getByText(/why this for you/i)).toBeInTheDocument())
   })
 })

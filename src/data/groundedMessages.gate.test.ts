@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { GROUNDED_MESSAGES } from './groundedMessages'
 import { LOCATION_TAGS, SYMPTOM_TAGS, TRIGGER_TAGS } from '../types/taxonomy'
+import { REGULATORY_GOALS } from '../types/hari'
 
 const PMID_RE = /^\d+$/
 const SENTINEL = '⟦' // unfilled transcription marker — must never ship
@@ -13,6 +14,12 @@ describe('grounded message bank — structural gate', () => {
   it('has unique message_ids', () => {
     const ids = GROUNDED_MESSAGES.map((m) => m.message_id)
     expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it('REGULATORY_GOALS lists exactly the 7 canonical goals', () => {
+    expect([...REGULATORY_GOALS].sort()).toEqual(
+      ['activate', 'decompress', 'downregulate', 'expand', 'ground', 'restore', 'stabilize'],
+    )
   })
 
   for (const m of GROUNDED_MESSAGES) {
@@ -39,10 +46,12 @@ describe('grounded message bank — structural gate', () => {
         const loc = m.selectors.location ?? []
         const sym = m.selectors.symptom ?? []
         const trg = m.selectors.trigger ?? []
-        expect(loc.length + sym.length + trg.length).toBeGreaterThan(0)
+        const goal = m.selectors.goal ?? []
+        expect(loc.length + sym.length + trg.length + goal.length).toBeGreaterThan(0)
         for (const t of loc) expect(LOCATION_TAGS).toContain(t)
         for (const t of sym) expect(SYMPTOM_TAGS).toContain(t)
         for (const t of trg) expect(TRIGGER_TAGS).toContain(t)
+        for (const g of goal) expect(REGULATORY_GOALS).toContain(g)
       })
     })
   }
