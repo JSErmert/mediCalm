@@ -18,9 +18,12 @@ facts in [`03-context-engine-map.md`](03-context-engine-map.md).
   Evidence binds to the *mechanism* (the goal), not to a specific `BreathFamily` timing.
   *(Alternative considered: bind on `BreathFamily`. Rejected — research grounds mechanisms,
   not 4/7 timings; goal is the stable key and there are fewer of them.)*
-- **D-B — Surface = the session intro moment.** Render the reveal in the M7 intro-transition
-  region, after safety-gate CLEAR, before the breath loop. Not a new full screen — an
-  evidence panel within the existing intro beat, so flow isn't lengthened by a hard stop.
+- **D-B — Surface = `SessionSetupScreen` (`session_setup`).** Render the reveal as one more
+  block on the existing pre-session preview (already shows protocol name, focus, position,
+  length, Begin), after safety-gate CLEAR, before the breath. *(Corrected 2026-06-21: the
+  originally-named M7 `IntroTransition` is deliberately dormant — operator removed pre-breath
+  narration after smoke-test. `session_setup` is the live, retained "here's your recommended
+  session" beat and the correct host.)*
 - **D-C — Selection is goal-gated, tag-ranked.** Eligible = live messages whose `goal`
   selector includes the derived `primaryGoal`. Rank eligible by overlap with this session's
   symptom/location/trigger tags (personalization); tie-break `message_id` asc. `null` → render
@@ -79,13 +82,18 @@ Given `null`: render nothing in the evidence slot (the intro proceeds normally).
 
 ## Bank seeding (Layer 1)
 
-Add `goal` selectors to the existing message and seed **at least one live, goal-bound
-message per goal that the demo path can hit** (`downregulate`, `decompress`, `restore` are
-the highest-traffic). Each new message: passes structural + coverage gates, ships
-`engineering_passed` (dark) until PT attestation, then flips to `pt_advisor_passed`. The
-existing `gentle_exercise_eases_sensitization` gains `goal: ['decompress','restore']`
-(movement-eases-sensitization supports protect/restore mechanisms) — **subject to PT
-re-attestation of the goal binding**, since the binding is itself a clinical claim.
+The existing `gentle_exercise_eases_sensitization` gains `goal: ['decompress','restore']`
+(movement-eases-sensitization supports protect/restore mechanisms). **The `goal` selector is
+engineering routing metadata — the same class as the existing `symptom`/`location`/`trigger`
+selectors — not a new clinical faithfulness claim.** `review_status` attests *quote fidelity
+to the paper*; selectors decide *where the attested message routes*. So adding `goal` does
+not change `review_status` and does not require re-attestation; a PT sanity-check that the
+routing is defensible is recommended, not blocking.
+
+Seeding **new** messages for other goals (so the reveal fires beyond decompress/restore) is a
+clinical-pipeline follow-up, not a code task: each needs a real PubMed-verified PMID + quote,
+ships `engineering_passed` (dark), and flips to `pt_advisor_passed` only on PT attestation.
+Until then, other goals show nothing at the reveal (INV-5 — honest degradation).
 
 ## Acceptance criteria
 
