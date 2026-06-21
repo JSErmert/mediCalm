@@ -81,6 +81,83 @@ button {
   color: inherit;
 }
 
+/* ── GroundedTip — research-backed pre-session insight ───────────────────── */
+
+.grounded-tip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  text-align: center;
+}
+
+.grounded-tip__text {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.52);
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+.grounded-tip__toggle {
+  font-size: 0.62rem;
+  color: rgba(26, 138, 138, 0.55);
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.grounded-tip__toggle:hover {
+  color: rgba(26, 138, 138, 0.85);
+}
+
+.grounded-tip__anchor {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.grounded-tip__popup {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 8px 12px;
+  border: 1px solid rgba(26, 138, 138, 0.18);
+  border-radius: 6px;
+  background: rgba(10, 30, 38, 0.96);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.grounded-tip__quote {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.44);
+  line-height: 1.55;
+}
+
+.grounded-tip__attrib {
+  font-size: 0.60rem;
+  color: rgba(255, 255, 255, 0.28);
+  letter-spacing: 0.02em;
+}
+
+.grounded-tip__pmid-link {
+  color: rgba(26, 138, 138, 0.65);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.grounded-tip__pmid-link:hover {
+  color: rgba(26, 138, 138, 0.90);
+  text-decoration: underline;
+}
+
 /* Screen-reader only utility */
 .sr-only {
   position: absolute;

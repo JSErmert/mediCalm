@@ -22,7 +22,7 @@ import { SessionCaseFile } from '../components/SessionCaseFile'
 import { YourPatternsPanel } from '../components/YourPatternsPanel'
 import { GroundedTip } from '../components/GroundedTip'
 import { buildContinueWhatHelpedSession } from '../engine/hari/continueWhatHelped'
-import { selectPreSessionTip } from '../engine/groundedMessages/selectTip'
+import { selectPreSessionTip, liveMessages } from '../engine/groundedMessages/selectTip'
 import styles from './HomeScreen.module.css'
 
 export function HomeScreen() {
@@ -54,7 +54,7 @@ export function HomeScreen() {
     }
   }, [])
 
-  const preSessionTip = selectPreSessionTip(history[0] ?? null)
+  const preSessionTip = selectPreSessionTip(history[0] ?? null) ?? liveMessages()[0] ?? null
 
   function handleStart() {
     // M6.2: All new sessions enter via state selection.
@@ -132,10 +132,7 @@ export function HomeScreen() {
       <div className={styles.hero}>
         <h1 className={styles.headline}>Just Breathe.</h1>
         <p className={styles.sub}>
-          Structured breathing protocol addressing ribcage compression
-          (limited rib expansion), deviated breathing mechanics, neck,
-          shoulder, and jaw tension, and protective muscle overactivation —
-          calibrated specifically to your current intensity level.
+          Structured breathing, calibrated to your current state.
         </p>
       </div>
 

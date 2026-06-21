@@ -192,6 +192,9 @@
 .tipZone {
   width: 100%;
   max-width: 440px;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.52);
+  text-align: center;
 }
 
 .startButton {

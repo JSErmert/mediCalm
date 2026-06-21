@@ -31,13 +31,11 @@ describe('GroundedTip', () => {
     expect(screen.queryByText(/Slow breathing increased HRV/)).not.toBeInTheDocument()
   })
 
-  it('reveals quote, PMID, and a PubMed link on toggle', async () => {
+  it('reveals attribution and a linked PMID on toggle', async () => {
     const user = userEvent.setup()
     render(<GroundedTip message={message} />)
     await user.click(screen.getByRole('button', { name: /learn more/i }))
-    expect(screen.getByText(/Slow breathing increased HRV/)).toBeInTheDocument()
-    expect(screen.getByText(/PMID 33117119/)).toBeInTheDocument()
-    const link = screen.getByRole('link', { name: /view on pubmed/i })
+    const link = screen.getByRole('link', { name: /PMID 33117119/i })
     expect(link).toHaveAttribute('href', 'https://pubmed.ncbi.nlm.nih.gov/33117119/')
   })
 

@@ -87,11 +87,10 @@ describe('HomeScreen', () => {
     await waitFor(() => expect(capturedScreen).toBe('state_selection'))
   })
 
-  it('renders revised hero copy with PT-approved terminology', () => {
+  it('renders hero copy', () => {
     renderWithProvider()
-    expect(screen.getByText(/ribcage compression/i)).toBeInTheDocument()
-    expect(screen.getByText(/deviated breathing mechanics/i)).toBeInTheDocument()
-    expect(screen.getByText(/neck, shoulder, and jaw tension/i)).toBeInTheDocument()
+    expect(screen.getByText(/Just Breathe/i)).toBeInTheDocument()
+    expect(screen.getByText(/calibrated to your current state/i)).toBeInTheDocument()
   })
 
   it('does not contain retired terminology in hero', () => {
