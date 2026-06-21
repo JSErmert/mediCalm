@@ -32,7 +32,7 @@ aspiration:
 | Context stack (source-isolated engine map) | [`03-context-engine-map.md`](03-context-engine-map.md) | Foundation | factual |
 | **Dispatch tier — Layer 1** | [`04-layer1-recommendation-reveal-spec.md`](04-layer1-recommendation-reveal-spec.md) | Low (executable) | **awaiting review** |
 | Roadmap — Layers 2–4 | [`05-roadmap-layers-2-4.md`](05-roadmap-layers-2-4.md) | Bridge | sequenced, not dispatched |
-| Implementation plan (Layer 1 TDD tasks) | `../../superpowers/plans/2026-06-20-grounded-guidance-layer1.md` | Dispatch payload | produced by writing-plans **after review** |
+| Implementation plan (Layer 1 TDD tasks) | [`06-layer1-plan.md`](06-layer1-plan.md) | Dispatch payload | **ready** (5 TDD tasks) |
 
 ---
 
@@ -58,5 +58,6 @@ source-isolated substrate executors read to avoid re-deriving the codebase. The 
 is *context only* — it shapes interfaces so Layer 1 doesn't wall off Layers 2–4, but no
 executor builds from it.
 
-**Next step:** operator reviews `04-…` (the dispatch-tier spec). On approval, invoke
-`superpowers:writing-plans` to generate the Layer 1 TDD plan, then dispatch.
+**Next step:** the Layer 1 TDD plan is ready ([`06-layer1-plan.md`](06-layer1-plan.md)).
+Dispatch via `superpowers:subagent-driven-development` (fresh implementer per task +
+two-stage review), pointing the executor at `06-layer1-plan.md`.
