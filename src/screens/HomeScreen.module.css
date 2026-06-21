@@ -189,6 +189,14 @@
   padding: 4px 0 36px;
 }
 
+.tipZone {
+  width: 100%;
+  max-width: 440px;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.52);
+  text-align: center;
+}
+
 .startButton {
   width: 220px;
   min-height: var(--touch-min);
