@@ -15,6 +15,10 @@ export const GROUNDED_MESSAGES: GroundedMessage[] = [
       'Meta-analysis revealed large improvement of post-intervention CS indices compared to baseline (SMD -0.81, 95 % CI -0.93 to -0.70).',
     authored_by: 'JSEer',
     authored_at: '2026-06-19T00:00:00.000Z',
-    review_status: 'engineering_passed',
+    // Clinical attestation (two-lock model, lock 2): Dr. Zach Ermert, SPT,
+    // attested 2026-06-20 during the MET demo walkthrough that this message
+    // faithfully represents PMID 39818121. This is what authorizes 'pt_advisor_passed'
+    // and lets the message clear liveMessages() to reach real users.
+    review_status: 'pt_advisor_passed',
   },
 ]
