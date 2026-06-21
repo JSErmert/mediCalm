@@ -398,13 +398,18 @@ describe('RecommendationReveal', () => {
     expect(screen.getByText(/why this for you/i)).toBeInTheDocument()
   })
 
-  it('shows the verbatim quote only after expanding Learn more (INV-2)', async () => {
+  // CORRECTED 2026-06-21: the dropdown shows ONLY attribution + linked PMID, per the
+  // operator's same-day UI decision. Do NOT assert display_quote in the popup and do NOT
+  // modify GroundedTip to add it — that reverses a shipped decision. INV-2 is satisfied:
+  // nothing is synthesized; the PMID links to the verbatim source.
+  it('reveals the linked PMID after expanding Learn more (minimal dropdown)', async () => {
     const { default: userEvent } = await import('@testing-library/user-event')
     const user = userEvent.setup()
     render(<RecommendationReveal goal="decompress" input={{}} bank={[live]} />)
-    expect(screen.queryByText(/SMD -0.81/)).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /PMID 39818121/i })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /learn more/i }))
-    expect(screen.getByText(live.display_quote)).toBeInTheDocument()
+    const link = screen.getByRole('link', { name: /PMID 39818121/i })
+    expect(link).toHaveAttribute('href', live.citation.source_link)
   })
 })
 ```
