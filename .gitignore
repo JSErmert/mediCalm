@@ -7,6 +7,7 @@ dist
 .apex/
 apex-bundle.json
 mission-control.json
+MEDICALM-CURRENT-STATE.md
 
 *.local
 test-results
