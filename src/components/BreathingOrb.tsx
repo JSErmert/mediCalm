@@ -30,6 +30,12 @@ interface Props {
   gentleLabels?: boolean
   /** Milliseconds of silence before the entry countdown begins. Default: 0. */
   preStartDelay?: number
+  /**
+   * n5-crosscut movement mode: when true, the primary phase label renders large
+   * (glanceable, hands-free — read in under a second while walking). Additive:
+   * default false leaves every existing session's typography untouched.
+   */
+  glanceable?: boolean
 }
 
 type OrbPhase = 'entry' | 'inhale' | 'hold_in' | 'exhale' | 'hold_out' | 'pause'
@@ -68,6 +74,7 @@ export function BreathingOrb({
   onAllRoundsComplete,
   gentleLabels = false,
   preStartDelay = 0,
+  glanceable = false,
 }: Props) {
   const { inhale_seconds, exhale_seconds, rounds } = timingProfile
   const holdIn = timingProfile.hold_after_inhale_seconds ?? 0
@@ -294,7 +301,11 @@ export function BreathingOrb({
 
       {/* Single text slot — fixed min-height, always in DOM, content changes only */}
       <div className={styles.instructionSlot} aria-live="polite">
-        {line1 && <p className={styles.instructionPrimary}>{line1}</p>}
+        {line1 && (
+          <p className={`${styles.instructionPrimary} ${glanceable ? styles.instructionPrimaryGlanceable : ''}`}>
+            {line1}
+          </p>
+        )}
         {line2 && <p className={styles.instructionSecondary}>{line2}</p>}
       </div>
     </div>

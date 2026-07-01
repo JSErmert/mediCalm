@@ -69,9 +69,9 @@ describe('core types', () => {
     expectTypeOf<HistoryEntry['state_entry']>().toEqualTypeOf<EntryState[] | undefined>()
   })
 
-  it('HistoryEntry session_type includes STATE', () => {
+  it('HistoryEntry session_type includes STATE and CUSTOM', () => {
     expectTypeOf<NonNullable<HistoryEntry['session_type']>>().toEqualTypeOf<
-      'HARI' | 'LEGACY' | 'STATE'
+      'HARI' | 'LEGACY' | 'STATE' | 'CUSTOM'
     >()
   })
 

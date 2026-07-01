@@ -22,7 +22,7 @@ import {
 } from '../engine/custom/customSessionToHistoryEntry'
 import { saveCustomHistoryEntry } from '../storage/sessionHistory'
 import { BreathingOrb } from './BreathingOrb'
-import { CustomCompletion } from './CustomCompletion'
+import { CustomCompletion, type CustomCompletionResult } from './CustomCompletion'
 import styles from './CustomPlayer.module.css'
 
 type PlayerPhase = 'playing' | 'completion'
@@ -30,6 +30,9 @@ type PlayerPhase = 'playing' | 'completion'
 export function CustomPlayer() {
   const { state, dispatch } = useAppContext()
   const session = state.pendingCustomSession
+  // n5-crosscut: movement (walking) mode — glanceable playback + abbreviated,
+  // honest close. Isolated from HARI; still lands a CUSTOM HistoryEntry.
+  const walkingMode = state.pendingWalkingMode
 
   const [phase, setPhase] = useState<PlayerPhase>('playing')
   const [cyclesCompleted, setCyclesCompleted] = useState(0)
@@ -83,13 +86,21 @@ export function CustomPlayer() {
     dispatch({ type: 'NAVIGATE', screen: 'home' })
   }
 
-  function handleSave(note: string | undefined) {
+  function handleSave(completion: CustomCompletionResult) {
     const elapsed = Math.max(0, Math.floor((Date.now() - startTimeRef.current) / 1000))
     const result: CustomSessionResult = {
       timestamp: new Date().toISOString(),
       cycles_completed: cyclesCompleted,
       session_duration_seconds: elapsed,
-      ...(note !== undefined && { user_note: note }),
+      ...(completion.note !== undefined && { user_note: completion.note }),
+      // Movement sessions stamp walking_mode; the pace tag rides along only if the
+      // user chose one. Standard custom runs carry neither.
+      ...(walkingMode && {
+        walking_mode: true,
+        ...(completion.walkingSpeedTag !== undefined && {
+          walking_speed_tag: completion.walkingSpeedTag,
+        }),
+      }),
     }
     saveCustomHistoryEntry(customSessionToHistoryEntry(session!, result))
     finishAndHome()
@@ -98,11 +109,11 @@ export function CustomPlayer() {
   return (
     <main className={styles.screen}>
       {phase === 'playing' && (
-        <div className={styles.playing}>
+        <div className={`${styles.playing} ${walkingMode ? styles.playingWalking : ''}`}>
           <header className={styles.topZone}>
             <p className={styles.sessionName}>{session.name}</p>
             <p className={styles.durationLabel}>
-              About {estimatedMinutes} minute{estimatedMinutes === 1 ? '' : 's'}
+              {walkingMode ? 'Walk with your breath' : `About ${estimatedMinutes} minute${estimatedMinutes === 1 ? '' : 's'}`}
             </p>
           </header>
 
@@ -110,6 +121,7 @@ export function CustomPlayer() {
             <BreathingOrb
               timingProfile={timingProfile}
               gentleLabels
+              glanceable={walkingMode}
               preStartDelay={1200}
               onRoundComplete={handleRoundComplete}
               onAllRoundsComplete={handleAllRoundsComplete}
@@ -138,6 +150,7 @@ export function CustomPlayer() {
           cyclesCompleted={cyclesCompleted}
           cyclesPlanned={clamped.cycles}
           endedEarly={endedEarly}
+          walkingMode={walkingMode}
           onSave={handleSave}
           onDismiss={finishAndHome}
         />

@@ -56,6 +56,23 @@
   margin-bottom: var(--space-5);
 }
 
+/* n5-crosscut movement mode: honest framing for the Walk affordance. */
+.movementNote {
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  line-height: var(--leading-relaxed);
+}
+
+.movementNote strong {
+  color: var(--color-text-primary);
+  font-weight: var(--weight-medium);
+}
+
 .softWarn {
   padding: var(--space-3) var(--space-4);
   margin-bottom: var(--space-4);
@@ -150,6 +167,28 @@
 
 .runButton:hover {
   background: var(--color-accent-glow);
+  border-color: var(--color-border-active);
+}
+
+/* Walk — the movement affordance. A primary action beside Run, but visually
+   distinct (outlined accent) so pairing with movement reads as a deliberate,
+   secondary intent rather than the default run. */
+.walkButton {
+  min-height: var(--touch-min);
+  padding: var(--space-2) var(--space-6);
+  background: none;
+  border: 1px solid var(--color-accent-border);
+  border-radius: var(--radius-full);
+  color: var(--color-accent-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  transition: background var(--transition-quick), color var(--transition-quick),
+    border-color var(--transition-quick);
+}
+
+.walkButton:hover {
+  background: var(--color-accent-subtle);
+  color: var(--color-on-accent);
   border-color: var(--color-border-active);
 }
 

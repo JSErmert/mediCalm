@@ -66,6 +66,16 @@ export interface AppState {
    * Cleared on CLEAR_SESSION or CLEAR_PENDING_CUSTOM.
    */
   pendingCustomSession: CustomSession | null
+  /**
+   * n5-crosscut: movement (walking) mode flag for the queued custom session.
+   * ADDITIVE — true only when the custom session was launched to be paired with
+   * walking. The movement path reuses the ISOLATED custom engine (never HARI):
+   * CustomPlayer renders a glanceable, hands-free layout and CustomCompletion
+   * writes walking_mode / walking_speed_tag / movement_note onto a CUSTOM
+   * HistoryEntry. Defaults to false so every existing custom run is unchanged.
+   * Cleared alongside pendingCustomSession (CLEAR_SESSION / CLEAR_PENDING_CUSTOM).
+   */
+  pendingWalkingMode: boolean
 }
 
 export type AppAction =
@@ -83,7 +93,7 @@ export type AppAction =
   | { type: 'CLEAR_STATE_ENTRY' }                                 // M6.2
   | { type: 'SET_STATE_INTERPRETATION'; result: StateInterpretationResult } // M6.4
   | { type: 'SET_BREATH_PRESCRIPTION'; prescription: BreathPrescription }  // M6.8.3
-  | { type: 'SET_PENDING_CUSTOM'; session: CustomSession }                 // n4-screens
+  | { type: 'SET_PENDING_CUSTOM'; session: CustomSession; walking?: boolean } // n4-screens; walking added n5-crosscut
   | { type: 'CLEAR_PENDING_CUSTOM' }                                       // n4-screens
 
 interface AppContextValue {

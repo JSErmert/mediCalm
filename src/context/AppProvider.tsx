@@ -29,6 +29,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         stateInterpretationResult: null,
         pendingBreathPrescription: null,
         pendingCustomSession: null,
+        pendingWalkingMode: false,
       }
     case 'UPDATE_SETTINGS':
       return { ...state, settings: { ...state.settings, ...action.settings } }
@@ -47,9 +48,9 @@ function reducer(state: AppState, action: AppAction): AppState {
     case 'SET_BREATH_PRESCRIPTION':
       return { ...state, pendingBreathPrescription: action.prescription }
     case 'SET_PENDING_CUSTOM':
-      return { ...state, pendingCustomSession: action.session }
+      return { ...state, pendingCustomSession: action.session, pendingWalkingMode: action.walking ?? false }
     case 'CLEAR_PENDING_CUSTOM':
-      return { ...state, pendingCustomSession: null }
+      return { ...state, pendingCustomSession: null, pendingWalkingMode: false }
   }
 }
 
@@ -67,6 +68,7 @@ function getInitialState(): AppState {
     stateInterpretationResult: null,
     pendingBreathPrescription: null,
     pendingCustomSession: null,
+    pendingWalkingMode: false,
   }
 }
 

@@ -17,7 +17,14 @@ import {
   duplicateCustomSession,
   SOFT_SESSION_WARN_LIMIT,
 } from '../storage/customSessions'
+import { GROUNDED_MESSAGES } from '../data/groundedMessages'
 import styles from './CustomLibraryScreen.module.css'
+
+// n5-crosscut movement mode: the walk affordance is the actionable form of the
+// EXISTING, PT-attested gentle-movement recommendation. We surface that message's
+// own text verbatim (no new clinical claim) as the honest framing for walking.
+const GENTLE_MOVEMENT_LINE =
+  GROUNDED_MESSAGES.find((m) => m.message_id === 'gentle_exercise_eases_sensitization')?.text ?? null
 
 const PHASE_LABELS: Record<string, string> = {
   inhale: 'Inhale',
@@ -46,6 +53,13 @@ export function CustomLibraryScreen() {
 
   function handleRun(session: CustomSession) {
     dispatch({ type: 'SET_PENDING_CUSTOM', session })
+    dispatch({ type: 'NAVIGATE', screen: 'custom_player' })
+  }
+
+  // n5-crosscut: run this composed session paired with walking. Same isolated
+  // custom engine, glanceable playback, honest abbreviated close, CUSTOM entry.
+  function handleWalk(session: CustomSession) {
+    dispatch({ type: 'SET_PENDING_CUSTOM', session, walking: true })
     dispatch({ type: 'NAVIGATE', screen: 'custom_player' })
   }
 
@@ -93,6 +107,16 @@ export function CustomLibraryScreen() {
 
       <h1 className={styles.title}>Your breathing</h1>
       <p className={styles.subtitle}>Sessions you have composed.</p>
+
+      {/* n5-crosscut movement mode: honest framing for the Walk affordance.
+          This is the attested gentle-movement recommendation made actionable —
+          it adds no new claim, and never implies a given session reduced pain. */}
+      {GENTLE_MOVEMENT_LINE && (
+        <p className={styles.movementNote} role="note">
+          Any session can be walked. {GENTLE_MOVEMENT_LINE} Tap <strong>Walk</strong> to pair one
+          with gentle movement.
+        </p>
+      )}
 
       {overSoftLimit && (
         <p className={styles.softWarn} role="status">
@@ -161,6 +185,14 @@ export function CustomLibraryScreen() {
                       aria-label={`Run ${session.name}`}
                     >
                       Run
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.walkButton}
+                      onClick={() => handleWalk(session)}
+                      aria-label={`Walk with ${session.name}`}
+                    >
+                      Walk
                     </button>
                     <button
                       type="button"
