@@ -32,7 +32,7 @@ interface Props {
   preStartDelay?: number
 }
 
-type OrbPhase = 'entry' | 'inhale' | 'exhale' | 'pause'
+type OrbPhase = 'entry' | 'inhale' | 'hold_in' | 'exhale' | 'hold_out' | 'pause'
 
 const DEFAULT_EXPRESSION: Pick<
   ExpressionProfile,
@@ -70,6 +70,8 @@ export function BreathingOrb({
   preStartDelay = 0,
 }: Props) {
   const { inhale_seconds, exhale_seconds, rounds } = timingProfile
+  const holdIn = timingProfile.hold_after_inhale_seconds ?? 0
+  const holdOut = timingProfile.hold_after_exhale_seconds ?? 0
   const expr = expressionProfile ?? DEFAULT_EXPRESSION
   const prefersReducedMotion = useReducedMotion()
 
@@ -96,6 +98,22 @@ export function BreathingOrb({
           setCountdown(remaining)
         } else {
           clearInterval(interval)
+          if (holdIn > 0) startHoldIn()
+          else startExhale()
+        }
+      }, 1000)
+    }
+
+    function startHoldIn() {
+      setPhase('hold_in')
+      let remaining = holdIn
+      setCountdown(remaining)
+      interval = setInterval(() => {
+        remaining -= 1
+        if (remaining >= 1) {
+          setCountdown(remaining)
+        } else {
+          clearInterval(interval)
           startExhale()
         }
       }, 1000)
@@ -104,6 +122,22 @@ export function BreathingOrb({
     function startExhale() {
       setPhase('exhale')
       let remaining = exhale_seconds
+      setCountdown(remaining)
+      interval = setInterval(() => {
+        remaining -= 1
+        if (remaining >= 1) {
+          setCountdown(remaining)
+        } else {
+          clearInterval(interval)
+          if (holdOut > 0) startHoldOut()
+          else startInterBreathPause()
+        }
+      }, 1000)
+    }
+
+    function startHoldOut() {
+      setPhase('hold_out')
+      let remaining = holdOut
       setCountdown(remaining)
       interval = setInterval(() => {
         remaining -= 1
@@ -160,10 +194,11 @@ export function BreathingOrb({
   }, [])
 
   // ── Motion values ───────────────────────────────────────────────────────────
-  const orbScale = phase === 'inhale' ? expr.orb_scale_max : expr.orb_scale_min
-  const glowScale = phase === 'inhale' ? expr.glow_scale_max : expr.glow_scale_min
+  const isExpanded = phase === 'inhale' || phase === 'hold_in'
+  const orbScale = isExpanded ? expr.orb_scale_max : expr.orb_scale_min
+  const glowScale = isExpanded ? expr.glow_scale_max : expr.glow_scale_min
   const glowOpacity =
-    phase === 'inhale' ? expr.glow_opacity_max
+    isExpanded ? expr.glow_opacity_max
     : phase === 'entry' || phase === 'pause' ? expr.glow_opacity_min * 0.5
     : expr.glow_opacity_min
 
@@ -178,15 +213,25 @@ export function BreathingOrb({
   const line1 = gentleLabels
     ? phase === 'entry' ? 'Settle'
     : phase === 'inhale' ? 'Breathe in'
+    : phase === 'hold_in' ? 'Hold'
     : phase === 'exhale' ? 'Breathe out'
+    : phase === 'hold_out' ? 'Rest'
     : ''
     : phase === 'entry' ? 'Prepare to begin'
     : phase === 'inhale' ? `Inhale through nose — ${inhale_seconds} seconds`
+    : phase === 'hold_in' ? `Hold — ${holdIn} seconds`
     : phase === 'exhale' ? `Exhale slowly — ${exhale_seconds} seconds`
+    : phase === 'hold_out' ? `Rest — ${holdOut} seconds`
     : ''
 
+  const microPhase: 'inhale' | 'exhale' | 'entry' | 'pause' =
+    phase === 'inhale' ? 'inhale'
+    : phase === 'exhale' ? 'exhale'
+    : phase === 'entry' ? 'entry'
+    : 'pause'
+
   const line2 = expr.show_microtext
-    ? getMicroGuidance(currentRound, phase, protocolId)
+    ? getMicroGuidance(currentRound, microPhase, protocolId)
     : ''
 
   return (
@@ -212,7 +257,7 @@ export function BreathingOrb({
           initial={{ scale: expr.glow_scale_min, opacity: expr.glow_opacity_min * 0.5 }}
           animate={
             prefersReducedMotion
-              ? { opacity: phase === 'inhale' ? expr.glow_opacity_max * 0.85 : expr.glow_opacity_min * 0.5 }
+              ? { opacity: isExpanded ? expr.glow_opacity_max * 0.85 : expr.glow_opacity_min * 0.5 }
               : { scale: glowScale, opacity: glowOpacity }
           }
           transition={
