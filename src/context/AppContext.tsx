@@ -21,6 +21,8 @@ export type AppScreen =
   | 'state_selection'      // M6.1 — M6 state-aware entry point
   | 'sad_safety'           // M6.1.1 — SAD pre-intake safety gate
   | 'support_resources'    // M6.1.1 — escalation exit support references
+  | 'custom_builder'       // n1-foundation — user-authored custom session builder
+  | 'custom_library'       // n1-foundation — saved custom sessions library
   // 'm6_guided_session' retired in M6.8.4 — all sessions route through 'guided_session'
 
 export interface AppState {

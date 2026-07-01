@@ -96,6 +96,10 @@ export interface TimingProfile {
   inhale_seconds: number
   exhale_seconds: number
   rounds: number
+  /** Optional inhale hold (seconds). Absent or 0 = no hold. Legacy protocols unaffected. */
+  hold_after_inhale_seconds?: number
+  /** Optional exhale hold (seconds). Absent or 0 = no hold. Legacy protocols unaffected. */
+  hold_after_exhale_seconds?: number
 }
 
 /**
@@ -178,8 +182,20 @@ export interface HistoryEntry {
    * M4.7: session type differentiation.
    * Absent in pre-M4.7 entries — treat as 'LEGACY' for backward compat.
    * Authority: M4.7 §4–§5
+   * CUSTOM added for user-authored breathing sessions (n1-foundation).
    */
-  session_type?: 'HARI' | 'LEGACY' | 'STATE'
+  session_type?: 'HARI' | 'LEGACY' | 'STATE' | 'CUSTOM'
+  /**
+   * Custom session ID — present only when session_type === 'CUSTOM'.
+   * References a saved CustomSession.id.
+   */
+  custom_session_id?: string
+  /** True when a custom session was paired with walking movement. */
+  walking_mode?: boolean
+  /** Pace tag for walking-mode sessions. */
+  walking_speed_tag?: import('./custom').WalkingSpeedTag
+  /** Free-text user note for movement context (not used as safety signal). */
+  movement_note?: string
   /**
    * M6: selected entry states — present only on session_type === 'STATE' sessions.
    * Authority: M6.0 § Completion Model, M6.2 § M6 Schema Additions
@@ -320,3 +336,4 @@ export interface MechanismObject {
 }
 
 export * from './m7'
+export type { WalkingSpeedTag, CustomTimingProfile, CustomSession } from './custom'
