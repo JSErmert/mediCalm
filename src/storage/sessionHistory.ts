@@ -97,6 +97,16 @@ export function getEligibleHariHistory(): HistoryEntry[] {
   return loadHistory().filter(isEligibleHariSession)
 }
 
+/**
+ * Persist a custom or movement history entry WITHOUT the M4.1 validation gate.
+ * Custom and movement sessions are exempt from pending-validation by operator doctrine.
+ * Do NOT use for standard HARI/STATE sessions — use saveSession() for those.
+ */
+export function saveCustomHistoryEntry(entry: HistoryEntry): void {
+  const history = loadHistory()
+  storageSet(KEY, [entry, ...history])
+}
+
 export function deleteSession(sessionId: string): void {
   const history = loadHistory()
   storageSet(KEY, history.filter((e) => e.session_id !== sessionId))
