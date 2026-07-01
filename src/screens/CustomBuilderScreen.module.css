@@ -1,0 +1,350 @@
+/* CustomBuilderScreen.module.css — D4-B4 Deep Current
+   Authority: n4-screens custom experience — the paced composer
+*/
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  max-width: var(--screen-max-width);
+  margin: 0 auto;
+  padding: 0 var(--screen-padding) var(--space-8);
+  color: var(--color-text-primary);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.backLink {
+  min-height: var(--touch-min);
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  transition: color var(--transition-quick);
+}
+
+.backLink:hover {
+  color: var(--color-text-primary);
+}
+
+.wordmark {
+  font-size: 0.60rem;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-light);
+  letter-spacing: -0.018em;
+  line-height: var(--leading-tight);
+  margin-bottom: var(--space-2);
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-6);
+}
+
+/* ── Presets ─────────────────────────────────────────────────────────── */
+.presetList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.presetCard {
+  width: 100%;
+  min-height: var(--space-16);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  text-align: left;
+  transition:
+    background var(--transition-quick),
+    border-color var(--transition-quick),
+    box-shadow var(--transition-quick);
+}
+
+.presetCard:hover {
+  border-color: var(--color-border-active);
+  background: var(--color-accent-subtle);
+}
+
+.presetName {
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+}
+
+.presetSub {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.presetPattern {
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  color: var(--color-accent-primary);
+}
+
+.composeOwnButton {
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: var(--space-4);
+  background: none;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
+  transition: color var(--transition-quick), border-color var(--transition-quick);
+}
+
+.composeOwnButton:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-border-active);
+}
+
+/* ── Compose (one value at a time) ───────────────────────────────────── */
+.stepProgress {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-4);
+}
+
+.stepLabel {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-light);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
+}
+
+.stepHint {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-10);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  margin-bottom: var(--space-10);
+}
+
+.stepperButton {
+  width: 3.5rem;
+  height: 3.5rem;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-light);
+  color: var(--color-accent-primary);
+  background: var(--color-accent-subtle);
+  border: 1px solid var(--color-accent-border);
+  border-radius: var(--radius-full);
+  transition:
+    background var(--transition-quick),
+    border-color var(--transition-quick),
+    opacity var(--transition-quick);
+}
+
+.stepperButton:hover:not(:disabled) {
+  background: var(--color-accent-glow);
+  border-color: var(--color-border-active);
+}
+
+.stepperButton:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+.stepperValue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 6rem;
+}
+
+.stepperNumber {
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-light);
+  line-height: 1;
+  color: var(--color-text-primary);
+}
+
+.stepperUnit {
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-text-tertiary);
+}
+
+.stepNav {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: auto;
+}
+
+/* ── Review ──────────────────────────────────────────────────────────── */
+.patternList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.patternRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.patternCycles {
+  background: var(--color-accent-subtle);
+  border-color: var(--color-accent-border);
+}
+
+.patternLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.patternValue {
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+}
+
+.nameField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+}
+
+.nameLabel {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--color-text-tertiary);
+}
+
+.nameInput {
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  transition: border-color var(--transition-quick);
+}
+
+.nameInput:focus-visible {
+  border-color: var(--color-border-active);
+}
+
+.nameInput::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.reviewActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: auto;
+}
+
+/* ── Shared buttons ──────────────────────────────────────────────────── */
+.primaryButton {
+  flex: 1;
+  min-height: var(--touch-min);
+  padding: var(--space-4);
+  background: var(--color-accent-subtle);
+  border: 1px solid var(--color-accent-border);
+  border-radius: var(--radius-full);
+  color: var(--color-on-accent);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.02em;
+  transition: background var(--transition-quick), box-shadow var(--transition-quick);
+}
+
+.primaryButton:hover {
+  background: var(--color-accent-glow);
+  border-color: var(--color-border-active);
+}
+
+.secondaryButton {
+  flex: 1;
+  min-height: var(--touch-min);
+  padding: var(--space-4);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  transition: color var(--transition-quick), border-color var(--transition-quick);
+}
+
+.secondaryButton:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-border-active);
+}
+
+.tertiaryButton {
+  min-height: var(--touch-min);
+  padding: var(--space-2);
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  font-size: var(--text-sm);
+  transition: color var(--transition-quick);
+}
+
+.tertiaryButton:hover {
+  color: var(--color-text-secondary);
+}

@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { AppSettings, PainInputState, RuntimeSession, SafetyAssessment } from '../types'
+import type { AppSettings, CustomSession, PainInputState, RuntimeSession, SafetyAssessment } from '../types'
 import type { HariSessionIntake, InterventionPackage, StateInterpretationResult, BreathPrescription, IntakeBranch } from '../types/hari'
 
 /**
@@ -23,6 +23,7 @@ export type AppScreen =
   | 'support_resources'    // M6.1.1 — escalation exit support references
   | 'custom_builder'       // n1-foundation — user-authored custom session builder
   | 'custom_library'       // n1-foundation — saved custom sessions library
+  | 'custom_player'        // n4-screens — exact-execution player for a composed custom session
   // 'm6_guided_session' retired in M6.8.4 — all sessions route through 'guided_session'
 
 export interface AppState {
@@ -58,6 +59,13 @@ export interface AppState {
    * Cleared on CLEAR_SESSION.
    */
   pendingBreathPrescription: BreathPrescription | null
+  /**
+   * n4-screens: Custom session queued to run in the exact-execution player.
+   * Set by CustomBuilderScreen (compose → begin) or CustomLibraryScreen (run).
+   * Consumed by CustomPlayer, which re-validates its timing before playback.
+   * Cleared on CLEAR_SESSION or CLEAR_PENDING_CUSTOM.
+   */
+  pendingCustomSession: CustomSession | null
 }
 
 export type AppAction =
@@ -75,6 +83,8 @@ export type AppAction =
   | { type: 'CLEAR_STATE_ENTRY' }                                 // M6.2
   | { type: 'SET_STATE_INTERPRETATION'; result: StateInterpretationResult } // M6.4
   | { type: 'SET_BREATH_PRESCRIPTION'; prescription: BreathPrescription }  // M6.8.3
+  | { type: 'SET_PENDING_CUSTOM'; session: CustomSession }                 // n4-screens
+  | { type: 'CLEAR_PENDING_CUSTOM' }                                       // n4-screens
 
 interface AppContextValue {
   state: AppState

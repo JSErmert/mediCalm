@@ -183,6 +183,17 @@ export function HomeScreen() {
           </div>
         </div>
 
+        {/* n4-screens: calm, first-class entry into the custom breathing library */}
+        <button
+          type="button"
+          className={styles.libraryCard}
+          onClick={() => dispatch({ type: 'NAVIGATE', screen: 'custom_library' })}
+          aria-label="Open your breathing — compose and run custom sessions"
+        >
+          <span className={styles.libraryCardLabel}>Your breathing</span>
+          <span className={styles.libraryCardSub}>Compose &amp; run your own sessions</span>
+        </button>
+
         {showContinue && (
           <div className={styles.continueZone}>
             {continueConfirmed ? (

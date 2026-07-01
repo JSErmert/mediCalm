@@ -1,0 +1,151 @@
+/* CustomCompletion.module.css — D4-B4 Deep Current
+   Authority: n4-screens custom experience
+   Token-only: colors/spacing/radius/type/motion all via tokens; dimensions in rem.
+*/
+
+.completion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: var(--screen-max-width);
+  margin: 0 auto;
+  padding: var(--space-8) var(--screen-padding);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.heading {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-light);
+  letter-spacing: -0.018em;
+  color: var(--color-text-primary);
+}
+
+.sessionName {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.summary {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-8);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+}
+
+.count {
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-light);
+  color: var(--color-accent-primary);
+  line-height: 1;
+}
+
+.countSep {
+  font-size: var(--text-xl);
+  color: var(--color-text-tertiary);
+}
+
+.planned {
+  font-size: var(--text-xl);
+  color: var(--color-text-secondary);
+}
+
+.countLabel {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-text-tertiary);
+  margin-inline-start: var(--space-2);
+}
+
+.section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: left;
+}
+
+.noteLabel {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--color-text-tertiary);
+}
+
+.noteInput {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  resize: none;
+  transition: border-color var(--transition-quick);
+}
+
+.noteInput:focus-visible {
+  border-color: var(--color-border-active);
+}
+
+.noteInput::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.saveButton {
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: var(--space-4);
+  background: var(--color-accent-subtle);
+  border: 1px solid var(--color-accent-border);
+  border-radius: var(--radius-full);
+  color: var(--color-on-accent);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.02em;
+  transition: background var(--transition-quick), border-color var(--transition-quick);
+}
+
+.saveButton:hover {
+  background: var(--color-accent-glow);
+  border-color: var(--color-border-active);
+}
+
+.dismissButton {
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: var(--space-3);
+  background: none;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  transition: color var(--transition-quick), border-color var(--transition-quick);
+}
+
+.dismissButton:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
