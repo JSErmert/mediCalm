@@ -291,6 +291,44 @@
   padding: 0.75rem 0.875rem;
 }
 
+/* n4-screens — first-class custom library entry */
+.libraryCard {
+  width: 100%;
+  max-width: 22rem;
+  margin-top: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.75rem 0.875rem;
+  text-align: left;
+  background: var(--color-accent-subtle);
+  border: 1px solid var(--color-accent-border);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  min-height: var(--touch-min, 44px);
+  font-family: inherit;
+  transition: background var(--transition-quick), box-shadow var(--transition-quick);
+}
+
+.libraryCard:hover {
+  background: rgba(26, 138, 138, 0.20);
+  box-shadow: 0 0 22px rgba(26, 138, 138, 0.12);
+}
+
+.libraryCardLabel {
+  font-size: 0.6rem;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(26, 138, 138, 0.72);
+}
+
+.libraryCardSub {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.4;
+}
+
 /* ── Continue What Helped ─────────────────────────────────────────────────── */
 
 .continueZone {

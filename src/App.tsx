@@ -24,6 +24,9 @@ import { BodyContextScreen } from './screens/BodyContextScreen'
 import { StateSelectionScreen } from './screens/StateSelectionScreen'
 import { SADSafetyScreen } from './screens/SADSafetyScreen'
 import { SupportResourcesScreen } from './screens/SupportResourcesScreen'
+import { CustomBuilderScreen } from './screens/CustomBuilderScreen'
+import { CustomLibraryScreen } from './screens/CustomLibraryScreen'
+import { CustomPlayer } from './components/CustomPlayer'
 import styles from './App.module.css'
 
 function ScreenRouter() {
@@ -96,6 +99,21 @@ function ScreenRouter() {
       {activeScreen === 'support_resources' && (
         <ScreenTransition screenKey="support_resources">
           <SupportResourcesScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'custom_library' && (
+        <ScreenTransition screenKey="custom_library">
+          <CustomLibraryScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'custom_builder' && (
+        <ScreenTransition screenKey="custom_builder">
+          <CustomBuilderScreen />
+        </ScreenTransition>
+      )}
+      {activeScreen === 'custom_player' && (
+        <ScreenTransition screenKey="custom_player">
+          <CustomPlayer />
         </ScreenTransition>
       )}
     </AnimatePresence>
