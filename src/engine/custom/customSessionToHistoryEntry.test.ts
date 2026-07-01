@@ -104,6 +104,53 @@ describe('customSessionToHistoryEntry — optional user_note', () => {
   })
 })
 
+describe('customSessionToHistoryEntry — movement (walking) fields', () => {
+  it('omits walking_mode for a standard custom run', () => {
+    const entry = customSessionToHistoryEntry(SESSION, RESULT)
+    expect(entry.walking_mode).toBeUndefined()
+    expect(entry.walking_speed_tag).toBeUndefined()
+  })
+
+  it('stamps walking_mode true when the run was paired with walking', () => {
+    const entry = customSessionToHistoryEntry(SESSION, { ...RESULT, walking_mode: true })
+    expect(entry.walking_mode).toBe(true)
+  })
+
+  it('carries the optional walking_speed_tag when provided', () => {
+    const entry = customSessionToHistoryEntry(SESSION, {
+      ...RESULT,
+      walking_mode: true,
+      walking_speed_tag: 'brisk',
+    })
+    expect(entry.walking_speed_tag).toBe('brisk')
+  })
+
+  it('omits walking_speed_tag when the pace was not chosen', () => {
+    const entry = customSessionToHistoryEntry(SESSION, { ...RESULT, walking_mode: true })
+    expect(entry.walking_speed_tag).toBeUndefined()
+  })
+
+  it('does not stamp walking metadata when walking_mode is false, even if a tag leaks in', () => {
+    const entry = customSessionToHistoryEntry(SESSION, {
+      ...RESULT,
+      walking_mode: false,
+      walking_speed_tag: 'slow',
+    })
+    expect(entry.walking_mode).toBeUndefined()
+    expect(entry.walking_speed_tag).toBeUndefined()
+  })
+
+  it('adds no efficacy or pain_reduced_by field on a movement entry (MOVEMENT-HONESTY)', () => {
+    const entry = customSessionToHistoryEntry(SESSION, {
+      ...RESULT,
+      walking_mode: true,
+      walking_speed_tag: 'moderate',
+    }) as unknown as Record<string, unknown>
+    expect(entry).not.toHaveProperty('pain_reduced_by')
+    expect(entry).not.toHaveProperty('efficacy')
+  })
+})
+
 describe('customSessionToHistoryEntry — required HistoryEntry fields', () => {
   it('sets session_status to completed', () => {
     const entry = customSessionToHistoryEntry(SESSION, RESULT)

@@ -130,6 +130,15 @@
   letter-spacing: 0.01em;
 }
 
+/* n5-crosscut movement mode: glanceable, hands-free phase label.
+   --text-4xl (2.25rem / 36px) clears the ≥32px legibility floor for treadmill
+   use; brighter primary text so it reads at arm's length in under a second. */
+.instructionPrimaryGlanceable {
+  font-size: var(--text-4xl);
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+}
+
 .instructionSecondary {
   font-size: 0.75rem;
   color: var(--color-text-tertiary);

@@ -29,6 +29,22 @@
   padding-top: var(--space-6);
 }
 
+/* n5-crosscut movement mode: glanceable, hands-free walking layout.
+   More breathing room and a larger session name so the screen is readable at
+   arm's length on a treadmill; the big phase label lives on the orb itself. */
+.playingWalking {
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.playingWalking .sessionName {
+  font-size: var(--text-xl);
+}
+
+.playingWalking .durationLabel {
+  color: var(--color-text-secondary);
+}
+
 .sessionName {
   font-size: var(--text-lg);
   font-weight: var(--weight-light);
