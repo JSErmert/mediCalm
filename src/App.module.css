@@ -22,6 +22,44 @@
   z-index: -1;
   pointer-events: none;
   overflow: hidden;
+
+  /* ── Field damping ────────────────────────────────────────────────────────
+     The field is persistent — it renders once and survives every screen change,
+     which is what makes it read as one body of water rather than per-screen
+     decoration. The cost is that one field serves three very different jobs, so
+     the active screen sets `data-field` here and the new layers respond.
+
+     These variables govern ONLY the layers added with the water column. The
+     original D4-B4 base, rays and cross-hatch never read them, so a safety screen
+     renders exactly as it did before this field existed. See
+     components/deepField/fieldMode.ts for which screen gets which mode. */
+  --field-particulate-opacity: 1;
+  --field-pool-opacity: 1;
+  --field-pool-rate: 1;
+}
+
+/* A session is running. The user is following a breath and anything else in motion
+   is competing with it — in peripheral vision a drifting field can pull focus, or
+   turn queasy, exactly when someone is trying to regulate. The field is damped to a
+   trace rather than switched off, because a background that disappears the moment a
+   session starts reads as a glitch. */
+.bgField[data-field='calm'] {
+  --field-particulate-opacity: 0.15;
+  --field-pool-opacity: 0.5;
+  --field-pool-rate: 2.2;
+}
+
+/* A safety surface — the 988 route, the SAD gate, the safety stop, the support exit.
+   These are the screens where the app is at its most serious, and atmosphere is the
+   wrong instinct on them. Both moving layers are gone.
+
+   The vignette deliberately stays. It carries no motion, no hue and no added light, so
+   it cannot compete for attention; it only deepens the corners, which if anything holds
+   the eye harder on the words. Worth knowing: that makes these screens very slightly
+   darker at the edges than they were before this field existed. */
+.bgField[data-field='off'] {
+  --field-particulate-opacity: 0;
+  --field-pool-opacity: 0;
 }
 
 .bgBase {
@@ -68,6 +106,122 @@
     rgba(0, 0, 0, 0.15) 88%,
     transparent 93%
   );
+}
+
+/* ── Water column: the colour pools ───────────────────────────────────────────
+   Three soft pools drifting on independent long cycles. Two hues, not one: the
+   established teal and a deep marine blue, so the ground varies in COLOUR across
+   the frame and not merely in brightness. That variation is most of what the eye
+   reads as depth in a dark field.
+
+   Screen blend, because on a near-black ground it adds light the way water scatters
+   it, rather than laying a flat film over the gradient beneath. Heavy blur keeps
+   every edge below the threshold where it would read as a shape.
+
+   The cycles are 74-118s — roughly double the portfolio's. Its field is meant to
+   feel alive to someone scanning a page; this one sits behind a breathing exercise
+   and should be slower than breathing. */
+.bgPools {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: var(--field-pool-opacity, 1);
+  transition: opacity 1200ms var(--ease-settle, ease);
+}
+
+.pool {
+  position: absolute;
+  /* Never a clean circle — an organic blob that stretches and rotates as it drifts. */
+  border-radius: 46% 54% 58% 42% / 52% 48% 52% 48%;
+  filter: blur(86px);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.poolTeal {
+  width: 78vw;
+  height: 66vw;
+  left: -6%;
+  top: -8%;
+  background: radial-gradient(circle, var(--pool-teal), transparent 68%);
+}
+
+.poolMarine {
+  width: 72vw;
+  height: 62vw;
+  right: -8%;
+  top: 18%;
+  background: radial-gradient(circle, var(--pool-marine), transparent 68%);
+}
+
+.poolCyan {
+  width: 64vw;
+  height: 56vw;
+  left: 18%;
+  bottom: -10%;
+  background: radial-gradient(circle, var(--pool-cyan), transparent 68%);
+}
+
+/* Depth vignette — the edges sink toward the pressure dark so the centre of the
+   frame, where the orb lives, is the brightest water in the field. Sits above the
+   pools and below the content. Unlike the pools it stays on every screen including
+   the safety surfaces: it is not atmosphere, it is the existing ground being seated. */
+.bgVignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 82% 74% at 50% 46%,
+    transparent 0%,
+    transparent 44%,
+    var(--field-vignette) 100%
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .poolTeal {
+    animation: pool-drift-1 86s ease-in-out infinite;
+    animation-duration: calc(86s * var(--field-pool-rate, 1));
+  }
+  .poolMarine {
+    animation: pool-drift-2 118s ease-in-out infinite;
+    animation-duration: calc(118s * var(--field-pool-rate, 1));
+  }
+  .poolCyan {
+    animation: pool-drift-3 74s ease-in-out infinite;
+    animation-duration: calc(74s * var(--field-pool-rate, 1));
+  }
+
+  @keyframes pool-drift-1 {
+    0%   { transform: translate(0, 0) scale(1, 1) rotate(0deg); }
+    30%  { transform: translate(5vw, 6vh) scale(1.16, 0.88) rotate(7deg); }
+    62%  { transform: translate(1vw, 11vh) scale(0.9, 1.14) rotate(-5deg); }
+    100% { transform: translate(0, 0) scale(1, 1) rotate(0deg); }
+  }
+  @keyframes pool-drift-2 {
+    0%   { transform: translate(0, 0) scale(1, 1) rotate(0deg); }
+    34%  { transform: translate(-6vw, 7vh) scale(0.88, 1.15) rotate(-6deg); }
+    66%  { transform: translate(-2vw, 13vh) scale(1.14, 0.9) rotate(5deg); }
+    100% { transform: translate(0, 0) scale(1, 1) rotate(0deg); }
+  }
+  @keyframes pool-drift-3 {
+    0%   { transform: translate(0, 0) scale(1.03, 0.97) rotate(0deg); }
+    32%  { transform: translate(4vw, -6vh) scale(1.13, 0.9) rotate(6deg); }
+    64%  { transform: translate(-4vw, -2vh) scale(0.91, 1.12) rotate(-6deg); }
+    100% { transform: translate(0, 0) scale(1.03, 0.97) rotate(0deg); }
+  }
+}
+
+/* Mobile GPU: three 86px-blur pools must re-rasterise on every composite, which a
+   phone at 3x density pays for in dropped frames behind the whole app. Drop to a
+   much cheaper blur and retire the third pool; two hues still cross, which is the
+   part that carries the depth. */
+@media (max-width: 640px) {
+  .pool {
+    filter: blur(34px);
+  }
+  .poolCyan {
+    display: none;
+  }
 }
 
 .bgFilterCross {

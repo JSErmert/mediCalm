@@ -48,6 +48,33 @@
   --color-orb-glow:         rgba(22, 130, 148, 0.20);
   --color-orb-text:         rgba(255, 255, 255, 0.92);
 
+  /* ── Water column — the ambient field's colour pools ───────────────────
+     A single-hue background is flat however good the gradient is: the eye reads
+     depth from colour VARIATION across a field, not from one colour fading out.
+     So the ground carries a second hue — a deep marine blue, a cousin of the
+     teal rather than a contrast to it — pooling on its own path and its own
+     clock, so the two drift in and out of each other and the field is never the
+     same colour twice.
+
+     Alphas are a third of what the portfolio's equivalent layer runs at. That
+     field is built to hold a skeptical reader; this one sits behind a breathing
+     session and has to stay beneath conscious notice.
+
+     Then pulled back another third after looking at the first desktop
+     render: at the original values the pools lifted the whole mid-frame, the orb
+     stopped being the brightest thing on the home screen, and the supporting copy
+     lost contrast against a ground that had brightened underneath it. The colour
+     VARIATION is what carries depth here, not the amount of light added, so the
+     variation is kept and the luminance is not. */
+  --pool-teal:      rgba(26, 138, 138, 0.17);  /* the established accent, pooled */
+  --pool-marine:    rgba(20, 74, 132, 0.20);   /* deep marine blue — the second hue */
+  --pool-cyan:      rgba(33, 150, 168, 0.12);  /* the orb's own cyan, faintest */
+
+  /* Edges sink toward the pressure dark so the centre holds the orb. Deepened at the
+     same time as the pools came down: with light spread across the frame the corners
+     have to fall further for the centre to still read as the near water. */
+  --field-vignette: rgba(1, 5, 9, 0.62);
+
   /* ── Elevation / Shadows ───────────────────────────────────────────── */
   --shadow-xs:   0 1px 4px rgba(0, 0, 0, 0.30);
   --shadow-sm:   0 1px 6px rgba(0, 0, 0, 0.40);

@@ -7,6 +7,7 @@ import { BreathingOrb } from '../components/BreathingOrb'
 import { CompletionForm } from '../components/CompletionForm'
 import { RoundDots } from '../components/RoundDots'
 import { PhaseRenderer } from '../components/m7/PhaseRenderer'
+import { useSuppressField } from '../components/deepField/fieldSuppression'
 import { saveSession } from '../storage/sessionHistory'
 import { deriveExpressionProfile } from '../engine/presentation/expressionProfile'
 import { decideContinuation } from '../engine/hari/reassessmentLoop'
@@ -74,6 +75,11 @@ export function GuidedSessionScreen() {
   const [reassessmentHistory, setReassessmentHistory] = useState<PersistedReassessmentResult[]>([])
 
   const [phase, setPhase] = useState<SessionPhase>('breathing')
+
+  // The safety interrupt is a safety surface that is NOT a screen — activeScreen stays
+  // 'guided_session' throughout — so the ambient field's screen mapping cannot see it.
+  // Hold the field off directly for as long as that alert is showing.
+  useSuppressField(phase === 'safety_interrupt')
   const [showStopConfirm, setShowStopConfirm] = useState(false)
   const [orbRunning, setOrbRunning] = useState(true)
 

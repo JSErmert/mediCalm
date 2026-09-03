@@ -1,0 +1,18 @@
+/* SuspendedParticulate — the fine grain of the Deep Current field.
+
+   A <canvas> is a replaced element, so `inset: 0` alone leaves it at its intrinsic
+   300x150. It needs explicit dimensions to fill the field.
+
+   Opacity is driven by the field mode set on the parent (see App.module.css): full
+   on idle screens, a trace during a session, nothing on a safety surface. The
+   transition is deliberately long — a background that changes on a screen
+   transition should be felt rather than seen. */
+.particulate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: var(--field-particulate-opacity, 1);
+  transition: opacity 1200ms var(--ease-settle, ease);
+}

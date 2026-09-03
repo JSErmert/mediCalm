@@ -27,6 +27,8 @@ import { SupportResourcesScreen } from './screens/SupportResourcesScreen'
 import { CustomBuilderScreen } from './screens/CustomBuilderScreen'
 import { CustomLibraryScreen } from './screens/CustomLibraryScreen'
 import { CustomPlayer } from './components/CustomPlayer'
+import { DeepField } from './components/deepField/DeepField'
+import { FieldSuppressionProvider } from './components/deepField/fieldSuppression'
 import styles from './App.module.css'
 
 function ScreenRouter() {
@@ -123,15 +125,18 @@ function ScreenRouter() {
 export default function App() {
   return (
     <AppProvider>
-      <div className={styles.appRoot}>
-        {/* D4-B4 Deep Current background — persistent across all screen transitions */}
-        <div className={styles.bgField} aria-hidden="true">
-          <div className={styles.bgBase} />
-          <div className={styles.bgFilterRadial} />
-          <div className={styles.bgFilterCross} />
+      {/* The field's off switch for safety surfaces that are not screens. It has to
+          wrap BOTH the field and the router: a screen raises the signal, the field
+          reads it. See components/deepField/fieldSuppression.tsx. */}
+      <FieldSuppressionProvider>
+        <div className={styles.appRoot}>
+          {/* D4-B4 Deep Current background — persistent across all screen transitions.
+              Composition and per-screen damping live in DeepField. It reads the active
+              screen from context, which is why it sits inside AppProvider. */}
+          <DeepField />
+          <ScreenRouter />
         </div>
-        <ScreenRouter />
-      </div>
+      </FieldSuppressionProvider>
     </AppProvider>
   )
 }
