@@ -55,6 +55,25 @@
   --shadow-lg:   0 8px 32px rgba(0, 0, 0, 0.60);
   --shadow-orb:  0 0 36px rgba(33, 150, 168, 0.42), 0 0 10px rgba(255, 255, 255, 0.07);
 
+  /* ── Card depth ────────────────────────────────────────────────────────
+     Three stacked parts, adapted from the portfolio's card system into teal:
+       inset hairline  — a lit top edge, so the card reads as a raised surface
+                         rather than a flat rectangle with a border
+       contact shadow  — tight and dark, anchoring the card to the ground
+       ambient shadow  — wide and soft with a negative spread, giving depth
+                         without a visible grey halo on the near-black field
+     On lift the ambient shadow deepens and a low-opacity teal ring appears.
+     The ring is the accent doing structural work — it is never a glow effect. */
+  --shadow-card:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 1px 2px rgba(0, 0, 0, 0.40),
+    0 14px 32px -18px rgba(0, 0, 0, 0.65);
+  --shadow-card-lift:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 2px 5px rgba(0, 0, 0, 0.45),
+    0 20px 42px -20px rgba(0, 0, 0, 0.78),
+    0 0 0 1px rgba(26, 138, 138, 0.30);
+
   /* ── Spacing ──────────────────────────────────────────────────────── */
   --space-1:   4px;
   --space-2:   8px;
@@ -101,6 +120,15 @@
   --transition-crossfade: 420ms cubic-bezier(0.0, 0.0, 0.4, 1.0);  /* M2.5.6 calm enter */
   --transition-slow:      500ms ease;
 
+  /* Settling expo-out. Decelerates hard and comes to rest rather than stopping,
+     so a surface that lifts reads as weight settling instead of a linear snap.
+     Adopted from the portfolio's motion system, which uses this one curve for
+     every interactive transition; using a single curve everywhere is what makes
+     an interface feel like one object. It carries no bounce and no overshoot, so
+     it stays inside doc 05's transition rules (no bounce, no zoom, no slides). */
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-settle: 260ms var(--ease-settle);
+
   /* ── Touch / Accessibility ────────────────────────────────────────── */
   --touch-min: 44px;
 
@@ -116,5 +144,6 @@
     --transition-quick:     0ms;
     --transition-crossfade: 0ms;
     --transition-slow:      0ms;
+    --transition-settle:    0ms;
   }
 }

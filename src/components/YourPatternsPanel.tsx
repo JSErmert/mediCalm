@@ -3,14 +3,19 @@
  * Authority: M6.8.2_Finalize_Runtime_Integrity_HARI_UI.md
  *
  * Displays last session and simple HARI memory in calm, non-analytic language.
- * Renders nothing if no sessions exist.
+ *
+ * NO SILENT BLANK (2026-09-02): this panel previously returned `null` before any
+ * session existed, which left its card chrome on HomeScreen painting as an empty
+ * box beside "Your State" — the second thing a first-time user saw. It now always
+ * renders something readable: its own empty state first, the session summary after.
+ * The guarantee lives here rather than in the caller so any future caller inherits it.
  *
  * Constraints:
  *   - No charts, no analytics, no percentages, no performance framing
  *   - Subtle shift language only (M6.8.2 Part 4)
  *   - Reads from session history; never writes
  */
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { HistoryEntry, ShiftOutcome } from '../types'
 import { loadHistory } from '../storage/sessionHistory'
 import styles from './YourPatternsPanel.module.css'
@@ -82,18 +87,26 @@ function getMemoryText(history: HistoryEntry[]): string {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function YourPatternsPanel() {
-  const [last, setLast] = useState<HistoryEntry | null>(null)
-  const [history, setHistory] = useState<HistoryEntry[]>([])
-
-  useEffect(() => {
-    const h = [...loadHistory()].sort(
+  // Read synchronously on the first render. localStorage is synchronous, so an
+  // effect-based load would paint the empty state for one frame before swapping
+  // to a real session — a visible flicker on every return visit.
+  const [history] = useState<HistoryEntry[]>(() =>
+    [...loadHistory()].sort(
       (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     )
-    setHistory(h)
-    setLast(h[0] ?? null)
-  }, [])
+  )
+  const last = history[0] ?? null
 
-  if (!last) return null
+  if (!last) {
+    return (
+      <div className={styles.panel}>
+        <span className={styles.label}>Your Patterns</span>
+        <span className={styles.empty}>
+          What helps you will appear here after your first session.
+        </span>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.panel}>

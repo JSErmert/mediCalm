@@ -17,6 +17,15 @@
   margin-bottom: 0.1rem;
 }
 
+/* Empty state — matches HomeScreen's .contextCardHint so the two cards in the
+   context row read as a pair rather than one filled card beside one blank one.
+   Uses the token (--color-text-tertiary is exactly rgba(255,255,255,0.30)). */
+.empty {
+  font-size: 0.62rem;
+  color: var(--color-text-tertiary);
+  line-height: 1.5;
+}
+
 .sessionRow {
   display: flex;
   align-items: baseline;

@@ -91,6 +91,93 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* ── Fold contract (2026-09-02) ────────────────────────────────────────────
+     Measured across a ladder of viewport heights: "Begin session" ends at a FIXED
+     y=745 whatever the viewport, because nothing in this column is height-relative.
+     So it clears a 800px viewport by 55px, a 768px one by 23px, and falls BELOW
+     THE FOLD at 720px and shorter. On a 1366x768 laptop, browser chrome takes the
+     real viewport under 720 — the primary control is off-screen on a very ordinary
+     machine, and the orb zone is spending 439px of the column on decoration.
+
+     Note the coordinate asymmetry that makes this easy to get wrong: `zoom: 1.5`
+     scales getBoundingClientRect (so 745 is zoomed px) but NOT window.innerHeight
+     (unzoomed px). Comparing the two is nonetheless the correct test, because the
+     zoomed render has to fit inside the unzoomed viewport. Media queries evaluate
+     against the unzoomed height, so the breakpoints below are in real viewport px.
+
+     The orb yields height on short viewports rather than being redrawn. The
+     `scale` property scales the whole assembly (rings, glow, sphere) around its
+     centre, and because `scale` is applied BEFORE `transform`, it composes with
+     each child's own animated transform instead of overriding it — the ping,
+     breathe and idle cycles are untouched at any size.
+
+     `scale` alone shrinks the paint but not the layout box, so the negative
+     block margin pulls the surrounding layout in by exactly what the visual
+     gave up: the box is 220px, the paint is 220 * s, the difference is
+     220 * (1 - s), half of it on each side. */
+  scale: var(--orb-scale, 1);
+  margin-block: calc((var(--orb-scale, 1) - 1) * 110px);
+}
+
+/* Desktop and landscape only (min-width 481px). Mobile portrait already clears the
+   fold — the CTA lands at 428 in an 844px viewport — and the orb is the emotional
+   centre there, so a phone keeps it at full presence.
+
+   Padding is always spent before the orb is: trimming dead space costs the design
+   nothing, shrinking the orb costs it presence. Each tier is sized against the BOTTOM
+   of its own range, where a ladder is weakest, not the top — measured clearance at the
+   tier floors is 46 / 41 / 39 / 54px, and 22px at a 500px sideways phone. Verified
+   across the ladder by e2e/home-fold.spec.ts, which asserts at those floors. */
+@media (min-width: 481px) and (max-height: 820px) {
+  .orbZone {
+    padding: 16px 0 12px;
+    gap: 10px;
+  }
+}
+
+@media (min-width: 481px) and (max-height: 760px) {
+  .orbZone {
+    padding: 12px 0 8px;
+    gap: 8px;
+  }
+  .orbField {
+    --orb-scale: 0.88;
+  }
+}
+
+@media (min-width: 481px) and (max-height: 700px) {
+  .orbZone {
+    padding: 8px 0 6px;
+    gap: 6px;
+  }
+  .orbField {
+    --orb-scale: 0.74;
+  }
+}
+
+@media (min-width: 481px) and (max-height: 640px) {
+  .orbZone {
+    padding: 6px 0 4px;
+    gap: 4px;
+  }
+  .orbField {
+    --orb-scale: 0.6;
+  }
+}
+
+/* Very short landscape (a phone turned sideways). The wordmark, hero and button
+   alone occupy ~340px, so below this the orb is not the thing to keep trimming —
+   the column layout itself is wrong here and wants a side-by-side treatment. This
+   tier buys back what it can; the landscape layout is a named, open gap. */
+@media (min-width: 481px) and (max-height: 600px) {
+  .orbZone {
+    padding: 4px 0 2px;
+    gap: 2px;
+  }
+  .orbField {
+    --orb-scale: 0.42;
+  }
 }
 
 /* Ping rings — all same size, staggered 2s apart for continuous outward pulse */
@@ -211,19 +298,35 @@
   letter-spacing: 0.04em;
   cursor: pointer;
   backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-card);
   transition:
-    opacity var(--transition-quick),
-    background var(--transition-quick),
-    box-shadow var(--transition-quick);
+    opacity var(--transition-settle),
+    background var(--transition-settle),
+    box-shadow var(--transition-settle),
+    transform var(--transition-settle);
 }
 
-.startButton:hover {
-  background: rgba(26, 138, 138, 0.20);
-  box-shadow: 0 0 22px rgba(26, 138, 138, 0.22);
+/* The primary control keeps its own soft teal glow — it is the one place on this
+   screen where the accent is allowed to read as light rather than as structure —
+   but it now sits on the shared card depth and moves on the shared curve, so the
+   whole screen settles as one object rather than as a set of separate widgets. */
+@media (hover: hover) {
+  .startButton:hover {
+    background: rgba(26, 138, 138, 0.2);
+    box-shadow: var(--shadow-card-lift), 0 0 22px rgba(26, 138, 138, 0.22);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .startButton:hover {
+    transform: translateY(-1px);
+  }
 }
 
 .startButton:active {
   opacity: 0.76;
+  box-shadow: var(--shadow-card);
+  transform: none;
 }
 
 .ctaSub {
@@ -243,20 +346,57 @@
   max-width: 22rem;
 }
 
-.yourStateCard {
+/* ── Card depth and lift ──────────────────────────────────────────────────────
+   The portfolio's card system, translated into teal and stripped of its bloom.
+   That site is marketing and its hover is meant to catch a skeptical eye: it
+   brightens, scales up and blooms a coloured ring. This app's job is the opposite
+   — to down-regulate — and doc 05 forbids bounce and zoom outright. So what comes
+   across is the DEPTH and the CURVE, not the spectacle: a lit top edge, a real
+   contact shadow, a 1px lift on the settle curve, and a low teal ring. No
+   brightness flash, no scale.
+
+   Hover states are behind `hover: hover` so a touch device never gets a lifted
+   card stuck under a finger after a tap; touch gets the `:active` press instead. */
+.yourStateCard,
+.yourPatternsCard {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(26, 138, 138, 0.2);
   border-radius: 0.5rem;
   padding: 0.75rem 0.875rem;
+  box-shadow: var(--shadow-card);
+  transition:
+    background var(--transition-settle),
+    box-shadow var(--transition-settle),
+    transform var(--transition-settle);
+}
+
+.yourStateCard {
   text-align: left;
   cursor: pointer;
-  transition: background 0.15s ease;
   font-family: inherit;
   min-height: var(--touch-min, 44px);
 }
 
-.yourStateCard:hover {
+@media (hover: hover) {
+  .yourStateCard:hover {
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: var(--shadow-card-lift);
+  }
+}
+
+/* The lift itself is motion, so it only exists where motion is welcome. Under
+   reduced-motion the card still gains its depth and ring — the information is
+   kept, only the movement is dropped. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .yourStateCard:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.yourStateCard:active {
   background: rgba(255, 255, 255, 0.07);
+  box-shadow: var(--shadow-card);
+  transform: none;
 }
 
 .contextCardLabel {
@@ -284,12 +424,9 @@
   margin-top: 0.25rem;
 }
 
-.yourPatternsCard {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(26, 138, 138, 0.2);
-  border-radius: 0.5rem;
-  padding: 0.75rem 0.875rem;
-}
+/* .yourPatternsCard is declared with .yourStateCard above so the two cards in the
+   context row share one surface definition — they sit side by side and must read
+   as the same material. It is not interactive, so it takes the depth but no lift. */
 
 /* n4-screens — first-class custom library entry */
 .libraryCard {
@@ -307,12 +444,30 @@
   cursor: pointer;
   min-height: var(--touch-min, 44px);
   font-family: inherit;
-  transition: background var(--transition-quick), box-shadow var(--transition-quick);
+  box-shadow: var(--shadow-card);
+  transition:
+    background var(--transition-settle),
+    box-shadow var(--transition-settle),
+    transform var(--transition-settle);
 }
 
-.libraryCard:hover {
-  background: rgba(26, 138, 138, 0.20);
-  box-shadow: 0 0 22px rgba(26, 138, 138, 0.12);
+@media (hover: hover) {
+  .libraryCard:hover {
+    background: rgba(26, 138, 138, 0.2);
+    box-shadow: var(--shadow-card-lift);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .libraryCard:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.libraryCard:active {
+  background: rgba(26, 138, 138, 0.2);
+  box-shadow: var(--shadow-card);
+  transform: none;
 }
 
 .libraryCardLabel {
@@ -353,18 +508,32 @@
   cursor: pointer;
   font-family: inherit;
   text-align: center;
+  box-shadow: var(--shadow-card);
   transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
+    background var(--transition-settle),
+    border-color var(--transition-settle),
+    box-shadow var(--transition-settle),
+    transform var(--transition-settle);
 }
 
-.continueCard:hover {
-  background: rgba(26, 138, 138, 0.14);
-  border-color: rgba(26, 138, 138, 0.45);
+@media (hover: hover) {
+  .continueCard:hover {
+    background: rgba(26, 138, 138, 0.14);
+    border-color: rgba(26, 138, 138, 0.45);
+    box-shadow: var(--shadow-card-lift);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .continueCard:hover {
+    transform: translateY(-1px);
+  }
 }
 
 .continueCard:active {
   opacity: 0.76;
+  box-shadow: var(--shadow-card);
+  transform: none;
 }
 
 .continueCardTitle {
