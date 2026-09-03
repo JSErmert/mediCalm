@@ -93,12 +93,20 @@
   justify-content: center;
 
   /* ── Fold contract (2026-09-02) ────────────────────────────────────────────
-     Measured across a ladder of viewport heights: "Begin session" ends at a FIXED
-     y=745 whatever the viewport, because nothing in this column is height-relative.
-     So it clears a 800px viewport by 55px, a 768px one by 23px, and falls BELOW
-     THE FOLD at 720px and shorter. On a 1366x768 laptop, browser chrome takes the
-     real viewport under 720 — the primary control is off-screen on a very ordinary
-     machine, and the orb zone is spending 439px of the column on decoration.
+     Measured across a ladder of viewport heights: "Begin session" ended at a FIXED
+     y=778 whatever the viewport, because nothing in this column is height-relative.
+     So it cleared an 820px viewport by 42px, an 800px one by 22px, and fell BELOW
+     THE FOLD at 768px and shorter. A 1366x768 laptop was already 10px short at its
+     full viewport, before any browser chrome — the primary control was off-screen
+     on a very ordinary machine, while the orb zone spent 439px of the column on
+     decoration.
+
+     MEASURE THIS AFTER THE WEBFONT LOADS. Inter arrives from Google Fonts, and the
+     fallback stack is narrower: before the swap the hero subheading fits on one
+     line and the CTA sits at 745, after it wraps to two and everything below moves
+     down 33px. An early measurement of this screen read 745 and put the failure
+     threshold at 720 — it was measuring a layout no settled user ever sees. Wait
+     for the font, or you will tune these tiers 33px too generously.
 
      Note the coordinate asymmetry that makes this easy to get wrong: `zoom: 1.5`
      scales getBoundingClientRect (so 745 is zoomed px) but NOT window.innerHeight
@@ -125,14 +133,15 @@
    centre there, so a phone keeps it at full presence.
 
    Padding is always spent before the orb is: trimming dead space costs the design
-   nothing, shrinking the orb costs it presence. Each tier is sized against the BOTTOM
-   of its own range, where a ladder is weakest, not the top — measured clearance at the
-   tier floors is 46 / 41 / 39 / 54px, and 22px at a 500px sideways phone. Verified
-   across the ladder by e2e/home-fold.spec.ts, which asserts at those floors. */
+   nothing, shrinking the orb costs it presence. Each tier is sized against the FLOOR
+   of its own range, where a ladder is weakest, never the top — a tier that only works
+   at its widest height is a tier that fails silently just above the next breakpoint.
+   Measured clearance at the four floors is 28 / 27 / 26 / 28px. Verified by
+   e2e/home-fold.spec.ts, which asserts at exactly those floors. */
 @media (min-width: 481px) and (max-height: 820px) {
   .orbZone {
-    padding: 16px 0 12px;
-    gap: 10px;
+    padding: 12px 0 8px;
+    gap: 8px;
   }
 }
 
@@ -142,7 +151,7 @@
     gap: 8px;
   }
   .orbField {
-    --orb-scale: 0.88;
+    --orb-scale: 0.82;
   }
 }
 
@@ -152,7 +161,7 @@
     gap: 6px;
   }
   .orbField {
-    --orb-scale: 0.74;
+    --orb-scale: 0.68;
   }
 }
 
@@ -162,7 +171,7 @@
     gap: 4px;
   }
   .orbField {
-    --orb-scale: 0.6;
+    --orb-scale: 0.58;
   }
 }
 
@@ -176,7 +185,7 @@
     gap: 2px;
   }
   .orbField {
-    --orb-scale: 0.42;
+    --orb-scale: 0.3;
   }
 }
 
